@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
@@ -36,7 +39,7 @@ public class MainWindow {
 	private JScrollPane scrollBar;
 	private JFileChooser selectedFile;
 	private File currentFile = null;
-	private boolean isDirty = false;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -70,6 +73,7 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
+		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -90,35 +94,30 @@ public class MainWindow {
 		selectedFile = new JFileChooser();
 		mntmOpenFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(!syntaxEditor.getText().isEmpty() && isDirty) {
-					if(JOptionPane.showConfirmDialog(null, "Are you sure you wish to trash the current file?") == 0 ){
-						int openResult = selectedFile.showOpenDialog(null);
-						if (openResult == selectedFile.APPROVE_OPTION) {
-							openFile(selectedFile.getSelectedFile());
-						}
-					} else {
-						if(currentFile == null){
-							int saveResult = selectedFile.showSaveDialog(frame);
-							saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-						}
-						else {
-							saveFile(currentFile, syntaxEditor.getText());
-						}
-						
-						int openResult = selectedFile.showOpenDialog(null);
-						if (openResult == selectedFile.APPROVE_OPTION) {
-							openFile(selectedFile.getSelectedFile());
-						}
-					
-				}
-			} else {				
-				int openResult = selectedFile.showOpenDialog(null);
-				if (openResult == selectedFile.APPROVE_OPTION) {
-					openFile(selectedFile.getSelectedFile());
-				}
 				
-			}
-				isDirty = false;
+				if(syntaxEditor.getText().isEmpty()) {
+					int openResult = selectedFile.showOpenDialog(null);
+					if (openResult == selectedFile.APPROVE_OPTION) {
+						openFile(selectedFile.getSelectedFile());
+					}
+				}
+				else {
+					if(currentFile == null){
+						int saveResult = selectedFile.showSaveDialog(frame);
+						
+						if (saveResult == selectedFile.APPROVE_OPTION) {
+							saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+							
+						}
+					}
+					else {
+						saveFile(currentFile, syntaxEditor.getText());
+					}
+					int openResult = selectedFile.showOpenDialog(null);
+					if (openResult == selectedFile.APPROVE_OPTION) {
+						openFile(selectedFile.getSelectedFile());
+					}
+				}
 		}
 		});
 		mntmOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
@@ -127,16 +126,12 @@ public class MainWindow {
 		JMenuItem mntmSave = new JMenuItem("Save...");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (currentFile == null) {
-					int saveResult = selectedFile.showSaveDialog(frame);
-					if (saveResult == selectedFile.APPROVE_OPTION) {
-						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					}
+				int saveResult = selectedFile.showSaveDialog(frame);
+				
+				if (saveResult == selectedFile.APPROVE_OPTION) {
+					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
 					
-				} else {
-					saveFile(currentFile, syntaxEditor.getText());
 				}
-				isDirty = false;
 			}
 		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -147,7 +142,7 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				int saveResult = selectedFile.showSaveDialog(frame);
 				saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-				isDirty = false;
+				
 			}
 		});
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
@@ -171,33 +166,7 @@ public class MainWindow {
 		syntaxEditor.setWrapStyleWord(true);
 		scrollBar = new JScrollPane(syntaxEditor);
 		frame.getContentPane().add(scrollBar, BorderLayout.CENTER);
-		
-		syntaxEditor.getDocument().addDocumentListener(new DocumentListener() {
-			
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				changed();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				changed();
-			}
-			
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				changed();
-			}
-			
-			public void changed() {
-				isDirty = true;
-			}
-			
-		});
-		
+
 	}
 	
 	public void openFile(File file) {
@@ -251,30 +220,25 @@ public class MainWindow {
 	
 	/* @abstract: This function opens a new syntax whiteboard after saving the existing content on the textArea */
 	public void newSyntax(){
-		if (!syntaxEditor.getText().isEmpty() && isDirty){
-			if(JOptionPane.showConfirmDialog(null, "Do you want to save changes to Untitled?") == 0){
-				if(currentFile == null){
-					// When the contents on Syntax Editor textArea are not saved
-					int saveResult = selectedFile.showSaveDialog(frame);
-					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-				}
-				else {
-					// When an existing saved file occupies the syntax Editor texArea
-					saveFile(currentFile, syntaxEditor.getText());
-				}
-				
-				syntaxEditor.setText("");
-				frame.setTitle("Untitled");
-			} 
-			else {
-				syntaxEditor.setText("");
-				frame.setTitle("Untitled");
-			}
+		if(syntaxEditor.getText().isEmpty()){
+			
 		}
 		else {
-			syntaxEditor.setText("");
-			frame.setTitle("Untitled");
+			if(currentFile == null){
+				int saveResult = selectedFile.showSaveDialog(frame);
+				
+				if (saveResult == selectedFile.APPROVE_OPTION) {
+					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+					
+				}
+			}
+			else {
+				saveFile(currentFile, syntaxEditor.getText());
+			}
 		}
+		
+		syntaxEditor.setText("");
+		frame.setTitle("Untitled");
 		
 	}
 	public void closeWindow() {
