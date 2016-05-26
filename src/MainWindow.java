@@ -40,6 +40,7 @@ public class MainWindow {
 	private JFileChooser selectedFile;
 	private File currentFile = null;
 	private ImportWindow importWin;
+	private SyntaxModel model;
 	/**
 	 * Launch the application.
 	 */
@@ -98,7 +99,7 @@ public class MainWindow {
 				if(syntaxEditor.getText().isEmpty()) {
 					int openResult = selectedFile.showOpenDialog(null);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile());
+						openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 				else {
@@ -115,7 +116,7 @@ public class MainWindow {
 					}
 					int openResult = selectedFile.showOpenDialog(null);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile());
+						openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 		}
@@ -151,6 +152,8 @@ public class MainWindow {
 		JMenuItem mntmImportDataset = new JMenuItem("Import Dataset");
 		mntmImportDataset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Path importedFile = importSelectedFile();
+				System.out.println(importedFile.toString());
 				importWin = new ImportWindow();
 				importWin.showWindow();
 			}
@@ -175,25 +178,39 @@ public class MainWindow {
 
 	}
 	
-	public void openFile(File file) {
+	public void openFile(File file, int flag) {
 		if (file.canRead()) {
 			String filePath = file.getPath();
 			String fileContents = "";
-		
-			if(filePath.endsWith(".txt")) {
+			int noOfLinesToRead;
+			
+			if(filePath.endsWith(".dat") || filePath.endsWith(".txt")) {
 				try {
 					Scanner scan = new Scanner(new FileInputStream(file));
+					if(flag == 1) { // When a data import file is to be read, read only 10 lines
+						noOfLinesToRead = 10;
+						model = new SyntaxModel();
+						while(scan.hasNextLine() && noOfLinesToRead > 0){
+							//model.importFileContents.add(scan.nextLine());
+							fileContents += scan.nextLine();
+							fileContents += "\n";
+							noOfLinesToRead--;
+						}
+						System.out.println(fileContents);
+					}
+					else {	// When a syntax file is to be read, read the entire file and show in the syntax editor
+					
 					while(scan.hasNextLine()){
 						fileContents += scan.nextLine();
 						fileContents += "\n";
 					}
+					syntaxEditor.setText(fileContents);
+					frame.setTitle(filePath);
+					currentFile = file;
+				  }
 				} catch (FileNotFoundException e) {
 					System.out.println("File Not Found Exception raised!");
 				}
-			
-				syntaxEditor.setText(fileContents);
-				frame.setTitle(filePath);
-				currentFile = file;
 			} 
 			else {
 			JOptionPane.showMessageDialog(null, "That file type is not supported!\n Only .txt file type is supported!");
@@ -250,5 +267,13 @@ public class MainWindow {
 	public void closeWindow() {
 		WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+	}
+	
+	public Path importSelectedFile() {
+		int openResult = selectedFile.showOpenDialog(null);
+		if (openResult == selectedFile.APPROVE_OPTION) {
+			openFile(selectedFile.getSelectedFile(), 1);
+		}
+		return selectedFile.getSelectedFile().toPath();
 	}
 }

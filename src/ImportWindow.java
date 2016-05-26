@@ -8,10 +8,26 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.GridLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class ImportWindow extends JFrame {
 
 	private JPanel contentPane;
+	private JTextField textField_1;
 
 	/**
 	 * Launch the application.
@@ -43,21 +59,45 @@ public class ImportWindow extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Data", null, panel, null);
+		JPanel dataPanel = new JPanel();
+		tabbedPane.addTab("Data", null, dataPanel, null);
+		dataPanel.setLayout(null);
 		
-		JButton btnTab_1 = new JButton("tab2");
-		btnTab_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		JLabel lblNewLabel = new JLabel("Delimiter");
+		lblNewLabel.setBounds(28, 25, 41, 14);
+		dataPanel.add(lblNewLabel);
+		
+		JLabel lblMissingValueCode = new JLabel("Missing Value Code");
+		lblMissingValueCode.setBounds(28, 65, 91, 14);
+		dataPanel.add(lblMissingValueCode);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(131, 65, 86, 20);
+		dataPanel.add(textField_1);
+		textField_1.setColumns(10);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setWrapStyleWord(true);
+		textArea.setLineWrap(true);
+		textArea.setBounds(285, 11, 356, 165);
+		dataPanel.add(textArea);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
+		comboBox.setBounds(131, 22, 86, 20);
+		dataPanel.add(comboBox);
+		
+		JButton btnImport = new JButton("Import");
+		btnImport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
 			}
 		});
-		panel.add(btnTab_1);
+		btnImport.setBounds(80, 120, 89, 23);
+		dataPanel.add(btnImport);
 		
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Variable", null, panel_1, null);
-		
-		JButton btnTab = new JButton("Tab1");
-		panel_1.add(btnTab);
+		JPanel variablePanel = new JPanel();
+		tabbedPane.addTab("Variable", null, variablePanel, null);
+		variablePanel.setLayout(null);
 	}
-
 }
