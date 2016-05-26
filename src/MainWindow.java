@@ -39,7 +39,7 @@ public class MainWindow {
 	private JScrollPane scrollBar;
 	private JFileChooser selectedFile;
 	private File currentFile = null;
-	
+	private ImportWindow importWin;
 	/**
 	 * Launch the application.
 	 */
@@ -149,6 +149,12 @@ public class MainWindow {
 		mnFile.add(mntmSaveAs);
 		
 		JMenuItem mntmImportDataset = new JMenuItem("Import Dataset");
+		mntmImportDataset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				importWin = new ImportWindow();
+				importWin.showWindow();
+			}
+		});
 		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
 		mnFile.add(mntmImportDataset);
 		
