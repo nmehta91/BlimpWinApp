@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
@@ -74,6 +75,7 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
+		model = SyntaxModel.getInstance();
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -154,6 +156,8 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				Path importedFile = importSelectedFile();
 				System.out.println(importedFile.toString());
+				model.mappings.put("data", importedFile.toString());
+				model.dataSetPath = importedFile;
 				importWin = new ImportWindow();
 				importWin.showWindow();
 			}
@@ -167,6 +171,14 @@ public class MainWindow {
 				closeWindow();
 			}
 		});
+		
+		JMenuItem mntmTest = new JMenuItem("Test");
+		mntmTest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		mnFile.add(mntmTest);
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
 		
@@ -186,13 +198,15 @@ public class MainWindow {
 			
 			if(filePath.endsWith(".dat") || filePath.endsWith(".txt")) {
 				try {
+					model.importFileContents = new ArrayList<String>();
 					Scanner scan = new Scanner(new FileInputStream(file));
 					if(flag == 1) { // When a data import file is to be read, read only 10 lines
 						noOfLinesToRead = 10;
-						model = new SyntaxModel();
 						while(scan.hasNextLine() && noOfLinesToRead > 0){
-							//model.importFileContents.add(scan.nextLine());
-							fileContents += scan.nextLine();
+							String line = scan.nextLine();
+							fileContents += line;
+							model.importFileContents.add(line);
+							System.out.println("Added to fileContents: " + line);
 							fileContents += "\n";
 							noOfLinesToRead--;
 						}
