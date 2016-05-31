@@ -25,6 +25,10 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTable;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import javax.swing.JScrollPane;
 
 public class ImportWindow extends JFrame {
 
@@ -32,6 +36,11 @@ public class ImportWindow extends JFrame {
 	private JTextField MV_Code;
 	private JComboBox DelimiterComboBox;
 	private SyntaxModel model;
+	private JTable parsedFileView;
+	private ArrayList<String[]> parsedFile;
+	private String[][] contents;
+	private int columns;
+	private JPanel dataPanel;
 	/**
 	 * Launch the application.
 	 */
@@ -63,7 +72,7 @@ public class ImportWindow extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
-		JPanel dataPanel = new JPanel();
+		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", null, dataPanel, null);
 		dataPanel.setLayout(null);
 		
@@ -102,6 +111,7 @@ public class ImportWindow extends JFrame {
 				}
 				System.out.println(DelimiterComboBox.getSelectedItem());
 				parseData(delimiter);
+				initializeParsedFileTableView();
 			}
 		});
 		btnImport.setBounds(80, 120, 89, 23);
@@ -110,17 +120,57 @@ public class ImportWindow extends JFrame {
 		JPanel variablePanel = new JPanel();
 		tabbedPane.addTab("Variable", null, variablePanel, null);
 		variablePanel.setLayout(null);
+		
+//		String[] variableNames = new String[columns];
+//		System.out.println(columns);
+//		for(int i = 0; i< variableNames.length; i++) {
+//			variableNames[i] = "V" + (i+1);
+//		}
+//		
+//		JScrollPane scrollPane = new JScrollPane();
+//		scrollPane.setBounds(285, 199, 356, 172);
+//		dataPanel.add(scrollPane);
+//		
+//		parsedFileView = new JTable(contents, variableNames);
+//		scrollPane.setViewportView(parsedFileView);
+//		parsedFileView.setBorder(new LineBorder(new Color(0, 0, 0)));
 	}
 	
-	public void parseData(String delimiter) {
-		
-		ArrayList<String[]> parsedFile = new ArrayList<String[]>();
-		
-		for(String str : model.importFileContents){
-			String[] line = str.split(delimiter);
-			parsedFile.add(line);
-			System.out.println(parsedFile.get(0)[2]);
+	public void initializeParsedFileTableView() {
+		String[] variableNames = new String[columns];
+		System.out.println(columns);
+		for(int i = 0; i< variableNames.length; i++) {
+			variableNames[i] = "V" + (i+1);
 		}
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(285, 199, 356, 172);
+		dataPanel.add(scrollPane);
+		
+		parsedFileView = new JTable(contents, variableNames);
+		scrollPane.setViewportView(parsedFileView);
+		parsedFileView.setBorder(new LineBorder(new Color(0, 0, 0)));
+	}
+	public void parseData(String delimiter) {
+		
+		parsedFile = new ArrayList<String[]>();
+		
+		int rows = model.importFileContents.size();
+		columns = model.importFileContents.get(0).split(delimiter).length;
+		contents = new String[rows][columns];
+		System.out.println("rows: "+rows);
+		System.out.println("columns:"+columns);
+//		for(String str : model.importFileContents){
+//			String[] line = str.split(delimiter);
+//			parsedFile.add(line);
+//			System.out.println(parsedFile.get(0)[2]);
+//		}
+		
+		for(int i = 0; i < rows; i++){
+			String[] line = model.importFileContents.get(i).split(delimiter);
+			for(int j = 0; j < columns; j++) {
+				contents[i][j] = line[j];
+			}
+		}
 	}
 }
