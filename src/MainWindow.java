@@ -210,6 +210,7 @@ public class MainWindow {
 							fileContents += "\n";
 							noOfLinesToRead--;
 						}
+						model.importFileContentsInString = fileContents;
 						System.out.println(fileContents);
 					}
 					else {	// When a syntax file is to be read, read the entire file and show in the syntax editor

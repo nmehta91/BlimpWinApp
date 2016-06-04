@@ -27,20 +27,27 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
+import javax.swing.table.AbstractTableModel;
+
 import java.awt.Color;
 import javax.swing.JScrollPane;
 
 public class ImportWindow extends JFrame {
 
 	private JPanel contentPane;
+	private SyntaxModel model;
 	private JTextField MV_Code;
 	private JComboBox DelimiterComboBox;
-	private SyntaxModel model;
+	private JTextArea rawDataView;
 	private JTable parsedFileView;
 	private ArrayList<String[]> parsedFile;
 	private String[][] contents;
 	private int columns;
 	private JPanel dataPanel;
+	private JPanel variablePanel;
+	private JTextField newVarName;
+	private JTable VariablesTable;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -57,6 +64,41 @@ public class ImportWindow extends JFrame {
 		});
 	}
 
+	
+	class VariablesTableModel extends AbstractTableModel {
+		private String[] columnNames;
+		private Object[][] data;
+		
+		VariablesTableModel(String[] colnames, Object[][] data) {
+			this.columnNames = colnames;
+			this.data = data;
+		}
+		  public int getColumnCount() {
+		        return columnNames.length;
+		    }
+
+		    public int getRowCount() {
+		        return data.length;
+		    }
+
+		    public String getColumnName(int col) {
+		        return columnNames[col];
+		    }
+
+		    public Object getValueAt(int row, int col) {
+		        return data[row][col];
+		    }
+		    
+		    public boolean isCellEditable(int row, int col) {
+		        switch (col) {
+		            case 0:
+		            case 1:
+		                return true;
+		            default:
+		                return false;
+		         }
+		   }
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -77,11 +119,11 @@ public class ImportWindow extends JFrame {
 		dataPanel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Delimiter");
-		lblNewLabel.setBounds(28, 25, 41, 14);
+		lblNewLabel.setBounds(28, 25, 73, 14);
 		dataPanel.add(lblNewLabel);
 		
 		JLabel lblMissingValueCode = new JLabel("Missing Value Code");
-		lblMissingValueCode.setBounds(28, 65, 91, 14);
+		lblMissingValueCode.setBounds(10, 68, 120, 14);
 		dataPanel.add(lblMissingValueCode);
 		
 		MV_Code = new JTextField();
@@ -89,11 +131,12 @@ public class ImportWindow extends JFrame {
 		dataPanel.add(MV_Code);
 		MV_Code.setColumns(10);
 		
-		JTextArea rawDataView = new JTextArea();
+		rawDataView = new JTextArea();
 		rawDataView.setWrapStyleWord(true);
 		rawDataView.setLineWrap(true);
 		rawDataView.setBounds(285, 11, 356, 165);
 		dataPanel.add(rawDataView);
+		rawDataView.setText(model.importFileContentsInString);
 		
 		DelimiterComboBox = new JComboBox();
 		DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
@@ -104,39 +147,59 @@ public class ImportWindow extends JFrame {
 		btnImport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String delimiter;
-				if ((String) DelimiterComboBox.getSelectedItem() == "Comma") {
+				if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
 					delimiter = "\\s+";
 				} else {
 					delimiter = ",";
 				}
 				System.out.println(DelimiterComboBox.getSelectedItem());
 				parseData(delimiter);
-				initializeParsedFileTableView();
+				initializeVariablesTable(initializeParsedFileTableView());
+				
 			}
 		});
 		btnImport.setBounds(80, 120, 89, 23);
 		dataPanel.add(btnImport);
 		
-		JPanel variablePanel = new JPanel();
+		variablePanel = new JPanel();
 		tabbedPane.addTab("Variable", null, variablePanel, null);
 		variablePanel.setLayout(null);
 		
-//		String[] variableNames = new String[columns];
-//		System.out.println(columns);
-//		for(int i = 0; i< variableNames.length; i++) {
-//			variableNames[i] = "V" + (i+1);
-//		}
-//		
-//		JScrollPane scrollPane = new JScrollPane();
-//		scrollPane.setBounds(285, 199, 356, 172);
-//		dataPanel.add(scrollPane);
-//		
-//		parsedFileView = new JTable(contents, variableNames);
-//		scrollPane.setViewportView(parsedFileView);
-//		parsedFileView.setBorder(new LineBorder(new Color(0, 0, 0)));
+		JLabel lblVariable = new JLabel("Variable");
+		lblVariable.setBounds(29, 27, 86, 14);
+		variablePanel.add(lblVariable);
+		
+		JLabel lblNewName = new JLabel("New Name");
+		lblNewName.setBounds(29, 67, 86, 14);
+		variablePanel.add(lblNewName);
+		
+		JLabel lblVariableScale = new JLabel("Variable Scale");
+		lblVariableScale.setBounds(29, 108, 86, 14);
+		variablePanel.add(lblVariableScale);
+		
+		
+		
+		newVarName = new JTextField();
+		newVarName.setBounds(125, 64, 86, 20);
+		variablePanel.add(newVarName);
+		newVarName.setColumns(10);
+		
+		JComboBox varTypes = new JComboBox();
+		varTypes.setBounds(125, 105, 86, 20);
+		variablePanel.add(varTypes);
+		
+		// Variables Table instantiation
+//		VariablesTable = new JTable();
+//		VariablesTable.setBounds(293, 11, 348, 360);
+//		variablePanel.add(VariablesTable);
+		
+		JButton btnSaveVarDetails = new JButton("Save");
+		btnSaveVarDetails.setBounds(86, 160, 89, 23);
+		variablePanel.add(btnSaveVarDetails);
+		
 	}
 	
-	public void initializeParsedFileTableView() {
+	public String[] initializeParsedFileTableView() {
 		String[] variableNames = new String[columns];
 		System.out.println(columns);
 		for(int i = 0; i< variableNames.length; i++) {
@@ -150,6 +213,8 @@ public class ImportWindow extends JFrame {
 		parsedFileView = new JTable(contents, variableNames);
 		scrollPane.setViewportView(parsedFileView);
 		parsedFileView.setBorder(new LineBorder(new Color(0, 0, 0)));
+		
+		return variableNames;
 	}
 	public void parseData(String delimiter) {
 		
@@ -160,17 +225,36 @@ public class ImportWindow extends JFrame {
 		contents = new String[rows][columns];
 		System.out.println("rows: "+rows);
 		System.out.println("columns:"+columns);
-//		for(String str : model.importFileContents){
-//			String[] line = str.split(delimiter);
-//			parsedFile.add(line);
-//			System.out.println(parsedFile.get(0)[2]);
-//		}
-		
+	
 		for(int i = 0; i < rows; i++){
 			String[] line = model.importFileContents.get(i).split(delimiter);
 			for(int j = 0; j < columns; j++) {
 				contents[i][j] = line[j];
 			}
 		}
+	}
+	
+	public void initializeVariablesTable(String[] variableNames) {
+		String[] header = {"Variable Name", "Variable Type"};
+		String[][] variablesTableContents = new String[variableNames.length][2];
+		
+		for(int i = 0; i < variableNames.length; i++){
+				variablesTableContents[i][0] = variableNames[i];
+				variablesTableContents[i][1] = "Continuous";
+				System.out.println("Name: " + variablesTableContents[i][0]);
+		}
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(293, 11, 348, 360);
+		variablePanel.add(scrollPane);
+		
+		VariablesTable = new JTable(new VariablesTableModel(header, variablesTableContents));
+		scrollPane.setViewportView(VariablesTable);
+		VariablesTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+
+		JComboBox variableNames1 = new JComboBox();
+		variableNames1.setModel(new DefaultComboBoxModel<String>(variableNames));
+		variableNames1.setBounds(125, 24, 150, 20);
+		variablePanel.add(variableNames1);
 	}
 }

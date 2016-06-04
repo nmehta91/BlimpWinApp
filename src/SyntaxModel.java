@@ -9,6 +9,7 @@ public class SyntaxModel {
 	public HashMap <String, String> mappings;
 	
 	public ArrayList<String> importFileContents;
+	public String importFileContentsInString;
 	
 	public static SyntaxModel getInstance(){
 		if(instance == null) {
