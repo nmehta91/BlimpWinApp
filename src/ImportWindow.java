@@ -106,46 +106,6 @@ public class ImportWindow extends JFrame {
 		    }
 	}
 	
-	class dataTableModel extends AbstractTableModel {
-		private String[] columnNames;
-		private Object[][] data;
-		
-		dataTableModel(String[] colnames, Object[][] data) {
-			this.columnNames = colnames;
-			this.data = data;
-		}
-		  public int getColumnCount() {
-		        return columnNames.length;
-		    }
-
-		    public int getRowCount() {
-		        return data.length;
-		    }
-
-		    public String getColumnName(int col) {
-		        return columnNames[col];
-		    }
-
-		    public Object getValueAt(int row, int col) {
-		        return data[row][col];
-		    }
-		    
-		    public boolean isCellEditable(int row, int col) {
-		        switch (col) {
-		            case 0:
-		            case 1:
-		                return true;
-		            default:
-		                return false;
-		         }
-		   }
-		    
-		   public void setValueAt(Object value, int row, int col) {
-		        data[row][col] = value;
-		        fireTableCellUpdated(row, col);
-		    }
-	}
-	
 	/**
 	 * Create the frame.
 	 */
@@ -280,7 +240,7 @@ public class ImportWindow extends JFrame {
 		dataPanel.add(scrollPane);
 		
 		//dataTable = new JTable(contents, variableNames);
-		dataTable = new JTable(new dataTableModel(variableNames, contents));
+		dataTable = new JTable(new VariablesTableModel(variableNames, contents));
 		scrollPane.setViewportView(dataTable);
 		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
