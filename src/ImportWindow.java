@@ -39,7 +39,7 @@ public class ImportWindow extends JFrame {
 	private JTextField MV_Code;
 	private JComboBox DelimiterComboBox;
 	private JTextArea rawDataView;
-	private JTable parsedFileView;
+	private JTable dataTable;
 	private ArrayList<String[]> parsedFile;
 	private String[][] contents;
 	private int columns;
@@ -105,6 +105,47 @@ public class ImportWindow extends JFrame {
 		        fireTableCellUpdated(row, col);
 		    }
 	}
+	
+	class dataTableModel extends AbstractTableModel {
+		private String[] columnNames;
+		private Object[][] data;
+		
+		dataTableModel(String[] colnames, Object[][] data) {
+			this.columnNames = colnames;
+			this.data = data;
+		}
+		  public int getColumnCount() {
+		        return columnNames.length;
+		    }
+
+		    public int getRowCount() {
+		        return data.length;
+		    }
+
+		    public String getColumnName(int col) {
+		        return columnNames[col];
+		    }
+
+		    public Object getValueAt(int row, int col) {
+		        return data[row][col];
+		    }
+		    
+		    public boolean isCellEditable(int row, int col) {
+		        switch (col) {
+		            case 0:
+		            case 1:
+		                return true;
+		            default:
+		                return false;
+		         }
+		   }
+		    
+		   public void setValueAt(Object value, int row, int col) {
+		        data[row][col] = value;
+		        fireTableCellUpdated(row, col);
+		    }
+	}
+	
 	/**
 	 * Create the frame.
 	 */
@@ -238,9 +279,10 @@ public class ImportWindow extends JFrame {
 		scrollPane.setBounds(285, 199, 356, 172);
 		dataPanel.add(scrollPane);
 		
-		parsedFileView = new JTable(contents, variableNames);
-		scrollPane.setViewportView(parsedFileView);
-		parsedFileView.setBorder(new LineBorder(new Color(0, 0, 0)));
+		//dataTable = new JTable(contents, variableNames);
+		dataTable = new JTable(new dataTableModel(variableNames, contents));
+		scrollPane.setViewportView(dataTable);
+		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 		return variableNames;
 	}
@@ -289,6 +331,8 @@ public class ImportWindow extends JFrame {
 		if(name != ""){
 			variable[0] = name;
 			VariablesTable.getModel().setValueAt(name, index, 0);
+			dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
+			dataTable.getTableHeader().repaint();
 		}
 		variable[1] = type;
 		VariablesTable.getModel().setValueAt(type, index, 1);
