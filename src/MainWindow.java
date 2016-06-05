@@ -196,7 +196,7 @@ public class MainWindow {
 			String fileContents = "";
 			int noOfLinesToRead;
 			
-			if(filePath.endsWith(".dat") || filePath.endsWith(".txt")) {
+			if(filePath.endsWith(".dat") || filePath.endsWith(".txt") || filePath.endsWith(".csv")) {
 				try {
 					model.importFileContents = new ArrayList<String>();
 					Scanner scan = new Scanner(new FileInputStream(file));

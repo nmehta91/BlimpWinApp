@@ -140,11 +140,17 @@ public class ImportWindow extends JFrame {
 		dataPanel.add(MV_Code);
 		MV_Code.setColumns(10);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(285, 11, 356, 165);
+		
 		rawDataView = new JTextArea();
-		rawDataView.setWrapStyleWord(true);
-		rawDataView.setLineWrap(true);
+		rawDataView.setWrapStyleWord(false);
+		rawDataView.setLineWrap(false);
 		rawDataView.setBounds(285, 11, 356, 165);
-		dataPanel.add(rawDataView);
+		
+		scrollPane.setViewportView(rawDataView);
+		dataPanel.add(scrollPane);
+		
 		rawDataView.setText(model.importFileContentsInString);
 		
 		DelimiterComboBox = new JComboBox();
@@ -230,15 +236,15 @@ public class ImportWindow extends JFrame {
 			dataColHeadings[i] = "V"+(i+1);
 		}
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(285, 199, 356, 172);
-		dataPanel.add(scrollPane);
-		
-		DefaultTableModel model = new DefaultTableModel(10, dataColHeadings.length);
-		model.setColumnIdentifiers(dataColHeadings);
-		dataTable = new JTable(model);
-		scrollPane.setViewportView(dataTable);
-		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+//		JScrollPane scrollPane = new JScrollPane();
+//		scrollPane.setBounds(285, 199, 356, 172);
+//		dataPanel.add(scrollPane);
+//		
+//		DefaultTableModel model = new DefaultTableModel(10, dataColHeadings.length);
+//		model.setColumnIdentifiers(dataColHeadings);
+//		dataTable = new JTable(model);
+//		scrollPane.setViewportView(dataTable);
+//		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 	}
 	
 	public String[] initializeParsedFileTableView() {
@@ -261,8 +267,6 @@ public class ImportWindow extends JFrame {
 		scrollPane.setViewportView(dataTable);
 		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
 		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
 		renderer.setHorizontalAlignment( JLabel.RIGHT );
 		return variableNames;
@@ -280,7 +284,7 @@ public class ImportWindow extends JFrame {
 		for(int i = 0; i < rows; i++){
 			String[] line = model.importFileContents.get(i).split(delimiter);
 			for(int j = 0; j < columns; j++) {
-				contents[i][j] = line[j];
+				contents[i][j] = String.format("%.3g%n", Double.parseDouble(line[j]));
 			}
 		}
 	}
