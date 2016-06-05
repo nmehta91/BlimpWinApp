@@ -47,7 +47,8 @@ public class ImportWindow extends JFrame {
 	private JPanel variablePanel;
 	private JTextField newVarName;
 	private JTable VariablesTable;
-	
+	private JComboBox<String> variableNamesComboBox;
+	private String[][] variablesTableContents;
 	/**
 	 * Launch the application.
 	 */
@@ -98,6 +99,11 @@ public class ImportWindow extends JFrame {
 		                return false;
 		         }
 		   }
+		    
+		   public void setValueAt(Object value, int row, int col) {
+		        data[row][col] = value;
+		        fireTableCellUpdated(row, col);
+		    }
 	}
 	/**
 	 * Create the frame.
@@ -184,26 +190,48 @@ public class ImportWindow extends JFrame {
 		variablePanel.add(newVarName);
 		newVarName.setColumns(10);
 		
-		JComboBox varTypes = new JComboBox();
+		JComboBox<String> varTypes =  new JComboBox<String>();
+		varTypes.setModel(new DefaultComboBoxModel(new String[] {"Continuous", "Nominal", "Ordinal"}));
 		varTypes.setBounds(125, 105, 86, 20);
 		variablePanel.add(varTypes);
 		
-		// Variables Table instantiation
-//		VariablesTable = new JTable();
-//		VariablesTable.setBounds(293, 11, 348, 360);
-//		variablePanel.add(VariablesTable);
-		
 		JButton btnSaveVarDetails = new JButton("Save");
+		btnSaveVarDetails.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int selectedVariable = variableNamesComboBox.getSelectedIndex();
+				String newName = newVarName.getText();
+				String newType = (String)varTypes.getSelectedItem();
+				saveVariableChanges(selectedVariable, newName, newType);
+			}
+		});
 		btnSaveVarDetails.setBounds(86, 160, 89, 23);
 		variablePanel.add(btnSaveVarDetails);
 		
+		JButton btnPrintVariables = new JButton("Print Variables");
+		btnPrintVariables.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				for(int i = 0; i < model.variables.size(); i++){
+					System.out.println(model.variables.get(i)[0]+":"+model.variables.get(i)[1]);
+				}
+			}
+		});
+		btnPrintVariables.setBounds(86, 194, 101, 23);
+		variablePanel.add(btnPrintVariables);
+		
+		variableNamesComboBox = new JComboBox<String>();
+		variableNamesComboBox.setBounds(125, 24, 150, 20);
+		variablePanel.add(variableNamesComboBox);
 	}
 	
 	public String[] initializeParsedFileTableView() {
 		String[] variableNames = new String[columns];
 		System.out.println(columns);
+	
+		
 		for(int i = 0; i< variableNames.length; i++) {
 			variableNames[i] = "V" + (i+1);
+			String[] variable = {variableNames[i],"Continuous"};
+			model.variables.add(variable);
 		}
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -236,7 +264,7 @@ public class ImportWindow extends JFrame {
 	
 	public void initializeVariablesTable(String[] variableNames) {
 		String[] header = {"Variable Name", "Variable Type"};
-		String[][] variablesTableContents = new String[variableNames.length][2];
+		variablesTableContents = new String[variableNames.length][2];
 		
 		for(int i = 0; i < variableNames.length; i++){
 				variablesTableContents[i][0] = variableNames[i];
@@ -248,13 +276,24 @@ public class ImportWindow extends JFrame {
 		scrollPane.setBounds(293, 11, 348, 360);
 		variablePanel.add(scrollPane);
 		
+		
 		VariablesTable = new JTable(new VariablesTableModel(header, variablesTableContents));
 		scrollPane.setViewportView(VariablesTable);
 		VariablesTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 
-		JComboBox variableNames1 = new JComboBox();
-		variableNames1.setModel(new DefaultComboBoxModel<String>(variableNames));
-		variableNames1.setBounds(125, 24, 150, 20);
-		variablePanel.add(variableNames1);
+		variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(variableNames));
+	}
+	
+	public void saveVariableChanges(int index, String name, String type){
+		String[] variable = model.variables.get(index);
+		if(name != ""){
+			variable[0] = name;
+			VariablesTable.getModel().setValueAt(name, index, 0);
+		}
+		variable[1] = type;
+		VariablesTable.getModel().setValueAt(type, index, 1);
+		model.variables.remove(index);
+		model.variables.add(index, variable);
+		
 	}
 }

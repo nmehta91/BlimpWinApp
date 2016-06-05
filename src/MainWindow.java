@@ -156,7 +156,7 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				Path importedFile = importSelectedFile();
 				System.out.println(importedFile.toString());
-				model.mappings.put("data", importedFile.toString());
+				//model.mappings.put("data", importedFile.toString());
 				model.dataSetPath = importedFile;
 				importWin = new ImportWindow();
 				importWin.showWindow();
