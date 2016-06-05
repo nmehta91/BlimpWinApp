@@ -28,6 +28,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import java.awt.Color;
 import javax.swing.JScrollPane;
@@ -187,13 +189,13 @@ public class ImportWindow extends JFrame {
 		
 		
 		newVarName = new JTextField();
-		newVarName.setBounds(125, 64, 86, 20);
+		newVarName.setBounds(125, 64, 150, 20);
 		variablePanel.add(newVarName);
 		newVarName.setColumns(10);
 		
 		JComboBox<String> varTypes =  new JComboBox<String>();
 		varTypes.setModel(new DefaultComboBoxModel(new String[] {"Continuous", "Nominal", "Ordinal"}));
-		varTypes.setBounds(125, 105, 86, 20);
+		varTypes.setBounds(125, 105, 150, 20);
 		variablePanel.add(varTypes);
 		
 		JButton btnSaveVarDetails = new JButton("Save");
@@ -222,6 +224,21 @@ public class ImportWindow extends JFrame {
 		variableNamesComboBox = new JComboBox<String>();
 		variableNamesComboBox.setBounds(125, 24, 150, 20);
 		variablePanel.add(variableNamesComboBox);
+		
+		String[] dataColHeadings = new String[10];
+		for(int i = 0; i < 10; i++) {
+			dataColHeadings[i] = "V"+(i+1);
+		}
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(285, 199, 356, 172);
+		dataPanel.add(scrollPane);
+		
+		DefaultTableModel model = new DefaultTableModel(10, dataColHeadings.length);
+		model.setColumnIdentifiers(dataColHeadings);
+		dataTable = new JTable(model);
+		scrollPane.setViewportView(dataTable);
+		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 	}
 	
 	public String[] initializeParsedFileTableView() {
@@ -244,6 +261,10 @@ public class ImportWindow extends JFrame {
 		scrollPane.setViewportView(dataTable);
 		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
+		renderer.setHorizontalAlignment( JLabel.RIGHT );
 		return variableNames;
 	}
 	public void parseData(String delimiter) {
