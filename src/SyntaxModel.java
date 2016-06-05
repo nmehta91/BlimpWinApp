@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class SyntaxModel {
 	private static SyntaxModel instance = null;
 	public Path dataSetPath;
-	public HashMap <String, ArrayList<String[]>> mappings;
+	public HashMap <String, String> mappings;
 	public ArrayList<String[]> variables;
 	
 	public ArrayList<String> importFileContents;
@@ -15,7 +15,7 @@ public class SyntaxModel {
 	public static SyntaxModel getInstance(){
 		if(instance == null) {
 			instance = new SyntaxModel();
-			instance.mappings = new HashMap <String, ArrayList<String[]>> ();
+			instance.mappings = new HashMap <String, String> ();
 			instance.variables = new ArrayList<String[]> ();
 		}
 		return instance;

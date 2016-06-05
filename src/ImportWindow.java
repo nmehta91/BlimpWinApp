@@ -171,10 +171,18 @@ public class ImportWindow extends JFrame {
 				parseData(delimiter);
 				initializeVariablesTable(initializeParsedFileTableView());
 				
+				if(!MV_Code.getText().equals(""))
+					model.mappings.put("MVC", MV_Code.getText());
 			}
 		});
 		btnImport.setBounds(80, 120, 89, 23);
 		dataPanel.add(btnImport);
+		
+		JButton btnDone = new JButton("Done");
+		btnDone.setForeground(Color.BLUE);
+		btnDone.setBackground(Color.BLUE);
+		btnDone.setBounds(80, 348, 89, 23);
+		dataPanel.add(btnDone);
 		
 		variablePanel = new JPanel();
 		tabbedPane.addTab("Variable", null, variablePanel, null);
