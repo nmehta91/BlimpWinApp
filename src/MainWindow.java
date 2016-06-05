@@ -286,7 +286,7 @@ public class MainWindow {
 	
 	public Path importSelectedFile() {
 		int openResult = selectedFile.showOpenDialog(null);
-		if (openResult == selectedFile.APPROVE_OPTION) {
+		if (openResult == JFileChooser.APPROVE_OPTION) {
 			openFile(selectedFile.getSelectedFile(), 1);
 		}
 		return selectedFile.getSelectedFile().toPath();

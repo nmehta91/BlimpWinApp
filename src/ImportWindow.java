@@ -112,9 +112,10 @@ public class ImportWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public ImportWindow() {
+		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 682, 459);
+		setBounds(100, 100, 711, 497);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -175,13 +176,14 @@ public class ImportWindow extends JFrame {
 					model.mappings.put("MVC", MV_Code.getText());
 			}
 		});
+		
 		btnImport.setBounds(80, 120, 89, 23);
 		dataPanel.add(btnImport);
 		
 		JButton btnDone = new JButton("Done");
-		btnDone.setForeground(Color.BLUE);
-		btnDone.setBackground(Color.BLUE);
-		btnDone.setBounds(80, 348, 89, 23);
+		btnDone.setForeground(Color.BLACK);
+		btnDone.setBackground(Color.LIGHT_GRAY);
+		btnDone.setBounds(285, 386, 89, 23);
 		dataPanel.add(btnDone);
 		
 		variablePanel = new JPanel();
