@@ -40,7 +40,8 @@ public class MainWindow {
 	private JScrollPane scrollBar;
 	private JFileChooser selectedFile;
 	private File currentFile = null;
-	private ImportWindow importWin;
+	private ImportWindow importWin = null;
+	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
 	/**
 	 * Launch the application.
@@ -181,6 +182,42 @@ public class MainWindow {
 		mnFile.add(mntmTest);
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
+		
+		JMenu mnImpute = new JMenu("Impute");
+		menuBar.add(mnImpute);
+		
+		JMenuItem mntmSpecifyModel = new JMenuItem("Specify Model");
+		mntmSpecifyModel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				ModelMCOutputWindow = new ModelMCOutput(0);
+				ModelMCOutputWindow.setVisible(true);
+				
+			}
+		});
+		mntmSpecifyModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
+		mnImpute.add(mntmSpecifyModel);
+		
+		JMenuItem mntmMcmcOptions = new JMenuItem("MCMC Options");
+		mntmMcmcOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ModelMCOutputWindow = new ModelMCOutput(1);
+				ModelMCOutputWindow.setVisible(true);
+				
+			}
+		});
+		mntmMcmcOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnImpute.add(mntmMcmcOptions);
+		
+		JMenuItem mntmOutputOptions = new JMenuItem("Output Options");
+		mntmOutputOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ModelMCOutputWindow = new ModelMCOutput(2);
+				ModelMCOutputWindow.setVisible(true);
+			}
+		});
+		mntmOutputOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnImpute.add(mntmOutputOptions);
 		
 		syntaxEditor = new JTextArea(5, 30);
 		syntaxEditor.setLineWrap(true);
