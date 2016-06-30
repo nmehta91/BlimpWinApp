@@ -229,9 +229,9 @@ public class ImportWindow extends JFrame {
 		JButton btnPrintVariables = new JButton("Print Variables");
 		btnPrintVariables.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				for(int i = 0; i < model.variables.size(); i++){
-					System.out.println(model.variables.get(i)[0]+":"+model.variables.get(i)[1]);
-				}
+//				for(int i = 0; i < model.variables.size(); i++){
+//					System.out.println(model.variables.get(i)[0]+":"+model.variables.get(i)[1]);
+//				}
 			}
 		});
 		btnPrintVariables.setBounds(86, 194, 101, 23);
@@ -263,9 +263,10 @@ public class ImportWindow extends JFrame {
 	
 		
 		for(int i = 0; i< variableNames.length; i++) {
-			variableNames[i] = "V" + (i+1);
-			String[] variable = {variableNames[i],"Continuous"};
-			model.variables.add(variable);
+			String name = "V" + (i+1);
+			Variable newVariable = new Variable(name, "Continuous", i);
+			variableNames[i] = name;
+			model.variables.add(newVariable);
 		}
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -322,14 +323,14 @@ public class ImportWindow extends JFrame {
 	}
 	
 	public void saveVariableChanges(int index, String name, String type){
-		String[] variable = model.variables.get(index);
+		Variable variable = model.variables.get(index);
 		if(name != ""){
-			variable[0] = name;
+			variable.name = name;
 			VariablesTable.getModel().setValueAt(name, index, 0);
 			dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
 			dataTable.getTableHeader().repaint();
 		}
-		variable[1] = type;
+		variable.type = type;
 		VariablesTable.getModel().setValueAt(type, index, 1);
 		model.variables.remove(index);
 		model.variables.add(index, variable);

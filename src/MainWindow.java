@@ -161,6 +161,7 @@ public class MainWindow {
 				model.dataSetPath = importedFile;
 				importWin = new ImportWindow();
 				importWin.showWindow();
+				ModelMCOutputWindow = new ModelMCOutput(0);
 			}
 		});
 		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
@@ -189,8 +190,10 @@ public class MainWindow {
 		JMenuItem mntmSpecifyModel = new JMenuItem("Specify Model");
 		mntmSpecifyModel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if(ModelMCOutputWindow == null){
+					ModelMCOutputWindow = new ModelMCOutput(0);
+				}
 				
-				ModelMCOutputWindow = new ModelMCOutput(0);
 				ModelMCOutputWindow.setVisible(true);
 				
 			}
