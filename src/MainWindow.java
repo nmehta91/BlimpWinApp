@@ -156,12 +156,16 @@ public class MainWindow {
 		mntmImportDataset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Path importedFile = importSelectedFile();
-				System.out.println(importedFile.toString());
 				//model.mappings.put("data", importedFile.toString());
-				model.dataSetPath = importedFile;
-				importWin = new ImportWindow();
-				importWin.showWindow();
-				ModelMCOutputWindow = new ModelMCOutput(0);
+				if(importedFile == null){
+					System.out.println("There was an error in importing the file.");
+				} else {
+					model.dataSetPath = importedFile;
+					importWin = new ImportWindow();
+					importWin.showWindow();
+					ModelMCOutputWindow = new ModelMCOutput(0);
+				}
+				
 			}
 		});
 		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
@@ -328,7 +332,10 @@ public class MainWindow {
 		int openResult = selectedFile.showOpenDialog(null);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
 			openFile(selectedFile.getSelectedFile(), 1);
+			return selectedFile.getSelectedFile().toPath();
+		} else {
+			return null;
 		}
-		return selectedFile.getSelectedFile().toPath();
+		
 	}
 }

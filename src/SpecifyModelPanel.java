@@ -3,6 +3,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -200,10 +201,13 @@ public class SpecifyModelPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = modelVariables.getSelectedRows();
 				
+				int count = 0;
 				for(int i = 0; i < selectedRows.length; i++) {
-					model.modelVariables.remove(selectedRows[i]);
-					modelVariables.repaint();
+					System.out.println("Removing variable from model: " + model.modelVariables.get(selectedRows[i] - count));
+					model.modelVariables.remove(selectedRows[i] - count);
+					count++;
 				}
+				modelVariables.repaint();
 			}
 		});
 		button_1.setBounds(293, 134, 89, 33);
@@ -233,7 +237,7 @@ public class SpecifyModelPanel extends JPanel {
 				for(int i = 0; i < selectedRow.length; i++) {
 					Variable variable = model.variables.get(selectedRow[i]);
 					System.out.println(variable.name);
-					Variable identifierVariable = new Variable(variable.name+"(L"+(model.identifierVariables.size()+1)+")", "Undefined", -1);
+					Variable identifierVariable = new Variable(variable.name+"(L"+(model.identifierVariables.size()+1)+")", "Undefined", variable.position);
 					model.identifierVariables.add(identifierVariable);
 					
 				}
@@ -261,12 +265,20 @@ public class SpecifyModelPanel extends JPanel {
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = imputationVariablesTable.getSelectedRows();
+				System.out.println("Size of idenitifier variale: " + model.identifierVariables.size());
 				
-				for(int i = 0; i < selectedRows.length; i++) {
-					model.variables.add(model.identifierVariables.get(selectedRows[i]));
-					model.identifierVariables.remove(selectedRows[i]);
-					
+				for(Variable var : model.variables){
+					System.out.println(var.name + ":" + " " + var.position);
 				}
+				int count = 0;
+				for(int i = 0; i < selectedRows.length; i++) {
+					model.variables.add(model.identifierVariables.get(selectedRows[i]-count));
+					Collections.sort(model.variables);
+					model.identifierVariables.remove(selectedRows[i]-count);
+					count++;
+				}
+				variableTable.repaint();
+				imputationVariablesTable.repaint();
 			}
 		});
 		button_3.setBounds(293, 303, 89, 33);

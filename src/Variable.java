@@ -1,5 +1,6 @@
+import java.util.Comparator;
 
-public class Variable {
+public class Variable implements Comparable<Variable>{
 	String name;
 	String type;
 	int position;
@@ -14,5 +15,11 @@ public class Variable {
 		this.name = name;
 		this.type = type;
 		this.position = position;
+	}
+
+	@Override
+	public int compareTo(Variable v2) {
+		// TODO Auto-generated method stub
+		return this.position - v2.position;
 	}
 }
