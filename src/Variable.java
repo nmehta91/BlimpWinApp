@@ -19,7 +19,6 @@ public class Variable implements Comparable<Variable>{
 
 	@Override
 	public int compareTo(Variable v2) {
-		// TODO Auto-generated method stub
 		return this.position - v2.position;
 	}
 }

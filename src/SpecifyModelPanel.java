@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
 
 public class SpecifyModelPanel extends JPanel {
 	private JTable variableTable;
@@ -117,27 +118,27 @@ public class SpecifyModelPanel extends JPanel {
 		mode = 0; // 0 = Main Effects, 1 = Random Slopes
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(25, 44, 210, 194);
+		scrollPane.setBounds(25, 44, 210, 367);
 		add(scrollPane);
 		
 		variableTable = new JTable(new VariablesTableModel("Variables", model.variables));
 		scrollPane.setViewportView(variableTable);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(442, 44, 183, 149);
+		scrollPane_1.setBounds(442, 191, 183, 220);
 		add(scrollPane_1);
 		
 		modelVariables = new JTable();
 		scrollPane_1.setViewportView(modelVariables);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(442, 226, 183, 132);
+		scrollPane_2.setBounds(442, 44, 183, 132);
 		add(scrollPane_2);
 		
 		imputationVariablesTable = new JTable();
 		scrollPane_2.setViewportView(imputationVariablesTable);
 		
-		JButton button = new JButton("-->");
+		JButton button = new JButton(">");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow[] = variableTable.getSelectedRows();
@@ -193,10 +194,10 @@ public class SpecifyModelPanel extends JPanel {
 				scrollPane_1.setViewportView(modelVariables);
 			}
 		});
-		button.setBounds(293, 81, 89, 33);
+		button.setBounds(293, 255, 89, 33);
 		add(button);
 		
-		JButton button_1 = new JButton("<--");
+		JButton button_1 = new JButton("<");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = modelVariables.getSelectedRows();
@@ -210,29 +211,26 @@ public class SpecifyModelPanel extends JPanel {
 				modelVariables.repaint();
 			}
 		});
-		button_1.setBounds(293, 134, 89, 33);
+		button_1.setBounds(293, 313, 89, 33);
 		add(button_1);
 		
 		JLabel lblVariables = new JLabel("Variables");
 		lblVariables.setBounds(25, 30, 76, 14);
 		add(lblVariables);
 		
-		JLabel lblModelVariables = new JLabel("Model Variables");
-		lblModelVariables.setBounds(442, 30, 144, 14);
-		add(lblModelVariables);
-		
 		JLabel lblImputationVariables = new JLabel("Imputation Variables");
-		lblImputationVariables.setBounds(442, 212, 121, 14);
+		lblImputationVariables.setBounds(442, 30, 121, 14);
 		add(lblImputationVariables);
 		
-		JButton button_2 = new JButton("-->");
+		JButton button_2 = new JButton(">");
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedRow[] = variableTable.getSelectedRows();
 				System.out.println("Selected Row: " + selectedRow.length);
+				System.out.println("identifier variables size: "+ model.identifierVariables.size());
+				System.out.println("bandwidth: " + (3-model.variables.size()));
 				
-				if(model.identifierVariables.size() < 3){
-					
+				if(model.identifierVariables.size() < 3 && selectedRow.length <= (3-model.identifierVariables.size())){
 				
 				for(int i = 0; i < selectedRow.length; i++) {
 					Variable variable = model.variables.get(selectedRow[i]);
@@ -258,10 +256,10 @@ public class SpecifyModelPanel extends JPanel {
 			}
 			
 		});
-		button_2.setBounds(293, 246, 89, 33);
+		button_2.setBounds(293, 62, 89, 33);
 		add(button_2);
 		
-		JButton button_3 = new JButton("<--");
+		JButton button_3 = new JButton("<");
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = imputationVariablesTable.getSelectedRows();
@@ -281,7 +279,7 @@ public class SpecifyModelPanel extends JPanel {
 				imputationVariablesTable.repaint();
 			}
 		});
-		button_3.setBounds(293, 303, 89, 33);
+		button_3.setBounds(293, 119, 89, 33);
 		add(button_3);
 		
 		JComboBox<String> comboBox = new JComboBox<String>(new DefaultComboBoxModel<String>(new String[] {"Main Effects", "Random Slopes"}));
@@ -294,8 +292,12 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		comboBox.setBounds(293, 189, 89, 20);
+		comboBox.setBounds(293, 208, 89, 20);
 		add(comboBox);
+		
+		JLabel lblBuildTerms = new JLabel("Build Terms");
+		lblBuildTerms.setBounds(309, 192, 54, 14);
+		add(lblBuildTerms);
 
 	}
 	

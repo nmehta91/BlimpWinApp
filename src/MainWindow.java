@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -155,14 +156,22 @@ public class MainWindow {
 		JMenuItem mntmImportDataset = new JMenuItem("Import Dataset");
 		mntmImportDataset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				SyntaxModel.clearModel();
 				Path importedFile = importSelectedFile();
 				//model.mappings.put("data", importedFile.toString());
 				if(importedFile == null){
 					System.out.println("There was an error in importing the file.");
 				} else {
 					model.dataSetPath = importedFile;
-					importWin = new ImportWindow();
-					importWin.showWindow();
+					ImportWindow iWindow = new ImportWindow(frame);
+					iWindow.setVisible(true);
+					iWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeImportSyntax();
+                    }
+					});
 					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
 				
@@ -337,5 +346,45 @@ public class MainWindow {
 			return null;
 		}
 		
+	}
+	
+	public void writeImportSyntax() {
+		syntaxEditor.setText("");
+		String line;
+		if(model.dataSetPath != null) {
+			line = "DATA: " + model.dataSetPath.toAbsolutePath() + ";";
+			syntaxEditor.append(line);
+		}
+		if(model.variables.size() != 0){
+			line = "\n\nVARIABLES: ";
+			int i;
+			String ordinalVariables = "\n\nORDINAL: ";
+			String nominalVariables = "\n\nNOMINAL: ";
+			for(i = 0; i < model.variables.size() - 1; i++){
+				Variable var = model.variables.get(i);
+				line = line + var.name + " ";
+				
+				if(var.type == "Ordinal") 
+					ordinalVariables = ordinalVariables + var.name + " ";
+				if(var.type == "Nominal")
+					nominalVariables = nominalVariables + var.name + " "; 
+			}
+			line = line + model.variables.get(i).name + ";";
+			if(model.variables.get(i).type == "Ordinal") 
+				ordinalVariables = ordinalVariables + model.variables.get(i).name + ";";
+			if(model.variables.get(i).type == "Nominal")
+				nominalVariables = nominalVariables + model.variables.get(i).name + ";"; 
+			
+			syntaxEditor.append(line);
+			syntaxEditor.append(ordinalVariables);
+			syntaxEditor.append(nominalVariables);
+			
+		}
+		line = "\n\nMISSING: ";
+		if(model.mappings.containsKey("MVC")){
+			line += model.mappings.get("MVC");
+			line += ";";
+		}
+		syntaxEditor.append(line);
 	}
 }

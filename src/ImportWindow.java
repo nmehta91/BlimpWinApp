@@ -17,6 +17,8 @@ import com.jgoodies.forms.layout.FormSpecs;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Window;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
@@ -58,8 +60,8 @@ public class ImportWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ImportWindow frame = new ImportWindow();
-					frame.setVisible(true);
+//					ImportWindow frame = new ImportWindow();
+//					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -111,18 +113,19 @@ public class ImportWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ImportWindow() {
+	public ImportWindow(Window parent) {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 711, 497);
+		setBounds(100, 100, 760, 615);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.setLayout(null);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		tabbedPane.setBounds(5, 5, 735, 523);
+		contentPane.add(tabbedPane);
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", null, dataPanel, null);
@@ -180,12 +183,6 @@ public class ImportWindow extends JFrame {
 		btnImport.setBounds(80, 120, 89, 23);
 		dataPanel.add(btnImport);
 		
-		JButton btnDone = new JButton("Done");
-		btnDone.setForeground(Color.BLACK);
-		btnDone.setBackground(Color.LIGHT_GRAY);
-		btnDone.setBounds(285, 386, 89, 23);
-		dataPanel.add(btnDone);
-		
 		variablePanel = new JPanel();
 		tabbedPane.addTab("Variable", null, variablePanel, null);
 		variablePanel.setLayout(null);
@@ -201,8 +198,6 @@ public class ImportWindow extends JFrame {
 		JLabel lblVariableScale = new JLabel("Variable Scale");
 		lblVariableScale.setBounds(29, 108, 86, 14);
 		variablePanel.add(lblVariableScale);
-		
-		
 		
 		newVarName = new JTextField();
 		newVarName.setBounds(125, 64, 150, 20);
@@ -227,19 +222,21 @@ public class ImportWindow extends JFrame {
 		variablePanel.add(btnSaveVarDetails);
 		
 		JButton btnPrintVariables = new JButton("Print Variables");
-		btnPrintVariables.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-//				for(int i = 0; i < model.variables.size(); i++){
-//					System.out.println(model.variables.get(i)[0]+":"+model.variables.get(i)[1]);
-//				}
-			}
-		});
+		btnPrintVariables.addActionListener(new doneActionListener(this));
 		btnPrintVariables.setBounds(86, 194, 101, 23);
 		variablePanel.add(btnPrintVariables);
 		
 		variableNamesComboBox = new JComboBox<String>();
 		variableNamesComboBox.setBounds(125, 24, 150, 20);
 		variablePanel.add(variableNamesComboBox);
+		
+		JButton btnDone = new JButton("Done");
+		btnDone.addActionListener(new doneActionListener(this));
+		
+		btnDone.setBounds(601, 542, 137, 23);
+		contentPane.add(btnDone);
+		btnDone.setForeground(Color.BLACK);
+		btnDone.setBackground(Color.LIGHT_GRAY);
 		
 		String[] dataColHeadings = new String[10];
 		for(int i = 0; i < 10; i++) {
@@ -335,5 +332,19 @@ public class ImportWindow extends JFrame {
 		model.variables.remove(index);
 		model.variables.add(index, variable);
 		
+	}
+	
+	class doneActionListener implements ActionListener{
+
+	    private JFrame toBeClose;
+
+	    public doneActionListener(JFrame toBeClose) {
+	        this.toBeClose = toBeClose;
+	    }
+
+	    public void actionPerformed(ActionEvent e) {
+	        toBeClose.setVisible(false);
+	        toBeClose.dispose();
+	    }
 	}
 }
