@@ -432,8 +432,8 @@ public class MainWindow {
 		line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
 		line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
 		line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
-		System.out.println(model.outputFilePath.toAbsolutePath().toString());
-		line = line + "\n\nOUTFILE: " + model.outputFilePath.toAbsolutePath();
+		System.out.println(model.outputFilePath);
+		line = line + "\n\nOUTFILE: " + model.outputFilePath;
 		syntaxEditor.append(line);
 	}
 }

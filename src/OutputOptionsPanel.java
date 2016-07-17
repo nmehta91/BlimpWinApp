@@ -33,16 +33,8 @@ public class OutputOptionsPanel extends JPanel {
 		
 		JButton btnBrowse = new JButton("Browse");
 		selectedOutputDirectory = new JFileChooser();
-		btnBrowse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int openResult = selectedOutputDirectory.showSaveDialog(null);
-				if(openResult == selectedOutputDirectory.APPROVE_OPTION) {
-					model.outputFilePath = selectedOutputDirectory.getSelectedFile().toPath();
-					System.out.println("OutPut Filepath: " + model.outputFilePath);
-					outputFileNameLabel.setText(model.outputFilePath.toString());
-				}
-			}
-		});
+		selectedOutputDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
 		btnBrowse.setBounds(336, 127, 89, 23);
 		add(btnBrowse);
 		
@@ -84,6 +76,10 @@ public class OutputOptionsPanel extends JPanel {
 		JRadioButton rdbtncsv = new JRadioButton(".csv");
 		rdbtncsv.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+				model.outputFilePath = newFileName + ".csv";
+				outputFileNameLabel.setText(model.outputFilePath);
 			}
 		});
 		rdbtncsv.setSelected(true);
@@ -92,6 +88,14 @@ public class OutputOptionsPanel extends JPanel {
 		add(rdbtncsv);
 		
 		JRadioButton rdbtndat = new JRadioButton(".dat");
+		rdbtndat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+				model.outputFilePath = newFileName + ".dat";
+				outputFileNameLabel.setText(model.outputFilePath.toString());
+			}
+		});
 		buttonGroup_1.add(rdbtndat);
 		rdbtndat.setBounds(286, 335, 109, 23);
 		add(rdbtndat);
@@ -119,6 +123,22 @@ public class OutputOptionsPanel extends JPanel {
 		rdbtnPsr.setBounds(467, 335, 109, 23);
 		add(rdbtnPsr);
 		
+		btnBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int openResult = selectedOutputDirectory.showSaveDialog(null);
+				if(openResult == selectedOutputDirectory.APPROVE_OPTION) {
+					model.outputFilePath = selectedOutputDirectory.getSelectedFile().getAbsolutePath().toString();
+					System.out.println("OutPut Filepath: " + model.outputFilePath);
+					if(rdbtncsv.isSelected()) {
+						model.outputFilePath = model.outputFilePath + ".csv";
+						outputFileNameLabel.setText(model.outputFilePath);
+					} else {
+						model.outputFilePath = model.outputFilePath + ".dat";
+						outputFileNameLabel.setText(model.outputFilePath.toString() + ".dat");
+					}	
+				}
+			}
+		});
 		
 
 	}

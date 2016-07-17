@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class SyntaxModel {
 	private static SyntaxModel instance = null;
 	public Path dataSetPath;
-	public Path outputFilePath;
+	public String outputFilePath;
 	public HashMap <String, String> mappings;
 	public ArrayList<Variable> variables, modelVariables, identifierVariables;
 	public ArrayList<String> importFileContents;
