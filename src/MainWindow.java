@@ -435,5 +435,13 @@ public class MainWindow {
 		System.out.println(model.outputFilePath);
 		line = line + "\n\nOUTFILE: " + model.outputFilePath;
 		syntaxEditor.append(line);
+		
+		line = "\n\nOPTIONS:";
+		line += " " + model.mappings.get("DF") ;
+		line += " " + model.mappings.get("Diagnostics");
+		line += " " + model.mappings.get("CM");
+		line += " " + model.mappings.get("VP");
+		line += " " + model.mappings.get("LV");
+		syntaxEditor.append(line);
 	}
 }

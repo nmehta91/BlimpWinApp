@@ -25,6 +25,7 @@ public class MCMCOptionsPanel extends JPanel {
 		setLayout(null);
 		
 		model = SyntaxModel.getInstance();
+		initializeModel();
 		burnInTB = new JTextField();
 		burnInTB.setBounds(328, 68, 86, 20);
 		add(burnInTB);
@@ -154,7 +155,9 @@ public class MCMCOptionsPanel extends JPanel {
 
 	}
 	
-	public void initializeComponentsWithModel() {
-		
+	public void initializeModel() {
+		model.mappings.put("CM", "clmean");
+		model.mappings.put("LV", "hov");
+		model.mappings.put("VP", "iw0");
 	}
 }

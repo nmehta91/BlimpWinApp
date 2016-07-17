@@ -22,6 +22,7 @@ public class OutputOptionsPanel extends JPanel {
 	public OutputOptionsPanel() {
 		setLayout(null);
 		model = SyntaxModel.getInstance();
+		initializeModel();
 		
 		JLabel lblNewLabel = new JLabel("Save Imputations To File");
 		lblNewLabel.setBounds(208, 131, 118, 14);
@@ -80,6 +81,7 @@ public class OutputOptionsPanel extends JPanel {
 				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
 				model.outputFilePath = newFileName + ".csv";
 				outputFileNameLabel.setText(model.outputFilePath);
+				model.mappings.put("DT", "csv");
 			}
 		});
 		rdbtncsv.setSelected(true);
@@ -94,6 +96,7 @@ public class OutputOptionsPanel extends JPanel {
 				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
 				model.outputFilePath = newFileName + ".dat";
 				outputFileNameLabel.setText(model.outputFilePath.toString());
+				model.mappings.put("DT", "dat");
 			}
 		});
 		buttonGroup_1.add(rdbtndat);
@@ -139,7 +142,11 @@ public class OutputOptionsPanel extends JPanel {
 				}
 			}
 		});
-		
-
+	}
+	
+	public void initializeModel() {
+		model.mappings.put("DF", "stacked");
+		model.mappings.put("DT", "csv");
+		model.mappings.put("Diagnostics", "nopsr");
 	}
 }
