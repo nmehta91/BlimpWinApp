@@ -5,6 +5,8 @@ import javax.swing.JFileChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 
 public class OutputOptionsPanel extends JPanel {
 
@@ -13,6 +15,9 @@ public class OutputOptionsPanel extends JPanel {
 	 */
 	public JFileChooser selectedOutputDirectory;
 	private SyntaxModel model;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
 	
 	public OutputOptionsPanel() {
 		setLayout(null);
@@ -40,6 +45,79 @@ public class OutputOptionsPanel extends JPanel {
 		});
 		btnBrowse.setBounds(336, 127, 89, 23);
 		add(btnBrowse);
+		
+		JLabel lblDataFormat = new JLabel("Data Format");
+		lblDataFormat.setBounds(102, 288, 77, 14);
+		add(lblDataFormat);
+		
+		JLabel lblFileType = new JLabel("File Type");
+		lblFileType.setBounds(286, 288, 56, 14);
+		add(lblFileType);
+		
+		JLabel lblDiagnostics = new JLabel("Diagnostics");
+		lblDiagnostics.setBounds(467, 288, 77, 14);
+		add(lblDiagnostics);
+		
+		JRadioButton rdbtnStacked = new JRadioButton("Stacked");
+		rdbtnStacked.setActionCommand("stacked");
+		rdbtnStacked.setSelected(true);
+		buttonGroup.add(rdbtnStacked);
+		rdbtnStacked.setBounds(102, 309, 109, 23);
+		rdbtnStacked.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("DF", rdbtnStacked.getActionCommand());
+			}
+		});
+		add(rdbtnStacked);
+		
+		JRadioButton rdbtnSeparated = new JRadioButton("Separate Files");
+		rdbtnSeparated.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("DF", rdbtnSeparated.getActionCommand());
+			}
+		});
+		rdbtnSeparated.setActionCommand("seperate");
+		buttonGroup.add(rdbtnSeparated);
+		rdbtnSeparated.setBounds(102, 335, 109, 23);
+		add(rdbtnSeparated);
+		
+		JRadioButton rdbtncsv = new JRadioButton(".csv");
+		rdbtncsv.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		rdbtncsv.setSelected(true);
+		buttonGroup_1.add(rdbtncsv);
+		rdbtncsv.setBounds(286, 309, 109, 23);
+		add(rdbtncsv);
+		
+		JRadioButton rdbtndat = new JRadioButton(".dat");
+		buttonGroup_1.add(rdbtndat);
+		rdbtndat.setBounds(286, 335, 109, 23);
+		add(rdbtndat);
+		
+		JRadioButton rdbtnNoPsr = new JRadioButton("No PSR");
+		rdbtnNoPsr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("Diagnostics", rdbtnNoPsr.getActionCommand());
+			}
+		});
+		rdbtnNoPsr.setActionCommand("nopsr");
+		rdbtnNoPsr.setSelected(true);
+		buttonGroup_2.add(rdbtnNoPsr);
+		rdbtnNoPsr.setBounds(467, 309, 109, 23);
+		add(rdbtnNoPsr);
+		
+		JRadioButton rdbtnPsr = new JRadioButton("PSR");
+		rdbtnPsr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("Diagnostics", rdbtnPsr.getActionCommand());
+			}
+		});
+		rdbtnPsr.setActionCommand("psr");
+		buttonGroup_2.add(rdbtnPsr);
+		rdbtnPsr.setBounds(467, 335, 109, 23);
+		add(rdbtnPsr);
 		
 		
 

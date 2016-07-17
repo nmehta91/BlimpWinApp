@@ -207,6 +207,14 @@ public class MainWindow {
 					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
 				
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
 				ModelMCOutputWindow.setVisible(true);
 				
 			}
@@ -218,6 +226,14 @@ public class MainWindow {
 		mntmMcmcOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ModelMCOutputWindow = new ModelMCOutput(1);
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
 				ModelMCOutputWindow.setVisible(true);
 				
 			}
@@ -229,6 +245,14 @@ public class MainWindow {
 		mntmOutputOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ModelMCOutputWindow = new ModelMCOutput(2);
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
 				ModelMCOutputWindow.setVisible(true);
 			}
 		});
@@ -320,7 +344,6 @@ public class MainWindow {
 				
 				if (saveResult == selectedFile.APPROVE_OPTION) {
 					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					
 				}
 			}
 			else {
@@ -385,6 +408,32 @@ public class MainWindow {
 			line += model.mappings.get("MVC");
 			line += ";";
 		}
+		syntaxEditor.append(line);
+	}
+	
+	public void writeModelMCMCOutputSyntax() {
+		String line;
+		if(model.modelVariables.size() > 0) {
+			line = "\n\nMODEL: ";
+			int i;
+			for(i = 0; i < model.identifierVariables.size(); i++) {
+				line = line + model.identifierVariables.get(i).name + " ";
+			}
+			line += "~ ";
+			for(i = 0; i < model.modelVariables.size()-1; i++) {
+				line = line + model.modelVariables.get(i).name + " ";
+			}
+			line += model.modelVariables.get(i).name + ";";
+			syntaxEditor.append(line);
+		}
+		
+		line = "\n\nNIMPS: " + model.mappings.get("Nimps");
+		line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
+		line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
+		line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
+		line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
+		System.out.println(model.outputFilePath.toAbsolutePath().toString());
+		line = line + "\n\nOUTFILE: " + model.outputFilePath.toAbsolutePath();
 		syntaxEditor.append(line);
 	}
 }

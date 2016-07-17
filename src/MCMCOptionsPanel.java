@@ -4,13 +4,17 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.DefaultComboBoxModel;
 
 public class MCMCOptionsPanel extends JPanel {
-	private JTextField textField;
+	public JTextField burnInTB;
 	private SyntaxModel model;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
+	public JTextField thinIterTB;
+	public JTextField nimpsTB;
+	public JTextField randSeedTB;
+	public JComboBox<String> noOfChains;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
@@ -21,10 +25,10 @@ public class MCMCOptionsPanel extends JPanel {
 		setLayout(null);
 		
 		model = SyntaxModel.getInstance();
-		textField = new JTextField();
-		textField.setBounds(328, 68, 86, 20);
-		add(textField);
-		textField.setColumns(10);
+		burnInTB = new JTextField();
+		burnInTB.setBounds(328, 68, 86, 20);
+		add(burnInTB);
+		burnInTB.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("Burn In Iterations");
 		lblNewLabel.setBounds(199, 71, 122, 14);
@@ -34,28 +38,28 @@ public class MCMCOptionsPanel extends JPanel {
 		lblThinningIterations.setBounds(199, 113, 111, 14);
 		add(lblThinningIterations);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(328, 110, 86, 20);
-		add(textField_1);
-		textField_1.setColumns(10);
+		thinIterTB = new JTextField();
+		thinIterTB.setBounds(328, 110, 86, 20);
+		add(thinIterTB);
+		thinIterTB.setColumns(10);
 		
 		JLabel lblImputations = new JLabel("Imputations");
 		lblImputations.setBounds(199, 158, 97, 14);
 		add(lblImputations);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(328, 155, 86, 20);
-		add(textField_2);
-		textField_2.setColumns(10);
+		nimpsTB = new JTextField();
+		nimpsTB.setBounds(328, 155, 86, 20);
+		add(nimpsTB);
+		nimpsTB.setColumns(10);
 		
 		JLabel lblRandomNumberSeed = new JLabel("Random Number Seed");
 		lblRandomNumberSeed.setBounds(199, 205, 122, 14);
 		add(lblRandomNumberSeed);
 		
-		textField_3 = new JTextField();
-		textField_3.setBounds(328, 202, 86, 20);
-		add(textField_3);
-		textField_3.setColumns(10);
+		randSeedTB = new JTextField();
+		randSeedTB.setBounds(328, 202, 86, 20);
+		add(randSeedTB);
+		randSeedTB.setColumns(10);
 		
 		JLabel lblNumberOfChains = new JLabel("Number of Chains");
 		lblNumberOfChains.setBounds(199, 252, 111, 14);
@@ -66,11 +70,25 @@ public class MCMCOptionsPanel extends JPanel {
 		add(lblClusterMeans);
 		
 		JRadioButton rdbtnInclude = new JRadioButton("Include");
+		rdbtnInclude.setActionCommand("clmean\r\n");
+		rdbtnInclude.setSelected(true);
+		rdbtnInclude.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("CM", rdbtnInclude.getActionCommand());
+			}
+		});
+		
 		buttonGroup.add(rdbtnInclude);
 		rdbtnInclude.setBounds(125, 350, 109, 23);
 		add(rdbtnInclude);
 		
 		JRadioButton rdbtnExclude = new JRadioButton("Exclude");
+		rdbtnExclude.setActionCommand("noclmean");
+		rdbtnExclude.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("CM", rdbtnExclude.getActionCommand());
+			}
+		});
 		buttonGroup.add(rdbtnExclude);
 		rdbtnExclude.setBounds(125, 376, 109, 23);
 		add(rdbtnExclude);
@@ -80,11 +98,24 @@ public class MCMCOptionsPanel extends JPanel {
 		add(lblLevelVariance);
 		
 		JRadioButton rdbtnHomogenous = new JRadioButton("Homogenous");
+		rdbtnHomogenous.setSelected(true);
+		rdbtnHomogenous.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("LV", rdbtnHomogenous.getActionCommand());
+			}
+		});
+		rdbtnHomogenous.setActionCommand("hov");
 		buttonGroup_1.add(rdbtnHomogenous);
 		rdbtnHomogenous.setBounds(288, 350, 109, 23);
 		add(rdbtnHomogenous);
 		
 		JRadioButton rdbtnHeterogenous = new JRadioButton("Heterogenous");
+		rdbtnHeterogenous.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				model.mappings.put("LV", rdbtnHeterogenous.getActionCommand());
+			}
+		});
+		rdbtnHeterogenous.setActionCommand("hev");
 		buttonGroup_1.add(rdbtnHeterogenous);
 		rdbtnHeterogenous.setBounds(288, 376, 109, 23);
 		add(rdbtnHeterogenous);
@@ -94,18 +125,32 @@ public class MCMCOptionsPanel extends JPanel {
 		add(lblVariancePrior);
 		
 		JRadioButton rdbtnInverseWishart = new JRadioButton("Inverse Wishart 0");
+		rdbtnInverseWishart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("VP", rdbtnHeterogenous.getActionCommand());
+			}
+		});
+		rdbtnInverseWishart.setSelected(true);
+		rdbtnInverseWishart.setActionCommand("iw0");
 		buttonGroup_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.setBounds(433, 350, 122, 23);
 		add(rdbtnInverseWishart);
 		
 		JRadioButton rdbtnInverseWishartId = new JRadioButton("Inverse Wishart ID");
+		rdbtnInverseWishartId.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("VP", rdbtnHeterogenous.getActionCommand());
+			}
+		});
+		rdbtnInverseWishartId.setActionCommand("iw1");
 		buttonGroup_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.setBounds(433, 376, 122, 23);
 		add(rdbtnInverseWishartId);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(328, 249, 86, 20);
-		add(comboBox);
+		noOfChains = new JComboBox<String>();
+		noOfChains.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "3", "4", "5", "6", "7"}));
+		noOfChains.setBounds(328, 249, 86, 20);
+		add(noOfChains);
 
 	}
 	

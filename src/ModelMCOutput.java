@@ -31,6 +31,7 @@ public class ModelMCOutput extends JFrame {
 	private SpecifyModelPanel SMPanel;
 	private MCMCOptionsPanel MCMCPanel;
 	private OutputOptionsPanel outputOptionsPanel;
+	private SyntaxModel model;
 	/**
 	 * Launch the application.
 	 */
@@ -50,13 +51,9 @@ public class ModelMCOutput extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		model = SyntaxModel.getInstance();
 		
 		JButton btnNewButton = new JButton("Done");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
 		btnNewButton.setBounds(686, 572, 141, 23);
 		contentPane.add(btnNewButton);
 		
@@ -73,9 +70,26 @@ public class ModelMCOutput extends JFrame {
 		tabbedPane.addTab("MCMC Options", null, MCMCPanel, null);
 		tabbedPane.addTab("Output Options", null, outputOptionsPanel, null);
 		tabbedPane.setSelectedIndex(selectTabIndex);
+		
+		btnNewButton.addActionListener(new doneActionListener(this));
 	}
 	
-	public void initializeWithModel() {
-		
+	class doneActionListener implements ActionListener{
+
+	    private JFrame toBeClose;
+
+	    public doneActionListener(JFrame toBeClose) {
+	        this.toBeClose = toBeClose;
+	    }
+
+	    public void actionPerformed(ActionEvent e) {
+	    	model.mappings.put("BurnIn", MCMCPanel.burnInTB.getText());
+			model.mappings.put("ThinIterations", MCMCPanel.thinIterTB.getText());
+			model.mappings.put("Nimps", MCMCPanel.nimpsTB.getText());
+			model.mappings.put("RandomSeed", MCMCPanel.randSeedTB.getText());
+			model.mappings.put("Chains", MCMCPanel.noOfChains.getSelectedItem().toString());
+	        toBeClose.setVisible(false);
+	        toBeClose.dispose();
+	    }
 	}
 }

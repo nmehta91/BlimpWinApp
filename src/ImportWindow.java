@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -242,16 +244,6 @@ public class ImportWindow extends JFrame {
 		for(int i = 0; i < 10; i++) {
 			dataColHeadings[i] = "V"+(i+1);
 		}
-		
-//		JScrollPane scrollPane = new JScrollPane();
-//		scrollPane.setBounds(285, 199, 356, 172);
-//		dataPanel.add(scrollPane);
-//		
-//		DefaultTableModel model = new DefaultTableModel(10, dataColHeadings.length);
-//		model.setColumnIdentifiers(dataColHeadings);
-//		dataTable = new JTable(model);
-//		scrollPane.setViewportView(dataTable);
-//		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 	}
 	
 	public String[] initializeParsedFileTableView() {
@@ -321,11 +313,18 @@ public class ImportWindow extends JFrame {
 	
 	public void saveVariableChanges(int index, String name, String type){
 		Variable variable = model.variables.get(index);
-		if(name != ""){
-			variable.name = name;
-			VariablesTable.getModel().setValueAt(name, index, 0);
-			dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
-			dataTable.getTableHeader().repaint();
+		System.out.println("name: " + name);
+		if(!name.equals("")){
+			//Check if the new variable name contains whitespaces, if yes skip 
+			Pattern pattern = Pattern.compile("\\s");
+			Matcher matcher = pattern.matcher(name);
+			boolean found = matcher.find();
+			if(!found){
+				variable.name = name;
+				VariablesTable.getModel().setValueAt(name, index, 0);
+				dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
+				dataTable.getTableHeader().repaint();
+			}
 		}
 		variable.type = type;
 		VariablesTable.getModel().setValueAt(type, index, 1);
