@@ -218,6 +218,14 @@ public class ImportWindow extends JFrame {
 				String newName = newVarName.getText();
 				String newType = (String)varTypes.getSelectedItem();
 				saveVariableChanges(selectedVariable, newName, newType);
+				
+				String[] varNames = new String[model.variables.size()];
+				for(int i = 0; i < model.variables.size(); i++) {
+					varNames[i] = model.variables.get(i).name;
+				}
+				variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(varNames));
+				varTypes.setSelectedIndex(0);
+				newVarName.setText("");
 			}
 		});
 		btnSaveVarDetails.setBounds(86, 160, 89, 23);
