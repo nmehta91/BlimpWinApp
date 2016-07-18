@@ -13,6 +13,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class SpecifyModelPanel extends JPanel {
 	private JTable variableTable;
@@ -125,7 +128,7 @@ public class SpecifyModelPanel extends JPanel {
 		scrollPane.setViewportView(variableTable);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(442, 191, 183, 220);
+		scrollPane_1.setBounds(442, 229, 183, 220);
 		add(scrollPane_1);
 		
 		modelVariables = new JTable();
@@ -220,8 +223,8 @@ public class SpecifyModelPanel extends JPanel {
 		lblImputationVariables.setBounds(442, 30, 121, 14);
 		add(lblImputationVariables);
 		
-		JButton button_2 = new JButton(">");
-		button_2.addActionListener(new ActionListener() {
+		JButton addToImputation = new JButton(">");
+		addToImputation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedRow[] = variableTable.getSelectedRows();
 				System.out.println("Selected Row: " + selectedRow.length);
@@ -254,11 +257,11 @@ public class SpecifyModelPanel extends JPanel {
 			}
 			
 		});
-		button_2.setBounds(293, 62, 89, 33);
-		add(button_2);
+		addToImputation.setBounds(293, 62, 89, 33);
+		add(addToImputation);
 		
-		JButton button_3 = new JButton("<");
-		button_3.addActionListener(new ActionListener() {
+		JButton removeFromImputation = new JButton("<");
+		removeFromImputation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = imputationVariablesTable.getSelectedRows();
 				System.out.println("Size of idenitifier variale: " + model.identifierVariables.size());
@@ -277,8 +280,8 @@ public class SpecifyModelPanel extends JPanel {
 				imputationVariablesTable.repaint();
 			}
 		});
-		button_3.setBounds(293, 119, 89, 33);
-		add(button_3);
+		removeFromImputation.setBounds(293, 119, 89, 33);
+		add(removeFromImputation);
 		
 		JComboBox<String> comboBox = new JComboBox<String>(new DefaultComboBoxModel<String>(new String[] {"Main Effects", "Random Slopes"}));
 		comboBox.addActionListener(new ActionListener() {
@@ -296,6 +299,52 @@ public class SpecifyModelPanel extends JPanel {
 		JLabel lblBuildTerms = new JLabel("Build Terms");
 		lblBuildTerms.setBounds(309, 192, 54, 14);
 		add(lblBuildTerms);
+		
+		JCheckBox chckbxSingleImputation = new JCheckBox("Single Imputation");
+		chckbxSingleImputation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(chckbxSingleImputation.isSelected()) {
+					int[] indexes = new int[model.modelVariables.size()];
+					int noOfVarsToRemove = 0;
+					for(int i = 0; i < model.modelVariables.size(); i++) {
+						Variable var = model.modelVariables.get(i);
+						if(var.name.lastIndexOf(":") != -1){
+							indexes[noOfVarsToRemove++] = i;
+						}		
+					}
+					
+					for(int i = model.modelVariables.size()-1; i >= 0; i--) {
+						for(int j = 0; j < noOfVarsToRemove; j++){
+							if(i == indexes[j])
+								model.modelVariables.remove(i);
+						}
+					}
+					
+					for(int i = 0; i < model.identifierVariables.size(); i++) {
+						Variable var = model.identifierVariables.get(i);
+						String truncatedName = var.name.substring(0, var.name.lastIndexOf("("));
+						var.name = truncatedName;
+						model.variables.add(var);
+					}
+					model.identifierVariables.clear();
+					imputationVariablesTable.repaint();
+					modelVariables.repaint();
+					
+					Collections.sort(model.variables);
+					variableTable.repaint();
+					
+					addToImputation.setEnabled(false);
+					removeFromImputation.setEnabled(false);
+					comboBox.removeItemAt(1);
+				} else {
+					addToImputation.setEnabled(true);
+					removeFromImputation.setEnabled(true);
+					comboBox.addItem("Random Slopes");
+				}
+			}
+		});
+		chckbxSingleImputation.setBounds(442, 183, 131, 23);
+		add(chckbxSingleImputation);
 
 	}
 	
