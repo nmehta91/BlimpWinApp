@@ -15,6 +15,12 @@ public class MCMCOptionsPanel extends JPanel {
 	public JTextField nimpsTB;
 	public JTextField randSeedTB;
 	public JComboBox<String> noOfChains;
+	private JRadioButton rdbtnInclude;
+	private JRadioButton rdbtnExclude;
+	private JRadioButton rdbtnHomogenous;
+	private JRadioButton rdbtnHeterogenous;
+	private JRadioButton rdbtnInverseWishart;
+	private JRadioButton rdbtnInverseWishartId;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
@@ -26,6 +32,7 @@ public class MCMCOptionsPanel extends JPanel {
 		
 		model = SyntaxModel.getInstance();
 		initializeModel();
+		initializeWithModel();
 		burnInTB = new JTextField();
 		burnInTB.setBounds(328, 68, 86, 20);
 		add(burnInTB);
@@ -70,12 +77,11 @@ public class MCMCOptionsPanel extends JPanel {
 		lblClusterMeans.setBounds(123, 329, 86, 14);
 		add(lblClusterMeans);
 		
-		JRadioButton rdbtnInclude = new JRadioButton("Include");
-		rdbtnInclude.setActionCommand("clmean\r\n");
+		rdbtnInclude = new JRadioButton("Include");
 		rdbtnInclude.setSelected(true);
 		rdbtnInclude.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("CM", rdbtnInclude.getActionCommand());
+				model.mappings.put("CM", "clmean");
 			}
 		});
 		
@@ -83,11 +89,10 @@ public class MCMCOptionsPanel extends JPanel {
 		rdbtnInclude.setBounds(125, 350, 109, 23);
 		add(rdbtnInclude);
 		
-		JRadioButton rdbtnExclude = new JRadioButton("Exclude");
-		rdbtnExclude.setActionCommand("noclmean");
+		rdbtnExclude = new JRadioButton("Exclude");
 		rdbtnExclude.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("CM", rdbtnExclude.getActionCommand());
+				model.mappings.put("CM", "noclmean");
 			}
 		});
 		buttonGroup.add(rdbtnExclude);
@@ -98,25 +103,23 @@ public class MCMCOptionsPanel extends JPanel {
 		lblLevelVariance.setBounds(288, 329, 86, 14);
 		add(lblLevelVariance);
 		
-		JRadioButton rdbtnHomogenous = new JRadioButton("Homogenous");
+		rdbtnHomogenous = new JRadioButton("Homogenous");
 		rdbtnHomogenous.setSelected(true);
 		rdbtnHomogenous.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("LV", rdbtnHomogenous.getActionCommand());
+				model.mappings.put("LV", "hov");
 			}
 		});
-		rdbtnHomogenous.setActionCommand("hov");
 		buttonGroup_1.add(rdbtnHomogenous);
 		rdbtnHomogenous.setBounds(288, 350, 109, 23);
 		add(rdbtnHomogenous);
 		
-		JRadioButton rdbtnHeterogenous = new JRadioButton("Heterogenous");
+		rdbtnHeterogenous = new JRadioButton("Heterogenous");
 		rdbtnHeterogenous.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				model.mappings.put("LV", rdbtnHeterogenous.getActionCommand());
+				model.mappings.put("LV", "hev");
 			}
 		});
-		rdbtnHeterogenous.setActionCommand("hev");
 		buttonGroup_1.add(rdbtnHeterogenous);
 		rdbtnHeterogenous.setBounds(288, 376, 109, 23);
 		add(rdbtnHeterogenous);
@@ -125,25 +128,23 @@ public class MCMCOptionsPanel extends JPanel {
 		lblVariancePrior.setBounds(433, 329, 79, 14);
 		add(lblVariancePrior);
 		
-		JRadioButton rdbtnInverseWishart = new JRadioButton("Inverse Wishart 0");
+		rdbtnInverseWishart = new JRadioButton("Inverse Wishart 0");
 		rdbtnInverseWishart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("VP", rdbtnHeterogenous.getActionCommand());
+				model.mappings.put("VP", "iw0");
 			}
 		});
 		rdbtnInverseWishart.setSelected(true);
-		rdbtnInverseWishart.setActionCommand("iw0");
 		buttonGroup_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.setBounds(433, 350, 122, 23);
 		add(rdbtnInverseWishart);
 		
-		JRadioButton rdbtnInverseWishartId = new JRadioButton("Inverse Wishart ID");
+		rdbtnInverseWishartId = new JRadioButton("Inverse Wishart ID");
 		rdbtnInverseWishartId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("VP", rdbtnHeterogenous.getActionCommand());
+				model.mappings.put("VP", "iw1");
 			}
 		});
-		rdbtnInverseWishartId.setActionCommand("iw1");
 		buttonGroup_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.setBounds(433, 376, 122, 23);
 		add(rdbtnInverseWishartId);
@@ -152,6 +153,8 @@ public class MCMCOptionsPanel extends JPanel {
 		noOfChains.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "3", "4", "5", "6", "7"}));
 		noOfChains.setBounds(328, 249, 86, 20);
 		add(noOfChains);
+		
+		System.out.println("Initializing mcmc..");
 
 	}
 	
@@ -159,5 +162,23 @@ public class MCMCOptionsPanel extends JPanel {
 		model.mappings.put("CM", "clmean");
 		model.mappings.put("LV", "hov");
 		model.mappings.put("VP", "iw0");
+	}
+	
+	public void initializeWithModel() {
+		if(model.mappings.get("BurnIn") != null){
+//			burnInTB.setText(model.mappings.get("BurnIn"));
+		}
+			
+	}
+	
+	public void reset() {
+		burnInTB.setText("");
+		thinIterTB.setText("");
+		nimpsTB.setText("");
+		randSeedTB.setText("");
+	    noOfChains.setSelectedIndex(0);
+	    rdbtnInclude.setSelected(true);
+	    rdbtnHomogenous.setSelected(true);
+	    rdbtnInverseWishart.setSelected(true);
 	}
 }

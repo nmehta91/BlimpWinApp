@@ -72,7 +72,29 @@ public class ModelMCOutput extends JFrame {
 		tabbedPane.addTab("Output Options", null, outputOptionsPanel, null);
 		tabbedPane.setSelectedIndex(selectTabIndex);
 		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		btnCancel.setBounds(15, 572, 89, 23);
+		contentPane.add(btnCancel);
+		
+		JButton btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reset();
+			}
+		});
+		btnReset.setBounds(108, 572, 89, 23);
+		contentPane.add(btnReset);
+		
 		btnNewButton.addActionListener(new doneActionListener(this));
+	}
+	
+	public void selectTab(int index) {
+		tabbedPane.setSelectedIndex(index);
 	}
 	
 	class doneActionListener implements ActionListener{
@@ -84,13 +106,25 @@ public class ModelMCOutput extends JFrame {
 	    }
 
 	    public void actionPerformed(ActionEvent e) {
-	    	model.mappings.put("BurnIn", MCMCPanel.burnInTB.getText());
-			model.mappings.put("ThinIterations", MCMCPanel.thinIterTB.getText());
-			model.mappings.put("Nimps", MCMCPanel.nimpsTB.getText());
-			model.mappings.put("RandomSeed", MCMCPanel.randSeedTB.getText());
-			model.mappings.put("Chains", MCMCPanel.noOfChains.getSelectedItem().toString());
+	    	if(!MCMCPanel.burnInTB.getText().equals(""))
+	    		model.mappings.put("BurnIn", MCMCPanel.burnInTB.getText());
+	    	if(!MCMCPanel.thinIterTB.getText().equals(""))
+	    		model.mappings.put("BurnIn", MCMCPanel.thinIterTB.getText());
+	    	if(!MCMCPanel.nimpsTB.getText().equals(""))
+	    		model.mappings.put("BurnIn", MCMCPanel.nimpsTB.getText());
+	    	if(!MCMCPanel.randSeedTB.getText().equals(""))
+	    		model.mappings.put("BurnIn", MCMCPanel.randSeedTB.getText());
+	    	if(!MCMCPanel.noOfChains.getSelectedItem().toString().equals(""))
+	    		model.mappings.put("BurnIn", MCMCPanel.noOfChains.getSelectedItem().toString());
+	
 	        toBeClose.setVisible(false);
 	        toBeClose.dispose();
 	    }
 	}
+	
+	public void reset() {
+		SMPanel.reset();
+		MCMCPanel.reset();
+		outputOptionsPanel.reset();
+	}	
 }

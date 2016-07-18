@@ -206,7 +206,7 @@ public class MainWindow {
 				if(ModelMCOutputWindow == null){
 					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
-				
+				ModelMCOutputWindow.selectTab(0);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
                         // .. get some information from the child before disposing 
@@ -225,7 +225,10 @@ public class MainWindow {
 		JMenuItem mntmMcmcOptions = new JMenuItem("MCMC Options");
 		mntmMcmcOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ModelMCOutputWindow = new ModelMCOutput(1);
+				if(ModelMCOutputWindow == null) {
+					ModelMCOutputWindow = new ModelMCOutput(1);
+				}
+				ModelMCOutputWindow.selectTab(1);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
                         // .. get some information from the child before disposing 
@@ -412,12 +415,16 @@ public class MainWindow {
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
+		syntaxEditor.setText("");
+		writeImportSyntax();
 		String line;
 		if(model.modelVariables.size() > 0) {
 			line = "\n\nMODEL: ";
 			int i;
 			for(i = 0; i < model.identifierVariables.size(); i++) {
-				line = line + model.identifierVariables.get(i).name + " ";
+				String name = model.identifierVariables.get(i).name;
+				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
+				line = line + truncatedVariable + " ";
 			}
 			line += "~ ";
 			for(i = 0; i < model.modelVariables.size()-1; i++) {

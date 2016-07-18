@@ -319,7 +319,7 @@ public class ImportWindow extends JFrame {
 			Pattern pattern = Pattern.compile("\\s");
 			Matcher matcher = pattern.matcher(name);
 			boolean found = matcher.find();
-			if(!found){
+			if(!found && !checkIfDuplicate(name)){
 				variable.name = name;
 				VariablesTable.getModel().setValueAt(name, index, 0);
 				dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
@@ -330,9 +330,16 @@ public class ImportWindow extends JFrame {
 		VariablesTable.getModel().setValueAt(type, index, 1);
 		model.variables.remove(index);
 		model.variables.add(index, variable);
-		
 	}
 	
+	public boolean checkIfDuplicate(String name) {
+		boolean found = false;
+		for(int i = 0; i < model.variables.size(); i++) {
+			if(model.variables.get(i).name.equals(name))
+				found = true;
+		}
+		return found;
+	}
 	class doneActionListener implements ActionListener{
 
 	    private JFrame toBeClose;

@@ -15,6 +15,13 @@ public class OutputOptionsPanel extends JPanel {
 	 */
 	public JFileChooser selectedOutputDirectory;
 	private SyntaxModel model;
+	public JLabel outputFileNameLabel;
+	private JRadioButton rdbtnStacked;
+	private JRadioButton rdbtnSeparated;
+	private JRadioButton rdbtncsv;
+	private JRadioButton rdbtndat;
+	private JRadioButton rdbtnNoPsr;
+	private JRadioButton rdbtnPsr;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
@@ -28,7 +35,7 @@ public class OutputOptionsPanel extends JPanel {
 		lblNewLabel.setBounds(208, 131, 118, 14);
 		add(lblNewLabel);
 		
-		JLabel outputFileNameLabel = new JLabel("");
+		outputFileNameLabel = new JLabel("");
 		outputFileNameLabel.setBounds(346, 161, 247, 104);
 		add(outputFileNameLabel); 
 		
@@ -51,30 +58,28 @@ public class OutputOptionsPanel extends JPanel {
 		lblDiagnostics.setBounds(467, 288, 77, 14);
 		add(lblDiagnostics);
 		
-		JRadioButton rdbtnStacked = new JRadioButton("Stacked");
-		rdbtnStacked.setActionCommand("stacked");
+		rdbtnStacked = new JRadioButton("Stacked");
 		rdbtnStacked.setSelected(true);
 		buttonGroup.add(rdbtnStacked);
 		rdbtnStacked.setBounds(102, 309, 109, 23);
 		rdbtnStacked.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("DF", rdbtnStacked.getActionCommand());
+				model.mappings.put("DF", "stacked");
 			}
 		});
 		add(rdbtnStacked);
 		
-		JRadioButton rdbtnSeparated = new JRadioButton("Separate Files");
+		rdbtnSeparated = new JRadioButton("Separate Files");
 		rdbtnSeparated.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("DF", rdbtnSeparated.getActionCommand());
+				model.mappings.put("DF", "seperate");
 			}
 		});
-		rdbtnSeparated.setActionCommand("seperate");
 		buttonGroup.add(rdbtnSeparated);
 		rdbtnSeparated.setBounds(102, 335, 109, 23);
 		add(rdbtnSeparated);
 		
-		JRadioButton rdbtncsv = new JRadioButton(".csv");
+		rdbtncsv = new JRadioButton(".csv");
 		rdbtncsv.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
@@ -89,13 +94,15 @@ public class OutputOptionsPanel extends JPanel {
 		rdbtncsv.setBounds(286, 309, 109, 23);
 		add(rdbtncsv);
 		
-		JRadioButton rdbtndat = new JRadioButton(".dat");
+		rdbtndat = new JRadioButton(".dat");
 		rdbtndat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
-				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
-				model.outputFilePath = newFileName + ".dat";
-				outputFileNameLabel.setText(model.outputFilePath.toString());
+				if(model.outputFilePath != null) {
+					int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+					String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+					model.outputFilePath = newFileName + ".dat";
+					outputFileNameLabel.setText(model.outputFilePath.toString());
+				}
 				model.mappings.put("DT", "dat");
 			}
 		});
@@ -103,25 +110,23 @@ public class OutputOptionsPanel extends JPanel {
 		rdbtndat.setBounds(286, 335, 109, 23);
 		add(rdbtndat);
 		
-		JRadioButton rdbtnNoPsr = new JRadioButton("No PSR");
+		rdbtnNoPsr = new JRadioButton("No PSR");
 		rdbtnNoPsr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("Diagnostics", rdbtnNoPsr.getActionCommand());
+				model.mappings.put("Diagnostics", "nopsr");
 			}
 		});
-		rdbtnNoPsr.setActionCommand("nopsr");
 		rdbtnNoPsr.setSelected(true);
 		buttonGroup_2.add(rdbtnNoPsr);
 		rdbtnNoPsr.setBounds(467, 309, 109, 23);
 		add(rdbtnNoPsr);
 		
-		JRadioButton rdbtnPsr = new JRadioButton("PSR");
+		rdbtnPsr = new JRadioButton("PSR");
 		rdbtnPsr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("Diagnostics", rdbtnPsr.getActionCommand());
+				model.mappings.put("Diagnostics", "psr");
 			}
 		});
-		rdbtnPsr.setActionCommand("psr");
 		buttonGroup_2.add(rdbtnPsr);
 		rdbtnPsr.setBounds(467, 335, 109, 23);
 		add(rdbtnPsr);
@@ -148,5 +153,12 @@ public class OutputOptionsPanel extends JPanel {
 		model.mappings.put("DF", "stacked");
 		model.mappings.put("DT", "csv");
 		model.mappings.put("Diagnostics", "nopsr");
+	}
+	
+	public void reset() {
+		outputFileNameLabel.setText("");
+		rdbtnStacked.setSelected(true);
+		rdbtncsv.setSelected(true);
+		rdbtnNoPsr.setSelected(true);
 	}
 }

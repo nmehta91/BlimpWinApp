@@ -187,8 +187,6 @@ public class SpecifyModelPanel extends JPanel {
 					}
 				}
 				
-			
-				
 				System.out.println("Model Variables length: " + model.modelVariables.size());
 				modelVariables = new JTable(new ModelTableModel("Model Variables", model.modelVariables));
 				scrollPane_1.setViewportView(modelVariables);
@@ -321,5 +319,20 @@ public class SpecifyModelPanel extends JPanel {
 			}
 		}
 		return combinations;
+	}
+	
+	public void reset() {
+		model.modelVariables.clear();
+		for(int i = 0; i < model.identifierVariables.size(); i++) {
+			String name = model.identifierVariables.get(i).name;
+			String truncatedName = name.substring(0, name.lastIndexOf("("));
+			model.identifierVariables.get(i).name = truncatedName;
+			model.variables.add(model.identifierVariables.get(i));
+		}
+		model.identifierVariables.clear();
+		Collections.sort(model.variables);
+		modelVariables.repaint();
+		imputationVariablesTable.repaint();
+		variableTable.repaint();
 	}
 }
