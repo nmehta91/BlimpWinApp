@@ -1,0 +1,164 @@
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+
+public class OutputOptionsPanel extends JPanel {
+
+	/**
+	 * Create the panel.
+	 */
+	public JFileChooser selectedOutputDirectory;
+	private SyntaxModel model;
+	public JLabel outputFileNameLabel;
+	private JRadioButton rdbtnStacked;
+	private JRadioButton rdbtnSeparated;
+	private JRadioButton rdbtncsv;
+	private JRadioButton rdbtndat;
+	private JRadioButton rdbtnNoPsr;
+	private JRadioButton rdbtnPsr;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
+	
+	public OutputOptionsPanel() {
+		setLayout(null);
+		model = SyntaxModel.getInstance();
+		initializeModel();
+		
+		JLabel lblNewLabel = new JLabel("Save Imputations To File");
+		lblNewLabel.setBounds(208, 131, 118, 14);
+		add(lblNewLabel);
+		
+		outputFileNameLabel = new JLabel("");
+		outputFileNameLabel.setBounds(346, 161, 247, 104);
+		add(outputFileNameLabel); 
+		
+		JButton btnBrowse = new JButton("Browse");
+		selectedOutputDirectory = new JFileChooser();
+		selectedOutputDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		btnBrowse.setBounds(336, 127, 89, 23);
+		add(btnBrowse);
+		
+		JLabel lblDataFormat = new JLabel("Data Format");
+		lblDataFormat.setBounds(102, 288, 77, 14);
+		add(lblDataFormat);
+		
+		JLabel lblFileType = new JLabel("File Type");
+		lblFileType.setBounds(286, 288, 56, 14);
+		add(lblFileType);
+		
+		JLabel lblDiagnostics = new JLabel("Diagnostics");
+		lblDiagnostics.setBounds(467, 288, 77, 14);
+		add(lblDiagnostics);
+		
+		rdbtnStacked = new JRadioButton("Stacked");
+		rdbtnStacked.setSelected(true);
+		buttonGroup.add(rdbtnStacked);
+		rdbtnStacked.setBounds(102, 309, 109, 23);
+		rdbtnStacked.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("DF", "stacked");
+			}
+		});
+		add(rdbtnStacked);
+		
+		rdbtnSeparated = new JRadioButton("Separate Files");
+		rdbtnSeparated.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("DF", "seperate");
+			}
+		});
+		buttonGroup.add(rdbtnSeparated);
+		rdbtnSeparated.setBounds(102, 335, 109, 23);
+		add(rdbtnSeparated);
+		
+		rdbtncsv = new JRadioButton(".csv");
+		rdbtncsv.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+				model.outputFilePath = newFileName + ".csv";
+				outputFileNameLabel.setText(model.outputFilePath);
+				model.mappings.put("DT", "csv");
+			}
+		});
+		rdbtncsv.setSelected(true);
+		buttonGroup_1.add(rdbtncsv);
+		rdbtncsv.setBounds(286, 309, 109, 23);
+		add(rdbtncsv);
+		
+		rdbtndat = new JRadioButton(".dat");
+		rdbtndat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(model.outputFilePath != null) {
+					int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+					String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+					model.outputFilePath = newFileName + ".dat";
+					outputFileNameLabel.setText(model.outputFilePath.toString());
+				}
+				model.mappings.put("DT", "dat");
+			}
+		});
+		buttonGroup_1.add(rdbtndat);
+		rdbtndat.setBounds(286, 335, 109, 23);
+		add(rdbtndat);
+		
+		rdbtnNoPsr = new JRadioButton("No PSR");
+		rdbtnNoPsr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("Diagnostics", "nopsr");
+			}
+		});
+		rdbtnNoPsr.setSelected(true);
+		buttonGroup_2.add(rdbtnNoPsr);
+		rdbtnNoPsr.setBounds(467, 309, 109, 23);
+		add(rdbtnNoPsr);
+		
+		rdbtnPsr = new JRadioButton("PSR");
+		rdbtnPsr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.mappings.put("Diagnostics", "psr");
+			}
+		});
+		buttonGroup_2.add(rdbtnPsr);
+		rdbtnPsr.setBounds(467, 335, 109, 23);
+		add(rdbtnPsr);
+		
+		btnBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int openResult = selectedOutputDirectory.showSaveDialog(null);
+				if(openResult == selectedOutputDirectory.APPROVE_OPTION) {
+					model.outputFilePath = selectedOutputDirectory.getSelectedFile().getAbsolutePath().toString();
+					System.out.println("OutPut Filepath: " + model.outputFilePath);
+					if(rdbtncsv.isSelected()) {
+						model.outputFilePath = model.outputFilePath + ".csv";
+						outputFileNameLabel.setText(model.outputFilePath);
+					} else {
+						model.outputFilePath = model.outputFilePath + ".dat";
+						outputFileNameLabel.setText(model.outputFilePath.toString() + ".dat");
+					}	
+				}
+			}
+		});
+	}
+	
+	public void initializeModel() {
+		model.mappings.put("DF", "stacked");
+		model.mappings.put("DT", "csv");
+		model.mappings.put("Diagnostics", "nopsr");
+	}
+	
+	public void reset() {
+		outputFileNameLabel.setText("");
+		rdbtnStacked.setSelected(true);
+		rdbtncsv.setSelected(true);
+		rdbtnNoPsr.setSelected(true);
+	}
+}

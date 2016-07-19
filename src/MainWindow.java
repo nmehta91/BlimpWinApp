@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,7 +41,8 @@ public class MainWindow {
 	private JScrollPane scrollBar;
 	private JFileChooser selectedFile;
 	private File currentFile = null;
-	private ImportWindow importWin;
+	private ImportWindow importWin = null;
+	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
 	/**
 	 * Launch the application.
@@ -154,12 +156,25 @@ public class MainWindow {
 		JMenuItem mntmImportDataset = new JMenuItem("Import Dataset");
 		mntmImportDataset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				SyntaxModel.clearModel();
 				Path importedFile = importSelectedFile();
-				System.out.println(importedFile.toString());
 				//model.mappings.put("data", importedFile.toString());
-				model.dataSetPath = importedFile;
-				importWin = new ImportWindow();
-				importWin.showWindow();
+				if(importedFile == null){
+					System.out.println("There was an error in importing the file.");
+				} else {
+					model.dataSetPath = importedFile;
+					ImportWindow iWindow = new ImportWindow(frame);
+					iWindow.setVisible(true);
+					iWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeImportSyntax();
+                    }
+					});
+					ModelMCOutputWindow = new ModelMCOutput(0);
+				}
+				
 			}
 		});
 		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
@@ -181,6 +196,71 @@ public class MainWindow {
 		mnFile.add(mntmTest);
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
+		
+		JMenu mnImpute = new JMenu("Impute");
+		menuBar.add(mnImpute);
+		
+		JMenuItem mntmSpecifyModel = new JMenuItem("Specify Model");
+		mntmSpecifyModel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(ModelMCOutputWindow == null){
+					ModelMCOutputWindow = new ModelMCOutput(0);
+				}
+				ModelMCOutputWindow.selectTab(0);
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
+				ModelMCOutputWindow.setVisible(true);
+				
+			}
+		});
+		mntmSpecifyModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
+		mnImpute.add(mntmSpecifyModel);
+		
+		JMenuItem mntmMcmcOptions = new JMenuItem("MCMC Options");
+		mntmMcmcOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(ModelMCOutputWindow == null) {
+					ModelMCOutputWindow = new ModelMCOutput(1);
+				}
+				ModelMCOutputWindow.selectTab(1);
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
+				ModelMCOutputWindow.setVisible(true);
+				
+			}
+		});
+		mntmMcmcOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnImpute.add(mntmMcmcOptions);
+		
+		JMenuItem mntmOutputOptions = new JMenuItem("Output Options");
+		mntmOutputOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ModelMCOutputWindow = new ModelMCOutput(2);
+				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        // .. get some information from the child before disposing 
+                        System.out.println("Window closed."); // does not terminate when passing frame as parent
+                        writeModelMCMCOutputSyntax();
+                    }
+					});
+				
+				ModelMCOutputWindow.setVisible(true);
+			}
+		});
+		mntmOutputOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnImpute.add(mntmOutputOptions);
 		
 		syntaxEditor = new JTextArea(5, 30);
 		syntaxEditor.setLineWrap(true);
@@ -267,7 +347,6 @@ public class MainWindow {
 				
 				if (saveResult == selectedFile.APPROVE_OPTION) {
 					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					
 				}
 			}
 			else {
@@ -288,7 +367,88 @@ public class MainWindow {
 		int openResult = selectedFile.showOpenDialog(null);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
 			openFile(selectedFile.getSelectedFile(), 1);
+			return selectedFile.getSelectedFile().toPath();
+		} else {
+			return null;
 		}
-		return selectedFile.getSelectedFile().toPath();
+		
+	}
+	
+	public void writeImportSyntax() {
+		syntaxEditor.setText("");
+		String line;
+		if(model.dataSetPath != null) {
+			line = "DATA: " + model.dataSetPath.toAbsolutePath() + ";";
+			syntaxEditor.append(line);
+		}
+		if(model.variables.size() != 0){
+			line = "\n\nVARIABLES: ";
+			int i;
+			String ordinalVariables = "\n\nORDINAL: ";
+			String nominalVariables = "\n\nNOMINAL: ";
+			for(i = 0; i < model.variables.size() - 1; i++){
+				Variable var = model.variables.get(i);
+				line = line + var.name + " ";
+				
+				if(var.type == "Ordinal") 
+					ordinalVariables = ordinalVariables + var.name + " ";
+				if(var.type == "Nominal")
+					nominalVariables = nominalVariables + var.name + " "; 
+			}
+			line = line + model.variables.get(i).name + ";";
+			if(model.variables.get(i).type == "Ordinal") 
+				ordinalVariables = ordinalVariables + model.variables.get(i).name + ";";
+			if(model.variables.get(i).type == "Nominal")
+				nominalVariables = nominalVariables + model.variables.get(i).name + ";"; 
+			
+			syntaxEditor.append(line);
+			syntaxEditor.append(ordinalVariables);
+			syntaxEditor.append(nominalVariables);
+			
+		}
+		line = "\n\nMISSING: ";
+		if(model.mappings.containsKey("MVC")){
+			line += model.mappings.get("MVC");
+			line += ";";
+		}
+		syntaxEditor.append(line);
+	}
+	
+	public void writeModelMCMCOutputSyntax() {
+		syntaxEditor.setText("");
+		writeImportSyntax();
+		String line;
+		if(model.modelVariables.size() > 0) {
+			line = "\n\nMODEL: ";
+			int i;
+			for(i = 0; i < model.identifierVariables.size(); i++) {
+				String name = model.identifierVariables.get(i).name;
+				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
+				line = line + truncatedVariable + " ";
+			}
+			line += "~ ";
+			for(i = 0; i < model.modelVariables.size()-1; i++) {
+				line = line + model.modelVariables.get(i).name + " ";
+			}
+			line += model.modelVariables.get(i).name + ";";
+			syntaxEditor.append(line);
+		}
+		
+		line = "\n\nNIMPS: " + model.mappings.get("Nimps");
+		line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
+		line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
+		line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
+		line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
+		System.out.println(model.outputFilePath);
+		line = line + "\n\nOUTFILE: " + model.outputFilePath;
+		syntaxEditor.append(line);
+		
+		line = "\n\nOPTIONS:";
+		line += " " + model.mappings.get("DF") ;
+		line += " " + model.mappings.get("Diagnostics");
+		line += " " + model.mappings.get("CM");
+		line += " " + model.mappings.get("VP");
+		line += " " + model.mappings.get("LV");
+		syntaxEditor.append(line);
 	}
 }
