@@ -44,6 +44,7 @@ public class MainWindow {
 	private ImportWindow importWin = null;
 	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
+	private RunLogsWindow runWindow = null;
 	/**
 	 * Launch the application.
 	 */
@@ -261,6 +262,17 @@ public class MainWindow {
 		});
 		mntmOutputOptions.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnImpute.add(mntmOutputOptions);
+		
+		JMenuItem mntmRun = new JMenuItem("Run");
+		mntmRun.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				runWindow = new RunLogsWindow();
+				runWindow.setVisible(true);
+				runWindow.initiateExecution();
+			}
+		});
+		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+		mnImpute.add(mntmRun);
 		
 		syntaxEditor = new JTextArea(5, 30);
 		syntaxEditor.setLineWrap(true);
