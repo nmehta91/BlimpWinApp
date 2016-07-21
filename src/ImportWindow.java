@@ -34,9 +34,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import java.awt.Color;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 public class ImportWindow extends JFrame {
 
@@ -55,6 +58,11 @@ public class ImportWindow extends JFrame {
 	private JTable VariablesTable;
 	private JComboBox<String> variableNamesComboBox;
 	private String[][] variablesTableContents;
+	private String[] variableNames;
+	private JScrollPane scrollPane;
+	private JScrollPane variableTableSB;
+	private JTable dummyTable;
+	private JScrollPane scrollPane_1;
 	/**
 	 * Launch the application.
 	 */
@@ -71,47 +79,6 @@ public class ImportWindow extends JFrame {
 		});
 	}
 
-	
-	class VariablesTableModel extends AbstractTableModel {
-		private String[] columnNames;
-		private Object[][] data;
-		
-		VariablesTableModel(String[] colnames, Object[][] data) {
-			this.columnNames = colnames;
-			this.data = data;
-		}
-		  public int getColumnCount() {
-		        return columnNames.length;
-		    }
-
-		    public int getRowCount() {
-		        return data.length;
-		    }
-
-		    public String getColumnName(int col) {
-		        return columnNames[col];
-		    }
-
-		    public Object getValueAt(int row, int col) {
-		        return data[row][col];
-		    }
-		    
-		    public boolean isCellEditable(int row, int col) {
-		        switch (col) {
-		            case 0:
-		            case 1:
-		                return true;
-		            default:
-		                return false;
-		         }
-		   }
-		    
-		   public void setValueAt(Object value, int row, int col) {
-		        data[row][col] = value;
-		        fireTableCellUpdated(row, col);
-		    }
-	}
-	
 	/**
 	 * Create the frame.
 	 */
@@ -119,14 +86,14 @@ public class ImportWindow extends JFrame {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 760, 615);
+		setBounds(100, 100, 759, 540);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(5, 5, 735, 523);
+		tabbedPane.setBounds(10, 5, 723, 449);
 		contentPane.add(tabbedPane);
 		
 		dataPanel = new JPanel();
@@ -146,17 +113,14 @@ public class ImportWindow extends JFrame {
 		dataPanel.add(MV_Code);
 		MV_Code.setColumns(10);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(285, 11, 356, 165);
-		
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(285, 11, 397, 187);
+		dataPanel.add(scrollPane_1);
+	
 		rawDataView = new JTextArea();
+		scrollPane_1.setViewportView(rawDataView);
 		rawDataView.setWrapStyleWord(false);
-		rawDataView.setLineWrap(false);
-		rawDataView.setBounds(285, 11, 356, 165);
-		
-		scrollPane.setViewportView(rawDataView);
-		dataPanel.add(scrollPane);
-		
+		rawDataView.setLineWrap(false);	
 		rawDataView.setText(model.importFileContentsInString);
 		
 		DelimiterComboBox = new JComboBox();
@@ -174,12 +138,14 @@ public class ImportWindow extends JFrame {
 					delimiter = ",";
 				}
 				System.out.println(DelimiterComboBox.getSelectedItem());
-				parseData(delimiter);
-				initializeVariablesTable(initializeParsedFileTableView());
+				if(parseData(delimiter))
+					initializeVariablesTable(initializeParsedFileTableView());
+				else 
+					System.out.println("There was error in parsing the file. Please select the appropriate delimiter.");
 				
 				if(!MV_Code.getText().equals(""))
 					model.mappings.put("MVC", MV_Code.getText());
-			}
+			}	
 		});
 		
 		btnImport.setBounds(80, 120, 89, 23);
@@ -231,19 +197,32 @@ public class ImportWindow extends JFrame {
 		btnSaveVarDetails.setBounds(86, 160, 89, 23);
 		variablePanel.add(btnSaveVarDetails);
 		
-		JButton btnPrintVariables = new JButton("Print Variables");
-		btnPrintVariables.addActionListener(new doneActionListener(this));
-		btnPrintVariables.setBounds(86, 194, 101, 23);
-		variablePanel.add(btnPrintVariables);
-		
 		variableNamesComboBox = new JComboBox<String>();
 		variableNamesComboBox.setBounds(125, 24, 150, 20);
 		variablePanel.add(variableNamesComboBox);
 		
+		variableTableSB = new JScrollPane();
+		variableTableSB.setBounds(389, 11, 311, 405);
+		variablePanel.add(variableTableSB);
+		
+		String[] variableTBColumnHeadings = {"Variable Name", "Variable Type"};
+		DefaultTableModel model = new DefaultTableModel(25, variableTBColumnHeadings.length) {
+			@Override
+			   public boolean isCellEditable(int row, int column) {
+			       //Only the third column
+			       return false;
+			   }
+		};
+		model.setColumnIdentifiers(variableTBColumnHeadings);
+		VariablesTable = new JTable(model);
+		VariablesTable.setBackground(Color.WHITE);
+		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		variableTableSB.setViewportView(VariablesTable);
+		
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new doneActionListener(this));
 		
-		btnDone.setBounds(601, 542, 137, 23);
+		btnDone.setBounds(596, 465, 137, 23);
 		contentPane.add(btnDone);
 		btnDone.setForeground(Color.BLACK);
 		btnDone.setBackground(Color.LIGHT_GRAY);
@@ -252,35 +231,87 @@ public class ImportWindow extends JFrame {
 		for(int i = 0; i < 10; i++) {
 			dataColHeadings[i] = "V"+(i+1);
 		}
+		
+		initializeDataTable();
 	}
 	
 	public String[] initializeParsedFileTableView() {
-		String[] variableNames = new String[columns];
+		variableNames = new String[columns];
 		System.out.println(columns);
-	
+		
+		// To ensure if Import button clicked more than once, variables don't get duplicated
+		model.variables.clear();
 		
 		for(int i = 0; i< variableNames.length; i++) {
-			String name = "V" + (i+1);
+			String name = "VAR" + (i+1);
 			Variable newVariable = new Variable(name, "Continuous", i);
 			variableNames[i] = name;
 			model.variables.add(newVariable);
 		}
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(285, 199, 356, 172);
-		dataPanel.add(scrollPane);
+		DefaultTableModel tm = (DefaultTableModel)dataTable.getModel();
+		tm.setColumnIdentifiers(variableNames);
+		tm.setRowCount(0);
 		
-		//dataTable = new JTable(contents, variableNames);
-		dataTable = new JTable(new VariablesTableModel(variableNames, contents));
+		for(int i = 0; i < contents.length; i++) {
+			tm.addRow(contents[i]);
+		}
+		
+		return variableNames;
+	}
+	
+	public void initializeDataTable() {
+		String[] defaultColumnHeadings = {"VAR1", "VAR2", "VAR3", "VAR4", "VAR5", "VAR6", "VAR7", "VAR8", "VAR9", "VAR10"};
+		int numOfRows = 10;
+
+		DefaultTableModel model = new DefaultTableModel(numOfRows, defaultColumnHeadings.length) {
+			@Override
+			   public boolean isCellEditable(int row, int column) {
+			       //Only the third column
+			       return false;
+			   }
+		};
+		model.setColumnIdentifiers(defaultColumnHeadings);
+		
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(41, 213, 641, 187);
+		dataPanel.add(scrollPane);
+
+		dataTable = new JTable(model);
+
+		for(int i = 0; i < defaultColumnHeadings.length; i++) {
+			TableColumn column = dataTable.getColumnModel().getColumn(i);
+			column.setPreferredWidth(30);
+		}
+		
 		scrollPane.setViewportView(dataTable);
 		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
 		renderer.setHorizontalAlignment( JLabel.RIGHT );
-		return variableNames;
 	}
-	public void parseData(String delimiter) {
+	
+	public void initializeVariablesTable(String[] variableNames) {
+		String[] header = {"Variable Name", "Variable Type"};
+		variablesTableContents = new String[variableNames.length][2];
+		DefaultTableModel tm = (DefaultTableModel)VariablesTable.getModel();
+		tm.setRowCount(0);
 		
+		//  Add rows to the table showing [variable_name, variable_type]
+		for(int i = 0; i < variableNames.length; i++){
+				variablesTableContents[i][0] = variableNames[i];
+				variablesTableContents[i][1] = "Continuous";
+				System.out.println("Name: " + variablesTableContents[i][0]);
+				tm.addRow(variablesTableContents[i]);
+		}
+
+		variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(variableNames));
+	}
+	
+	public boolean parseData(String delimiter) {
+		
+		boolean success = true;
 		parsedFile = new ArrayList<String[]>();
 		
 		int rows = model.importFileContents.size();
@@ -290,35 +321,20 @@ public class ImportWindow extends JFrame {
 		System.out.println("columns:"+columns);
 	
 		for(int i = 0; i < rows; i++){
-			String[] line = model.importFileContents.get(i).split(delimiter);
-			for(int j = 0; j < columns; j++) {
-				contents[i][j] = String.format("%.3g%n", Double.parseDouble(line[j]));
+			try{
+				String[] line = model.importFileContents.get(i).split(delimiter);
+				for(int j = 0; j < columns; j++) {
+					contents[i][j] = String.format("%.3g%n", Double.parseDouble(line[j]));
+				}
+			} catch(Exception e) {
+				System.err.println("The chosen delimiter is incorrect. Please re-select the appropriate one.");
+				success = false;
+				break;
 			}
 		}
+		return success;
 	}
-	
-	public void initializeVariablesTable(String[] variableNames) {
-		String[] header = {"Variable Name", "Variable Type"};
-		variablesTableContents = new String[variableNames.length][2];
 		
-		for(int i = 0; i < variableNames.length; i++){
-				variablesTableContents[i][0] = variableNames[i];
-				variablesTableContents[i][1] = "Continuous";
-				System.out.println("Name: " + variablesTableContents[i][0]);
-		}
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(293, 11, 348, 360);
-		variablePanel.add(scrollPane);
-		
-		
-		VariablesTable = new JTable(new VariablesTableModel(header, variablesTableContents));
-		scrollPane.setViewportView(VariablesTable);
-		VariablesTable.setBorder(new LineBorder(new Color(0, 0, 0)));
-
-		variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(variableNames));
-	}
-	
 	public void saveVariableChanges(int index, String name, String type){
 		Variable variable = model.variables.get(index);
 		System.out.println("name: " + name);
