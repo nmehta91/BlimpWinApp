@@ -1,6 +1,7 @@
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
@@ -109,10 +111,7 @@ public class SpecifyModelPanel extends JPanel {
 //		         }
 //		   }
 		    
-//		   public void setValueAt(Object value, int row, int col) {
-//		        data[row][col] = value;
-//		        fireTableCellUpdated(row, col);
-//		    }
+
 	}
 	public SpecifyModelPanel() {
 		setLayout(null);
@@ -121,24 +120,38 @@ public class SpecifyModelPanel extends JPanel {
 		mode = 0; // 0 = Main Effects, 1 = Random Slopes
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(25, 44, 210, 367);
+		scrollPane.setBounds(25, 11, 209, 455);
 		add(scrollPane);
 		
 		variableTable = new JTable(new VariablesTableModel("Variables", model.variables));
+		variableTable.setOpaque(true);
+		variableTable.setFillsViewportHeight(true);
+		variableTable.setBackground(Color.WHITE);
+		
 		scrollPane.setViewportView(variableTable);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(442, 229, 183, 220);
+		scrollPane_1.setBounds(442, 192, 222, 274);
 		add(scrollPane_1);
 		
-		modelVariables = new JTable();
+		DefaultTableModel tblmodel = new DefaultTableModel(0, 1);
+		tblmodel.setColumnIdentifiers(new String[] {"Imputation Model Variables"});
+		modelVariables = new JTable(tblmodel);
+		modelVariables.setOpaque(true);
+		modelVariables.setFillsViewportHeight(true);
+		modelVariables.setBackground(Color.WHITE);
 		scrollPane_1.setViewportView(modelVariables);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(442, 44, 183, 132);
+		scrollPane_2.setBounds(442, 11, 222, 129);
 		add(scrollPane_2);
 		
-		imputationVariablesTable = new JTable();
+		DefaultTableModel tblmodel1 = new DefaultTableModel(0, 1);
+		tblmodel1.setColumnIdentifiers(new String[] {"Cluster-Level Identifier Variables"});
+		imputationVariablesTable = new JTable(tblmodel1);
+		imputationVariablesTable.setOpaque(true);
+		imputationVariablesTable.setFillsViewportHeight(true);
+		imputationVariablesTable.setBackground(Color.WHITE);
 		scrollPane_2.setViewportView(imputationVariablesTable);
 		
 		JButton button = new JButton(">");
@@ -192,6 +205,9 @@ public class SpecifyModelPanel extends JPanel {
 				
 				System.out.println("Model Variables length: " + model.modelVariables.size());
 				modelVariables = new JTable(new ModelTableModel("Model Variables", model.modelVariables));
+				modelVariables.setOpaque(true);
+				modelVariables.setFillsViewportHeight(true);
+				modelVariables.setBackground(Color.WHITE);
 				scrollPane_1.setViewportView(modelVariables);
 			}
 		});
@@ -214,14 +230,6 @@ public class SpecifyModelPanel extends JPanel {
 		});
 		button_1.setBounds(293, 313, 89, 33);
 		add(button_1);
-		
-		JLabel lblVariables = new JLabel("Variables");
-		lblVariables.setBounds(25, 30, 76, 14);
-		add(lblVariables);
-		
-		JLabel lblImputationVariables = new JLabel("Imputation Variables");
-		lblImputationVariables.setBounds(442, 30, 121, 14);
-		add(lblImputationVariables);
 		
 		JButton addToImputation = new JButton(">");
 		addToImputation.addActionListener(new ActionListener() {
@@ -250,6 +258,9 @@ public class SpecifyModelPanel extends JPanel {
 				
 				System.out.println("Imputation Variables length: " + model.identifierVariables.size());
 				imputationVariablesTable = new JTable(new ModelTableModel("Imputation Variables", model.identifierVariables));
+				imputationVariablesTable.setOpaque(true);
+				imputationVariablesTable.setFillsViewportHeight(true);
+				imputationVariablesTable.setBackground(Color.WHITE);
 				scrollPane_2.setViewportView(imputationVariablesTable);
 				} else {
 					System.out.println("Maximum bound on identifier variables reached. Not adding more.");
@@ -343,7 +354,7 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		chckbxSingleImputation.setBounds(442, 183, 131, 23);
+		chckbxSingleImputation.setBounds(442, 147, 131, 23);
 		add(chckbxSingleImputation);
 
 	}

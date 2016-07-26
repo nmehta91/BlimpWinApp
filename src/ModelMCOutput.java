@@ -47,7 +47,7 @@ public class ModelMCOutput extends JFrame {
 	
 	public void initializeWindowComponents(int selectTabIndex) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 864, 656);
+		setBounds(100, 100, 781, 594);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -55,11 +55,11 @@ public class ModelMCOutput extends JFrame {
 		model = SyntaxModel.getInstance();
 		
 		JButton btnNewButton = new JButton("Done");
-		btnNewButton.setBounds(686, 572, 141, 23);
+		btnNewButton.setBounds(627, 519, 125, 23);
 		contentPane.add(btnNewButton);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(5, 5, 822, 556);
+		tabbedPane.setBounds(5, 5, 747, 503);
 		contentPane.add(tabbedPane);
 		MCMCPanel = new MCMCOptionsPanel();
 		outputOptionsPanel = new OutputOptionsPanel();
@@ -78,7 +78,7 @@ public class ModelMCOutput extends JFrame {
 				
 			}
 		});
-		btnCancel.setBounds(15, 572, 89, 23);
+		btnCancel.setBounds(15, 519, 89, 23);
 		contentPane.add(btnCancel);
 		
 		JButton btnReset = new JButton("Reset");
@@ -87,7 +87,7 @@ public class ModelMCOutput extends JFrame {
 				reset();
 			}
 		});
-		btnReset.setBounds(108, 572, 89, 23);
+		btnReset.setBounds(114, 519, 89, 23);
 		contentPane.add(btnReset);
 		
 		btnNewButton.addActionListener(new doneActionListener(this));
