@@ -388,7 +388,7 @@ public class MainWindow {
 	
 	public void writeImportSyntax() {
 		syntaxEditor.setText("");
-		String line;
+		String line = "";
 		if(model.dataSetPath != null) {
 			line = "DATA: " + model.dataSetPath.toAbsolutePath() + ";";
 			syntaxEditor.append(line);
@@ -418,6 +418,7 @@ public class MainWindow {
 			syntaxEditor.append(nominalVariables);
 			
 		}
+		
 		line = "\n\nMISSING: ";
 		if(model.mappings.containsKey("MVC")){
 			line += model.mappings.get("MVC");
@@ -440,27 +441,36 @@ public class MainWindow {
 			}
 			line += "~ ";
 			for(i = 0; i < model.modelVariables.size()-1; i++) {
-				line = line + model.modelVariables.get(i).name + " ";
+				String name = model.modelVariables.get(i).name;
+				if(name.lastIndexOf("(") != -1) {
+					String truncatedVariable = name.substring(0, name.lastIndexOf("("));
+					line = line + truncatedVariable + " ";
+				}
+				line = line + name + " ";
 			}
-			line += model.modelVariables.get(i).name + ";";
+			//line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + ";";
+			line += model.modelVariables.get(i).name + " ";
 			syntaxEditor.append(line);
 		}
 		
-		line = "\n\nNIMPS: " + model.mappings.get("Nimps");
-		line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
-		line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
-		line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
-		line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
-		System.out.println(model.outputFilePath);
-		line = line + "\n\nOUTFILE: " + model.outputFilePath;
-		syntaxEditor.append(line);
+		System.out.println("Model Mapping size = " + model.mappings.size());
 		
-		line = "\n\nOPTIONS:";
-		line += " " + model.mappings.get("DF") ;
-		line += " " + model.mappings.get("Diagnostics");
-		line += " " + model.mappings.get("CM");
-		line += " " + model.mappings.get("VP");
-		line += " " + model.mappings.get("LV");
-		syntaxEditor.append(line);
+			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
+			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
+			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
+			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
+			line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
+			System.out.println(model.outputFilePath);
+			line = line + "\n\nOUTFILE: " + model.outputFilePath;
+			syntaxEditor.append(line);
+			
+			line = "\n\nOPTIONS:";
+			line += " " + model.mappings.get("DF") ;
+			line += " " + model.mappings.get("Diagnostics");
+			line += " " + model.mappings.get("CM");
+			line += " " + model.mappings.get("VP");
+			line += " " + model.mappings.get("LV");
+			syntaxEditor.append(line);
+		
 	}
 }

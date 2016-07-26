@@ -142,9 +142,6 @@ public class ImportWindow extends JFrame {
 					initializeVariablesTable(initializeParsedFileTableView());
 				else 
 					System.out.println("There was error in parsing the file. Please select the appropriate delimiter.");
-				
-				if(!MV_Code.getText().equals(""))
-					model.mappings.put("MVC", MV_Code.getText());
 			}	
 		});
 		
@@ -374,7 +371,9 @@ public class ImportWindow extends JFrame {
 	    }
 
 	    public void actionPerformed(ActionEvent e) {
-	        toBeClose.setVisible(false);
+	    	if(!MV_Code.getText().equals(""))
+				model.mappings.put("MVC", MV_Code.getText());
+	    	toBeClose.setVisible(false);
 	        toBeClose.dispose();
 	    }
 	}

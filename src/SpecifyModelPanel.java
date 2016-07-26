@@ -196,7 +196,8 @@ public class SpecifyModelPanel extends JPanel {
 								System.out.println("Combinated variable "+ combinations.get(i) + " already present. Removing it..");
 								model.modelVariables.remove(index);
 							}
-							Variable newModelVariable = new Variable(combinations.get(i), "Undefined", -1);
+							String variableName = combinations.get(i) + "(Random Slopes)";
+							Variable newModelVariable = new Variable(variableName, "Undefined", -1);
 							model.modelVariables.add(newModelVariable);
 							modelVariables.repaint();
 						}
@@ -304,11 +305,11 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		comboBox.setBounds(293, 208, 89, 20);
+		comboBox.setBounds(281, 207, 116, 20);
 		add(comboBox);
 		
 		JLabel lblBuildTerms = new JLabel("Build Terms");
-		lblBuildTerms.setBounds(309, 192, 54, 14);
+		lblBuildTerms.setBounds(308, 184, 89, 23);
 		add(lblBuildTerms);
 		
 		JCheckBox chckbxSingleImputation = new JCheckBox("Single Imputation");
