@@ -142,9 +142,6 @@ public class ImportWindow extends JFrame {
 					initializeVariablesTable(initializeParsedFileTableView());
 				else 
 					System.out.println("There was error in parsing the file. Please select the appropriate delimiter.");
-				
-				if(!MV_Code.getText().equals(""))
-					model.mappings.put("MVC", MV_Code.getText());
 			}	
 		});
 		
@@ -215,17 +212,17 @@ public class ImportWindow extends JFrame {
 		};
 		model.setColumnIdentifiers(variableTBColumnHeadings);
 		VariablesTable = new JTable(model);
+		VariablesTable.setOpaque(true);
+		VariablesTable.setFillsViewportHeight(true);
 		VariablesTable.setBackground(Color.WHITE);
+
 		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		variableTableSB.setViewportView(VariablesTable);
 		
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new doneActionListener(this));
-		
-		btnDone.setBounds(596, 465, 137, 23);
+		btnDone.setBounds(612, 465, 121, 23);
 		contentPane.add(btnDone);
-		btnDone.setForeground(Color.BLACK);
-		btnDone.setBackground(Color.LIGHT_GRAY);
 		
 		String[] dataColHeadings = new String[10];
 		for(int i = 0; i < 10; i++) {
@@ -279,7 +276,8 @@ public class ImportWindow extends JFrame {
 		dataPanel.add(scrollPane);
 
 		dataTable = new JTable(model);
-
+		
+		
 		for(int i = 0; i < defaultColumnHeadings.length; i++) {
 			TableColumn column = dataTable.getColumnModel().getColumn(i);
 			column.setPreferredWidth(30);
@@ -373,7 +371,9 @@ public class ImportWindow extends JFrame {
 	    }
 
 	    public void actionPerformed(ActionEvent e) {
-	        toBeClose.setVisible(false);
+	    	if(!MV_Code.getText().equals(""))
+				model.mappings.put("MVC", MV_Code.getText());
+	    	toBeClose.setVisible(false);
 	        toBeClose.dispose();
 	    }
 	}

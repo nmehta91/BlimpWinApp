@@ -23,6 +23,11 @@ import javax.swing.ButtonGroup;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.SpringLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import net.miginfocom.swing.MigLayout;
 
 public class ModelMCOutput extends JFrame {
 
@@ -47,20 +52,22 @@ public class ModelMCOutput extends JFrame {
 	
 	public void initializeWindowComponents(int selectTabIndex) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 864, 656);
+		setBounds(100, 100, 781, 594);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		model = SyntaxModel.getInstance();
 		
-		JButton btnNewButton = new JButton("Done");
-		btnNewButton.setBounds(686, 572, 141, 23);
-		contentPane.add(btnNewButton);
+		JButton btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reset();
+			}
+		});
+		contentPane.setLayout(new MigLayout("", "[94px][5px][84px][429px][125px]", "[498px][23px]"));
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(5, 5, 822, 556);
-		contentPane.add(tabbedPane);
+		contentPane.add(tabbedPane, "cell 0 0 5 1,grow");
 		MCMCPanel = new MCMCOptionsPanel();
 		outputOptionsPanel = new OutputOptionsPanel();
 		
@@ -78,17 +85,11 @@ public class ModelMCOutput extends JFrame {
 				
 			}
 		});
-		btnCancel.setBounds(15, 572, 89, 23);
-		contentPane.add(btnCancel);
+		contentPane.add(btnCancel, "cell 0 1,growx,aligny top");
+		contentPane.add(btnReset, "cell 2 1,growx,aligny top");
 		
-		JButton btnReset = new JButton("Reset");
-		btnReset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				reset();
-			}
-		});
-		btnReset.setBounds(108, 572, 89, 23);
-		contentPane.add(btnReset);
+		JButton btnNewButton = new JButton("Done");
+		contentPane.add(btnNewButton, "cell 4 1,growx,aligny top");
 		
 		btnNewButton.addActionListener(new doneActionListener(this));
 	}
