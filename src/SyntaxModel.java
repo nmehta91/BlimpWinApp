@@ -17,6 +17,7 @@ public class SyntaxModel {
 		if(instance == null) {
 			instance = new SyntaxModel();
 			instance.dataSetPath = null;
+			instance.outputFilePath = null;
 			instance.mappings = new HashMap <String, String> ();
 			instance.mcmcOptions = new HashMap <String, String> ();
 			instance.variables = new ArrayList<Variable> ();

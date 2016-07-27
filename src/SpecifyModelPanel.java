@@ -1,5 +1,6 @@
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -9,9 +10,12 @@ import java.util.Collections;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
@@ -25,6 +29,7 @@ public class SpecifyModelPanel extends JPanel {
 	private JTable imputationVariablesTable;
 	private SyntaxModel model;
 	private int mode;
+	private Frame parentFrame;
 	/**
 	 * Create the panel.
 	 */
@@ -176,7 +181,10 @@ public class SpecifyModelPanel extends JPanel {
 				} else {
 					// Random Slopes
 					if(selectedRow.length < 2){
-						System.out.println("Please select atleast 2 variables in Random Slopes mode");
+						JOptionPane.showMessageDialog(getParentFrame(),
+							    "Random Slopes requires more than one variable to be selected.",
+							    "Error!",
+							    JOptionPane.ERROR_MESSAGE);
 					} else {
 						ArrayList<String> selectedVars = new ArrayList<String>();
 						for(int i = 0; i < selectedRow.length; i++) {
@@ -264,7 +272,10 @@ public class SpecifyModelPanel extends JPanel {
 				imputationVariablesTable.setBackground(Color.WHITE);
 				scrollPane_2.setViewportView(imputationVariablesTable);
 				} else {
-					System.out.println("Maximum bound on identifier variables reached. Not adding more.");
+					JOptionPane.showMessageDialog(getParentFrame(),
+						    "Maximum of three identifier variables allowed!",
+						    "Error!",
+						    JOptionPane.ERROR_MESSAGE);
 				}
 			}
 			
@@ -357,7 +368,8 @@ public class SpecifyModelPanel extends JPanel {
 		});
 		chckbxSingleImputation.setBounds(442, 147, 131, 23);
 		add(chckbxSingleImputation);
-
+		
+		
 	}
 	
 	public int findInArrayList(ArrayList<Variable> list, String variableName) {
@@ -395,5 +407,24 @@ public class SpecifyModelPanel extends JPanel {
 		modelVariables.repaint();
 		imputationVariablesTable.repaint();
 		variableTable.repaint();
+	}
+	
+	public Frame getParentFrame() {
+		Window parentWindow = SwingUtilities.windowForComponent(this);
+		
+		Frame parentFrame = null;
+		if (parentWindow instanceof Frame) {
+		    parentFrame = (Frame)parentWindow;
+		}
+		
+		return parentFrame;
+	}
+	
+	public boolean isComplete() {
+		boolean isComplete = true;
+		if(model.modelVariables.size() == 0) {
+			isComplete = false;
+		}
+		return isComplete;
 	}
 }

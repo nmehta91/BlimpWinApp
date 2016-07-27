@@ -207,4 +207,12 @@ public class OutputOptionsPanel extends JPanel {
 		rdbtncsv.setSelected(true);
 		rdbtnNoPsr.setSelected(true);
 	}
+	
+	public boolean isComplete() {
+		boolean isComplete = true;
+		if(model.outputFilePath == null){
+			isComplete = false;
+		}
+		return isComplete;
+	}
 }
