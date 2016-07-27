@@ -377,4 +377,5 @@ public class ImportWindow extends JFrame {
 	        toBeClose.dispose();
 	    }
 	}
+	
 }

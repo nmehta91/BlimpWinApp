@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTabbedPane;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
@@ -110,16 +112,43 @@ public class ModelMCOutput extends JFrame {
 	    	if(!MCMCPanel.burnInTB.getText().equals(""))
 	    		model.mappings.put("BurnIn", MCMCPanel.burnInTB.getText());
 	    	if(!MCMCPanel.thinIterTB.getText().equals(""))
-	    		model.mappings.put("BurnIn", MCMCPanel.thinIterTB.getText());
+	    		model.mappings.put("ThinIterations", MCMCPanel.thinIterTB.getText());
 	    	if(!MCMCPanel.nimpsTB.getText().equals(""))
-	    		model.mappings.put("BurnIn", MCMCPanel.nimpsTB.getText());
+	    		model.mappings.put("Nimps", MCMCPanel.nimpsTB.getText());
 	    	if(!MCMCPanel.randSeedTB.getText().equals(""))
-	    		model.mappings.put("BurnIn", MCMCPanel.randSeedTB.getText());
+	    		model.mappings.put("RandomSeed", MCMCPanel.randSeedTB.getText());
 	    	if(!MCMCPanel.noOfChains.getSelectedItem().toString().equals(""))
-	    		model.mappings.put("BurnIn", MCMCPanel.noOfChains.getSelectedItem().toString());
+	    		model.mappings.put("Chains", MCMCPanel.noOfChains.getSelectedItem().toString());
 	
+	    	if(!IsComplete())
+	    		return;
+	    	
 	        toBeClose.setVisible(false);
 	        toBeClose.dispose();
+	    }
+	    
+	    public boolean IsComplete() {
+	    	String errorMsg = "";
+	    	boolean isComplete = true;
+	    	if(!SMPanel.isComplete()){
+	    		errorMsg += "Imputation Model Variables Empty.\n";
+	    		isComplete = false;
+	    	}
+	    	if(!MCMCPanel.isComplete()){
+	    		errorMsg += "MCMC Options not entered.\n";
+	    		isComplete = false;
+	    	}
+	    	if(!outputOptionsPanel.isComplete()){
+	    		errorMsg += "Output Options not entered.\n";
+	    		isComplete = false;
+	    	}
+	    	
+	    	if(!isComplete)
+	    		JOptionPane.showMessageDialog(contentPane.getParent(),
+	    													errorMsg,
+	    													"Error!",
+	    													JOptionPane.ERROR_MESSAGE);
+	    	return isComplete;
 	    }
 	}
 	

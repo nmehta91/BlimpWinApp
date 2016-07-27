@@ -184,4 +184,13 @@ public class MCMCOptionsPanel extends JPanel {
 	    rdbtnHomogenous.setSelected(true);
 	    rdbtnInverseWishart.setSelected(true);
 	}
+	
+	public boolean isComplete() {
+		boolean isComplete = true;
+		if(burnInTB.getText().equals("") || thinIterTB.getText().equals("") 
+		   || randSeedTB.getText().equals("") || nimpsTB.getText().equals("")){
+			isComplete = false;
+		}
+		return isComplete;
+	}
 }
