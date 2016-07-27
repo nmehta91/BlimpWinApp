@@ -446,11 +446,13 @@ public class MainWindow {
 				if(name.lastIndexOf("(") != -1) {
 					String truncatedVariable = name.substring(0, name.lastIndexOf("("));
 					line = line + truncatedVariable + " ";
+				} else {
+					line = line + name + " ";
 				}
-				line = line + name + " ";
+				System.out.println(line+"\n");
 			}
 			//line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + ";";
-			line += model.modelVariables.get(i).name + " ";
+			line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + " ";
 			syntaxEditor.append(line);
 		}
 		
