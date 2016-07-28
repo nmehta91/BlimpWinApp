@@ -452,7 +452,7 @@ public class MainWindow {
 		}
 		
 		System.out.println("Model Mapping size = " + model.mappings.size());
-		
+		//if(model.mappings.size() == 10) {
 			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
 			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
 			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
@@ -469,6 +469,6 @@ public class MainWindow {
 			line += " " + model.mappings.get("VP");
 			line += " " + model.mappings.get("LV");
 			syntaxEditor.append(line);
-		
+		//}
 	}
 }

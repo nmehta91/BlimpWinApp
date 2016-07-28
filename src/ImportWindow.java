@@ -22,6 +22,7 @@ import java.awt.Insets;
 import java.awt.Window;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import javax.swing.GroupLayout;
@@ -137,11 +138,15 @@ public class ImportWindow extends JFrame {
 				} else {
 					delimiter = ",";
 				}
-				System.out.println(DelimiterComboBox.getSelectedItem());
-				if(parseData(delimiter))
+			
+				if(parseData(delimiter)) {
 					initializeVariablesTable(initializeParsedFileTableView());
-				else 
-					System.out.println("There was error in parsing the file. Please select the appropriate delimiter.");
+				} else {
+					JOptionPane.showMessageDialog(contentPane.getParent(),
+							"There was an error in parsing the file. Please re-select the appropriate delimiter.",
+							"Error!",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}	
 		});
 		
@@ -325,7 +330,6 @@ public class ImportWindow extends JFrame {
 					contents[i][j] = String.format("%.3g%n", Double.parseDouble(line[j]));
 				}
 			} catch(Exception e) {
-				System.err.println("The chosen delimiter is incorrect. Please re-select the appropriate one.");
 				success = false;
 				break;
 			}
