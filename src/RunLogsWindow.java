@@ -14,12 +14,14 @@ import org.omg.CORBA.portable.InputStream;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.JProgressBar;
 
 public class RunLogsWindow extends JFrame {
 
 	private JPanel contentPane;
 	private JTextArea logTextArea;
 	private SwingWorker worker;
+	private JProgressBar progressBar;
 	/**
 	 * Launch the application.
 	 */
@@ -27,22 +29,30 @@ public class RunLogsWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public RunLogsWindow() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 596, 354);
+		setTitle("Output");
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 620, 402);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
 		
 		logTextArea = new JTextArea();
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
+		scrollPane_1.setBounds(5, 5, 586, 320);
 
-		contentPane.add(scrollPane_1, BorderLayout.CENTER);
+		contentPane.add(scrollPane_1);
+		
+		progressBar = new JProgressBar();
+		progressBar.setBounds(428, 338, 163, 14);
+		contentPane.add(progressBar);
 	}
 	
 	public void initiateExecution()
 	{
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(true);
 		executeEXE();
 	}
 	public void executeEXE()
@@ -80,7 +90,12 @@ public class RunLogsWindow extends JFrame {
 	                    	
 	                    }catch(Exception ex){}
 	                    return 0;
-	                }       
+	                } 
+	                
+	                @Override
+	                protected void done() {
+	                	progressBar.setIndeterminate(false);
+	                }
 	            };
 	            worker.execute();//Schedules this SwingWorker for execution on a worker thread.
 			
@@ -90,5 +105,4 @@ public class RunLogsWindow extends JFrame {
 		}
 				
 	}
-
 }

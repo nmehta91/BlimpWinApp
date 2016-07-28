@@ -213,7 +213,7 @@ public class SpecifyModelPanel extends JPanel {
 				}
 				
 				System.out.println("Model Variables length: " + model.modelVariables.size());
-				modelVariables = new JTable(new ModelTableModel("Model Variables", model.modelVariables));
+				modelVariables = new JTable(new ModelTableModel("Imputation Model Variables", model.modelVariables));
 				modelVariables.setOpaque(true);
 				modelVariables.setFillsViewportHeight(true);
 				modelVariables.setBackground(Color.WHITE);
