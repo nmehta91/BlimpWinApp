@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
@@ -446,13 +448,25 @@ public class MainWindow {
 					line = line + name + " ";
 				}
 			}
-			//line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + ";";
-			line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + " ";
+			
+			String name = model.modelVariables.get(i).name;
+			if(name.lastIndexOf("(") != -1) {
+				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
+				line = line + truncatedVariable + " ";
+			} else {
+				line = line + name + " ";
+			}
+			
 			syntaxEditor.append(line);
 		}
 		
 		System.out.println("Model Mapping size = " + model.mappings.size());
-		//if(model.mappings.size() == 10) {
+		
+		for(Entry<String, String> entry: model.mappings.entrySet()) {
+			System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+		}
+		
+		if(model.mappings.size() == 11) {
 			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
 			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
 			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
@@ -465,10 +479,11 @@ public class MainWindow {
 			line = "\n\nOPTIONS:";
 			line += " " + model.mappings.get("DF") ;
 			line += " " + model.mappings.get("Diagnostics");
+			line += " " + model.mappings.get("DT");
 			line += " " + model.mappings.get("CM");
 			line += " " + model.mappings.get("VP");
 			line += " " + model.mappings.get("LV");
 			syntaxEditor.append(line);
-		//}
+		}
 	}
 }
