@@ -204,7 +204,7 @@ public class SpecifyModelPanel extends JPanel {
 								System.out.println("Combinated variable "+ combinations.get(i) + " already present. Removing it..");
 								model.modelVariables.remove(index);
 							}
-							String variableName = combinations.get(i) + "(Random Slopes)";
+							String variableName = combinations.get(i) + " (Random Slopes)";
 							Variable newModelVariable = new Variable(variableName, "Undefined", -1);
 							model.modelVariables.add(newModelVariable);
 							modelVariables.repaint();
@@ -213,7 +213,7 @@ public class SpecifyModelPanel extends JPanel {
 				}
 				
 				System.out.println("Model Variables length: " + model.modelVariables.size());
-				modelVariables = new JTable(new ModelTableModel("Model Variables", model.modelVariables));
+				modelVariables = new JTable(new ModelTableModel("Imputation Model Variables", model.modelVariables));
 				modelVariables.setOpaque(true);
 				modelVariables.setFillsViewportHeight(true);
 				modelVariables.setBackground(Color.WHITE);
@@ -253,7 +253,7 @@ public class SpecifyModelPanel extends JPanel {
 				for(int i = 0; i < selectedRow.length; i++) {
 					Variable variable = model.variables.get(selectedRow[i]);
 					System.out.println(variable.name);
-					Variable identifierVariable = new Variable(variable.name+"(L"+(model.identifierVariables.size()+1)+")", "Undefined", variable.position);
+					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", "Undefined", variable.position);
 					model.identifierVariables.add(identifierVariable);
 					
 				}

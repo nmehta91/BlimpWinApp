@@ -21,9 +21,12 @@ import javax.swing.JRadioButton;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Panel;
+import java.awt.Toolkit;
+
 import javax.swing.ButtonGroup;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.SpringLayout;
 import java.awt.GridBagLayout;
@@ -81,10 +84,12 @@ public class ModelMCOutput extends JFrame {
 		tabbedPane.addTab("Output Options", null, outputOptionsPanel, null);
 		tabbedPane.setSelectedIndex(selectTabIndex);
 		
+		JFrame frame = this;
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
 			}
 		});
 		contentPane.add(btnCancel, "cell 0 1,growx,aligny top");

@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
@@ -42,7 +44,7 @@ public class MainWindow {
 	private JScrollPane scrollBar;
 	private JFileChooser selectedFile;
 	private File currentFile = null;
-	private ImportWindow importWin = null;
+	private ImportWindow importWindow;
 	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
 	private RunLogsWindow runWindow = null;
@@ -111,15 +113,14 @@ public class MainWindow {
 				else {
 					if(currentFile == null){
 						int saveResult = selectedFile.showSaveDialog(frame);
-						
 						if (saveResult == selectedFile.APPROVE_OPTION) {
 							saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-							
 						}
 					}
 					else {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
+					
 					int openResult = selectedFile.showOpenDialog(null);
 					if (openResult == selectedFile.APPROVE_OPTION) {
 						openFile(selectedFile.getSelectedFile(), 0);
@@ -134,7 +135,6 @@ public class MainWindow {
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int saveResult = selectedFile.showSaveDialog(frame);
-				
 				if (saveResult == selectedFile.APPROVE_OPTION) {
 					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
 					
@@ -160,18 +160,16 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				SyntaxModel.clearModel();
 				Path importedFile = importSelectedFile();
-				//model.mappings.put("data", importedFile.toString());
+
 				if(importedFile == null){
 					System.out.println("There was an error in importing the file.");
 				} else {
 					model.dataSetPath = importedFile;
-					ImportWindow iWindow = new ImportWindow(frame);
-					iWindow.setVisible(true);
-					iWindow.addWindowListener(new WindowAdapter() {
+					importWindow = new ImportWindow(frame);
+					importWindow.setVisible(true);
+					importWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        // .. get some information from the child before disposing 
-                        System.out.println("Window closed."); // does not terminate when passing frame as parent
-                        writeImportSyntax();
+                       writeImportSyntax();
                     }
 					});
 					ModelMCOutputWindow = new ModelMCOutput(0);
@@ -188,14 +186,6 @@ public class MainWindow {
 				closeWindow();
 			}
 		});
-		
-		JMenuItem mntmTest = new JMenuItem("Test");
-		mntmTest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		mnFile.add(mntmTest);
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
 		
@@ -211,8 +201,6 @@ public class MainWindow {
 				ModelMCOutputWindow.selectTab(0);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        // .. get some information from the child before disposing 
-                        System.out.println("Window closed."); // does not terminate when passing frame as parent
                         writeModelMCMCOutputSyntax();
                     }
 					});
@@ -252,8 +240,6 @@ public class MainWindow {
 				ModelMCOutputWindow = new ModelMCOutput(2);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        // .. get some information from the child before disposing 
-                        System.out.println("Window closed."); // does not terminate when passing frame as parent
                         writeModelMCMCOutputSyntax();
                     }
 					});
@@ -317,15 +303,24 @@ public class MainWindow {
 					currentFile = file;
 				  }
 				} catch (FileNotFoundException e) {
-					System.out.println("File Not Found Exception raised!");
+					JOptionPane.showMessageDialog(frame,
+							"FileNotFoundException raised!",
+							"Error!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			} 
 			else {
-			JOptionPane.showMessageDialog(null, "That file type is not supported!\n Only .txt file type is supported!");
+				JOptionPane.showMessageDialog(frame,
+						"That file type is not supported!\n Only .txt file type is supported!",
+						"Error!",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		} 
 		else {
-		JOptionPane.showMessageDialog(null, "File could not be opened!");
+			JOptionPane.showMessageDialog(frame,
+					"File could not be opened!",
+					"Error!",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -344,7 +339,10 @@ public class MainWindow {
 			frame.setTitle(filePath);
 			currentFile = file;
 		} catch (Exception e) {
-			System.out.println("Exception while trying to save the file!");
+			JOptionPane.showMessageDialog(frame,
+					"Exception while trying to save the file!",
+					"Error!",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -446,16 +444,29 @@ public class MainWindow {
 				if(name.lastIndexOf("(") != -1) {
 					String truncatedVariable = name.substring(0, name.lastIndexOf("("));
 					line = line + truncatedVariable + " ";
+				} else {
+					line = line + name + " ";
 				}
+			}
+			
+			String name = model.modelVariables.get(i).name;
+			if(name.lastIndexOf("(") != -1) {
+				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
+				line = line + truncatedVariable + " ";
+			} else {
 				line = line + name + " ";
 			}
-			//line += model.modelVariables.get(i).name.substring(0, model.modelVariables.get(i).name.lastIndexOf("(")) + ";";
-			line += model.modelVariables.get(i).name + " ";
+			
 			syntaxEditor.append(line);
 		}
 		
 		System.out.println("Model Mapping size = " + model.mappings.size());
 		
+		for(Entry<String, String> entry: model.mappings.entrySet()) {
+			System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+		}
+		
+		if(model.mappings.size() == 11) {
 			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
 			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
 			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
@@ -468,10 +479,11 @@ public class MainWindow {
 			line = "\n\nOPTIONS:";
 			line += " " + model.mappings.get("DF") ;
 			line += " " + model.mappings.get("Diagnostics");
+			line += " " + model.mappings.get("DT");
 			line += " " + model.mappings.get("CM");
 			line += " " + model.mappings.get("VP");
 			line += " " + model.mappings.get("LV");
 			syntaxEditor.append(line);
-		
+		}
 	}
 }
