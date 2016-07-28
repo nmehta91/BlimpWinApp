@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Toolkit;
 
 import javax.swing.JMenuBar;
@@ -33,6 +34,8 @@ import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import say.swing.JFontChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -188,6 +191,23 @@ public class MainWindow {
 		});
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
+		
+		JMenu mnFormat = new JMenu("Format");
+		menuBar.add(mnFormat);
+		
+		JMenuItem mntmFont = new JMenuItem("Font...");
+		mntmFont.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFontChooser fontChooser = new JFontChooser();
+				int result = fontChooser.showDialog(null);
+				if (result == JFontChooser.OK_OPTION)
+				{
+					Font font = fontChooser.getSelectedFont(); 
+					syntaxEditor.setFont(font);
+				}
+			}
+		});
+		mnFormat.add(mntmFont);
 		
 		JMenu mnImpute = new JMenu("Impute");
 		menuBar.add(mnImpute);
