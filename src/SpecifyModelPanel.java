@@ -266,7 +266,7 @@ public class SpecifyModelPanel extends JPanel {
 				}
 				
 				System.out.println("Imputation Variables length: " + model.identifierVariables.size());
-				imputationVariablesTable = new JTable(new ModelTableModel("Imputation Variables", model.identifierVariables));
+				imputationVariablesTable = new JTable(new ModelTableModel("Cluster-Level Identifier Variables", model.identifierVariables));
 				imputationVariablesTable.setOpaque(true);
 				imputationVariablesTable.setFillsViewportHeight(true);
 				imputationVariablesTable.setBackground(Color.WHITE);

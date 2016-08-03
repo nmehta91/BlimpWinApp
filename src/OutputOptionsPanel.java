@@ -41,21 +41,24 @@ public class OutputOptionsPanel extends JPanel {
 		initializeModel();
 		
 		rdbtndat = new JRadioButton(".dat");
+		rdbtndat.setBounds(358, 316, 143, 23);
 		rdbtndat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(model.outputFilePath != null) {
-					int indexOfExtension = model.outputFilePath.lastIndexOf(".");
-					String newFileName = model.outputFilePath.substring(0, indexOfExtension);
-					model.outputFilePath = newFileName + ".dat";
-					outputFileNameLabel.setText(model.outputFilePath.toString());
+//					int indexOfExtension = model.outputFilePath.lastIndexOf(".");
+//					String newFileName = model.outputFilePath.substring(0, indexOfExtension);
+//					model.outputFilePath = newFileName + ".dat";
+					outputFileNameLabel.setText(model.outputFilePath + ".dat");
 				}
 				model.mappings.put("DT", "dat");
 			}
 		});
 		
 		JLabel lblNewLabel = new JLabel("Save Imputations To File");
+		lblNewLabel.setBounds(254, 135, 118, 14);
 		
 		JButton btnBrowse = new JButton("Browse");
+		btnBrowse.setBounds(398, 131, 103, 23);
 		
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -64,41 +67,48 @@ public class OutputOptionsPanel extends JPanel {
 					model.outputFilePath = selectedOutputDirectory.getSelectedFile().getAbsolutePath().toString();
 					System.out.println("OutPut Filepath: " + model.outputFilePath);
 					if(rdbtncsv.isSelected()) {
-						model.outputFilePath = model.outputFilePath + ".csv";
-						outputFileNameLabel.setText(model.outputFilePath);
+						outputFileNameLabel.setText(model.outputFilePath + ".csv");
 					} else {
-						model.outputFilePath = model.outputFilePath + ".dat";
-						outputFileNameLabel.setText(model.outputFilePath.toString() + ".dat");
+						outputFileNameLabel.setText(model.outputFilePath + ".dat");
 					}	
 				}
 			}
 		});
 		
 		rdbtnSeparated = new JRadioButton("Separate Files");
+		rdbtnSeparated.setBounds(168, 313, 101, 23);
 		rdbtnSeparated.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				outputFileNameLabel.setText(model.outputFilePath + "*." + model.mappings.get("DT") );
 				model.mappings.put("DF", "seperate");
 			}
 		});
 		
 		rdbtnStacked = new JRadioButton("Stacked");
+		rdbtnStacked.setBounds(168, 290, 101, 23);
 		rdbtnStacked.setSelected(true);
 		buttonGroup.add(rdbtnStacked);
 		rdbtnStacked.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				outputFileNameLabel.setText(model.outputFilePath + "." + model.mappings.get("DT"));
 				model.mappings.put("DF", "stacked");
 			}
 		});
 		
 		outputFileNameLabel = new JLabel("");
+		outputFileNameLabel.setBounds(398, 159, 247, 99);
 		
 		JLabel lblDataFormat = new JLabel("Data Format");
+		lblDataFormat.setBounds(168, 269, 72, 14);
 		
 		JLabel lblFileType = new JLabel("File Type");
+		lblFileType.setBounds(362, 269, 65, 14);
 		
 		JLabel lblDiagnostics = new JLabel("Diagnostics");
+		lblDiagnostics.setBounds(523, 269, 54, 14);
 		
 		rdbtnNoPsr = new JRadioButton("No PSR");
+		rdbtnNoPsr.setBounds(523, 290, 126, 23);
 		rdbtnNoPsr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.mappings.put("Diagnostics", "nopsr");
@@ -106,12 +116,10 @@ public class OutputOptionsPanel extends JPanel {
 		});
 		
 		rdbtncsv = new JRadioButton(".csv");
+		rdbtncsv.setBounds(358, 290, 143, 23);
 		rdbtncsv.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int indexOfExtension = model.outputFilePath.lastIndexOf(".");
-				String newFileName = model.outputFilePath.substring(0, indexOfExtension);
-				model.outputFilePath = newFileName + ".csv";
-				outputFileNameLabel.setText(model.outputFilePath);
+				outputFileNameLabel.setText(model.outputFilePath + ".csv");
 				model.mappings.put("DT", "csv");
 			}
 		});
@@ -125,74 +133,26 @@ public class OutputOptionsPanel extends JPanel {
 		selectedOutputDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
 		rdbtnPsr = new JRadioButton("PSR");
+		rdbtnPsr.setBounds(523, 313, 126, 23);
 		rdbtnPsr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.mappings.put("Diagnostics", "psr");
 			}
 		});
 		buttonGroup_2.add(rdbtnPsr);
-		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(168)
-					.addComponent(lblDataFormat, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-					.addGap(122)
-					.addComponent(lblFileType, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
-					.addGap(96)
-					.addComponent(lblDiagnostics))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(168)
-					.addComponent(rdbtnStacked, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-					.addGap(89)
-					.addComponent(rdbtncsv, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
-					.addGap(22)
-					.addComponent(rdbtnNoPsr, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(168)
-					.addComponent(rdbtnSeparated, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-					.addGap(89)
-					.addComponent(rdbtndat, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
-					.addGap(22)
-					.addComponent(rdbtnPsr, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(254)
-					.addComponent(lblNewLabel)
-					.addGap(26)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(outputFileNameLabel, GroupLayout.PREFERRED_SIZE, 247, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnBrowse, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE))
-					.addGap(47))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(131)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(4)
-							.addComponent(lblNewLabel))
-						.addComponent(btnBrowse))
-					.addGap(5)
-					.addComponent(outputFileNameLabel, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblDataFormat)
-						.addComponent(lblFileType)
-						.addComponent(lblDiagnostics))
-					.addGap(7)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(rdbtnStacked)
-						.addComponent(rdbtncsv)
-						.addComponent(rdbtnNoPsr))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(rdbtnSeparated)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(3)
-							.addComponent(rdbtndat))
-						.addComponent(rdbtnPsr)))
-		);
-		setLayout(groupLayout);
+		setLayout(null);
+		add(lblDataFormat);
+		add(lblFileType);
+		add(lblDiagnostics);
+		add(rdbtnStacked);
+		add(rdbtncsv);
+		add(rdbtnNoPsr);
+		add(rdbtnSeparated);
+		add(rdbtndat);
+		add(rdbtnPsr);
+		add(lblNewLabel);
+		add(outputFileNameLabel);
+		add(btnBrowse);
 	}
 	
 	public void initializeModel() {
