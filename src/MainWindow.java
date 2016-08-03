@@ -13,6 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JMenu;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
+
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -280,6 +282,29 @@ public class MainWindow {
 		});
 		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
 		mnImpute.add(mntmRun);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmBlimpUserManual = new JMenuItem("Blimp User Manual");
+		mntmBlimpUserManual.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+		            try {
+		                File myFile = new File("Resources\\UserGuide.pdf");
+		                Desktop.getDesktop().open(myFile);
+		            } catch (IOException ex) {
+		                // no application registered for PDFs
+		            	JOptionPane.showMessageDialog(frame,
+								"No application found to open User Manual (.pdf). Please install and then try again.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+		            }
+		        }
+			}
+		});
+		mntmBlimpUserManual.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+		mnHelp.add(mntmBlimpUserManual);
 		
 		syntaxEditor = new JTextArea(5, 30);
 		syntaxEditor.setLineWrap(true);
