@@ -492,8 +492,13 @@ public class MainWindow {
 			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
 			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
 			line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
-			System.out.println(model.outputFilePath);
-			line = line + "\n\nOUTFILE: " + model.outputFilePath;
+			
+			if(model.mappings.get("DF") == "separate") {
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT");
+			} else {
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "." + model.mappings.get("DT");
+			}
+			
 			syntaxEditor.append(line);
 			
 			line = "\n\nOPTIONS:";
