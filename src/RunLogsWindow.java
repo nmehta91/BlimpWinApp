@@ -1,11 +1,15 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -22,6 +26,7 @@ public class RunLogsWindow extends JFrame {
 	private JTextArea logTextArea;
 	private SwingWorker worker;
 	private JProgressBar progressBar;
+
 	/**
 	 * Launch the application.
 	 */
@@ -36,7 +41,7 @@ public class RunLogsWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		logTextArea = new JTextArea();
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
@@ -105,4 +110,5 @@ public class RunLogsWindow extends JFrame {
 		}
 				
 	}
+	
 }

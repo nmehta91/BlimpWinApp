@@ -53,6 +53,7 @@ public class MainWindow {
 	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
 	private RunLogsWindow runWindow = null;
+	private int mostRecentHashCode;
 	/**
 	 * Launch the application.
 	 */
@@ -109,6 +110,7 @@ public class MainWindow {
 		mntmOpenFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
+				// If before opening new file, syntax editor is non-empty and needs to be saved
 				if(syntaxEditor.getText().isEmpty()) {
 					int openResult = selectedFile.showOpenDialog(null);
 					if (openResult == selectedFile.APPROVE_OPTION) {
@@ -116,6 +118,7 @@ public class MainWindow {
 					}
 				}
 				else {
+					// If syntax editor is non-empty, save the existing text on disk
 					if(currentFile == null){
 						int saveResult = selectedFile.showSaveDialog(frame);
 						if (saveResult == selectedFile.APPROVE_OPTION) {
@@ -139,11 +142,16 @@ public class MainWindow {
 		JMenuItem mntmSave = new JMenuItem("Save...");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int saveResult = selectedFile.showSaveDialog(frame);
-				if (saveResult == selectedFile.APPROVE_OPTION) {
-					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					
+				if(currentFile == null){
+					int saveResult = selectedFile.showSaveDialog(frame);
+					if (saveResult == selectedFile.APPROVE_OPTION) {
+						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+						
+					}
+				} else {
+					saveFile(currentFile, syntaxEditor.getText());
 				}
+				
 			}
 		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -275,6 +283,20 @@ public class MainWindow {
 		JMenuItem mntmRun = new JMenuItem("Run");
 		mntmRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if(currentFile == null){
+					int saveResult = selectedFile.showSaveDialog(frame);
+					if (saveResult == selectedFile.APPROVE_OPTION) {
+						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+					}
+				} else {
+					System.out.println("Most recent hashcode: " + mostRecentHashCode);
+					System.out.println("Syntax Editor hashcode: "+ syntaxEditor.getText().hashCode());
+					if(mostRecentHashCode != syntaxEditor.getText().hashCode()){
+						saveFile(currentFile, syntaxEditor.getText());
+					}
+				}
+					
 				runWindow = new RunLogsWindow();
 				runWindow.setVisible(true);
 				runWindow.initiateExecution();
@@ -383,6 +405,7 @@ public class MainWindow {
 			syntaxEditor.setText(contents);
 			frame.setTitle(filePath);
 			currentFile = file;
+			mostRecentHashCode = syntaxEditor.getText().hashCode();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(frame,
 					"Exception while trying to save the file!",
@@ -410,7 +433,7 @@ public class MainWindow {
 			}
 		}
 		
-		syntaxEditor.setText("");
+		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nCHAINS:\n\nOUTFILE:\n\nOPTIONS:\n\n");
 		frame.setTitle("Untitled");
 		
 	}
@@ -536,4 +559,5 @@ public class MainWindow {
 			syntaxEditor.append(line);
 		}
 	}
+
 }
