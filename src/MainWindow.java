@@ -142,11 +142,16 @@ public class MainWindow {
 		JMenuItem mntmSave = new JMenuItem("Save...");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int saveResult = selectedFile.showSaveDialog(frame);
-				if (saveResult == selectedFile.APPROVE_OPTION) {
-					saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					
+				if(currentFile == null){
+					int saveResult = selectedFile.showSaveDialog(frame);
+					if (saveResult == selectedFile.APPROVE_OPTION) {
+						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+						
+					}
+				} else {
+					saveFile(currentFile, syntaxEditor.getText());
 				}
+				
 			}
 		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));

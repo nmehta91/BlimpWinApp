@@ -26,6 +26,7 @@ public class RunLogsWindow extends JFrame {
 	private JTextArea logTextArea;
 	private SwingWorker worker;
 	private JProgressBar progressBar;
+
 	/**
 	 * Launch the application.
 	 */
@@ -40,7 +41,7 @@ public class RunLogsWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		logTextArea = new JTextArea();
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
@@ -109,4 +110,5 @@ public class RunLogsWindow extends JFrame {
 		}
 				
 	}
+	
 }
