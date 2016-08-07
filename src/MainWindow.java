@@ -433,7 +433,7 @@ public class MainWindow {
 			}
 		}
 		
-		syntaxEditor.setText("");
+		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nCHAINS:\n\nOUTFILE:\n\nOPTIONS:\n\n");
 		frame.setTitle("Untitled");
 		
 	}
