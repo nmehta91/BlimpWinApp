@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="Lib/jgoodies-common-1.8.1.jar"/>
 	<classpathentry kind="lib" path="Lib/jgoodies-forms-1.8.0.jar"/>
 	<classpathentry kind="lib" path="Lib/miglayout15-swing.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Blimp/Downloads/commons-io-2.5/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
