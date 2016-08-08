@@ -33,6 +33,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import net.miginfocom.swing.MigLayout;
+import java.awt.Color;
+import javax.swing.border.LineBorder;
 
 public class ModelMCOutput extends JFrame {
 
@@ -57,22 +59,24 @@ public class ModelMCOutput extends JFrame {
 	
 	public void initializeWindowComponents(int selectTabIndex) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 781, 594);
+		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		model = SyntaxModel.getInstance();
 		
 		JButton btnReset = new JButton("Reset");
+		btnReset.setBounds(114, 527, 82, 23);
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				reset();
 			}
 		});
-		contentPane.setLayout(new MigLayout("", "[94px][5px][84px][429px][125px]", "[498px][23px]"));
+		contentPane.setLayout(null);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.add(tabbedPane, "cell 0 0 5 1,grow");
+		tabbedPane.setBounds(10, 11, 764, 505);
+		contentPane.add(tabbedPane);
 		MCMCPanel = new MCMCOptionsPanel();
 		outputOptionsPanel = new OutputOptionsPanel();
 		
@@ -86,17 +90,19 @@ public class ModelMCOutput extends JFrame {
 		
 		JFrame frame = this;
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setBounds(10, 527, 92, 23);
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
 			}
 		});
-		contentPane.add(btnCancel, "cell 0 1,growx,aligny top");
-		contentPane.add(btnReset, "cell 2 1,growx,aligny top");
+		contentPane.add(btnCancel);
+		contentPane.add(btnReset);
 		
 		JButton btnNewButton = new JButton("Done");
-		contentPane.add(btnNewButton, "cell 4 1,growx,aligny top");
+		btnNewButton.setBounds(651, 527, 123, 23);
+		contentPane.add(btnNewButton);
 		
 		btnNewButton.addActionListener(new doneActionListener(this));
 	}

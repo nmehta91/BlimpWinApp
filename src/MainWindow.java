@@ -112,7 +112,7 @@ public class MainWindow {
 				
 				// If before opening new file, syntax editor is non-empty and needs to be saved
 				if(syntaxEditor.getText().isEmpty()) {
-					int openResult = selectedFile.showOpenDialog(null);
+					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
 						openFile(selectedFile.getSelectedFile(), 0);
 					}
@@ -129,7 +129,7 @@ public class MainWindow {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
 					
-					int openResult = selectedFile.showOpenDialog(null);
+					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
 						openFile(selectedFile.getSelectedFile(), 0);
 					}
@@ -209,7 +209,7 @@ public class MainWindow {
 		mntmFont.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFontChooser fontChooser = new JFontChooser();
-				int result = fontChooser.showDialog(null);
+				int result = fontChooser.showDialog(frame);
 				if (result == JFontChooser.OK_OPTION)
 				{
 					Font font = fontChooser.getSelectedFont(); 
@@ -487,13 +487,12 @@ public class MainWindow {
 			syntaxEditor.append(ordinalVariables + ";");
 			syntaxEditor.append(nominalVariables + ";");
 			
-		}
-		
-		line = "\n\nMISSING: ";
-		if(model.mappings.containsKey("MVC")){
-			line += model.mappings.get("MVC");
-		}
-		syntaxEditor.append(line + ";");
+			line = "\n\nMISSING: ";
+			if(model.mappings.containsKey("MVC")){
+				line += model.mappings.get("MVC");
+			}
+			syntaxEditor.append(line + ";");
+		}	
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
