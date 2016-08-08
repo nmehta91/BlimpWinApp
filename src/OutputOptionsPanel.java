@@ -80,7 +80,7 @@ public class OutputOptionsPanel extends JPanel {
 		rdbtnSeparated.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				outputFileNameLabel.setText(model.outputFilePath + "*." + model.mappings.get("DT") );
-				model.mappings.put("DF", "seperate");
+				model.mappings.put("DF", "separate");
 			}
 		});
 		

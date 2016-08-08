@@ -267,7 +267,10 @@ public class MainWindow {
 		JMenuItem mntmOutputOptions = new JMenuItem("Output Options");
 		mntmOutputOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ModelMCOutputWindow = new ModelMCOutput(2);
+				if(ModelMCOutputWindow == null) {
+					ModelMCOutputWindow = new ModelMCOutput(2);
+				}
+				ModelMCOutputWindow.selectTab(2);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
                         writeModelMCMCOutputSyntax();
@@ -476,22 +479,21 @@ public class MainWindow {
 			}
 			line = line + model.variables.get(i).name + ";";
 			if(model.variables.get(i).type == "Ordinal") 
-				ordinalVariables = ordinalVariables + model.variables.get(i).name + ";";
+				ordinalVariables = ordinalVariables + model.variables.get(i).name;
 			if(model.variables.get(i).type == "Nominal")
-				nominalVariables = nominalVariables + model.variables.get(i).name + ";"; 
+				nominalVariables = nominalVariables + model.variables.get(i).name; 
 			
 			syntaxEditor.append(line);
-			syntaxEditor.append(ordinalVariables);
-			syntaxEditor.append(nominalVariables);
+			syntaxEditor.append(ordinalVariables + ";");
+			syntaxEditor.append(nominalVariables + ";");
 			
 		}
 		
 		line = "\n\nMISSING: ";
 		if(model.mappings.containsKey("MVC")){
 			line += model.mappings.get("MVC");
-			line += ";";
 		}
-		syntaxEditor.append(line);
+		syntaxEditor.append(line + ";");
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
@@ -520,12 +522,12 @@ public class MainWindow {
 			String name = model.modelVariables.get(i).name;
 			if(name.lastIndexOf("(") != -1) {
 				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
-				line = line + truncatedVariable + " ";
+				line = line + truncatedVariable;
 			} else {
-				line = line + name + " ";
+				line = line + name;
 			}
 			
-			syntaxEditor.append(line);
+			syntaxEditor.append(line + ";");
 		}
 		
 		System.out.println("Model Mapping size = " + model.mappings.size());
@@ -534,17 +536,17 @@ public class MainWindow {
 			System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
 		}
 		
-		if(model.mappings.size() == 11) {
-			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
-			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
-			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
-			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
-			line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
+		if(model.mappings.size() >= 11) {
+			line = "\n\nNIMPS: " + model.mappings.get("Nimps") + ";";
+			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations") + ";";
+			line = line + "\n\nBURN: " + model.mappings.get("BurnIn") + ";";
+			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed") + ";";
+			line = line + "\n\nCHAINS: " + model.mappings.get("Chains") + ";";
 			
-			if(model.mappings.get("DF") == "separate") {
-				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT");
+			if(model.mappings.get("DF").equals("separate")) {
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT") + ";";
 			} else {
-				line = line + "\n\nOUTFILE: " + model.outputFilePath + "." + model.mappings.get("DT");
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "." + model.mappings.get("DT") + ";";
 			}
 			
 			syntaxEditor.append(line);
@@ -555,7 +557,7 @@ public class MainWindow {
 			line += " " + model.mappings.get("DT");
 			line += " " + model.mappings.get("CM");
 			line += " " + model.mappings.get("VP");
-			line += " " + model.mappings.get("LV");
+			line += " " + model.mappings.get("LV") + ";";
 			syntaxEditor.append(line);
 		}
 	}
