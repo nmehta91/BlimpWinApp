@@ -65,8 +65,9 @@ public class RunLogsWindow extends JFrame {
 	public void executeEXE()
 	{
 		Process process;
-		try {
-			process = new ProcessBuilder("Resources\\sample.exe", model.syntaxFilePath).start();
+		try {  
+			String temp = createTempDirectory();
+			process = new ProcessBuilder("C:\\Users\\Blimp\\Desktop\\abc\\sample.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -113,4 +114,11 @@ public class RunLogsWindow extends JFrame {
 				
 	}
 	
+	public String createTempDirectory() throws IOException {
+		File tempFile =  File.createTempFile("temp-file", "tmp");
+		tempFile.deleteOnExit();
+		String tempDirectory = tempFile.getParent();
+		Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
+		return tempDirectory;
+	}
 }

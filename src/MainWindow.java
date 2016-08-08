@@ -484,7 +484,7 @@ public class MainWindow {
 			for(i = 0; i < model.variables.size() - 1; i++){
 				Variable var = model.variables.get(i);
 				line = line + var.name + " ";
-				
+				System.out.println(var.name);
 				if(var.type == "Ordinal") 
 					ordinalVariables = ordinalVariables + var.name + " ";
 				if(var.type == "Nominal")
@@ -509,8 +509,8 @@ public class MainWindow {
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
-		syntaxEditor.setText("");
-		writeImportSyntax();
+//		syntaxEditor.setText("");
+//		writeImportSyntax();
 		String line;
 		if(model.modelVariables.size() > 0) {
 			line = "\n\nMODEL: ";
