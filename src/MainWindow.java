@@ -288,6 +288,13 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				if(currentFile == null){
+					if(syntaxEditor.getText().equals("")) {
+						JOptionPane.showMessageDialog(frame,
+								"Syntax File contains no syntax. Please enter and then continue.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					int saveResult = selectedFile.showSaveDialog(frame);
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
@@ -345,7 +352,7 @@ public class MainWindow {
 			String fileContents = "";
 			int noOfLinesToRead;
 			
-			if(filePath.endsWith(".dat") || filePath.endsWith(".txt") || filePath.endsWith(".csv")) {
+			if(filePath.endsWith(".txt") || filePath.endsWith(".dat") || filePath.endsWith(".csv")) {
 				try {
 					model.importFileContents = new ArrayList<String>();
 					Scanner scan = new Scanner(new FileInputStream(file));
@@ -371,6 +378,8 @@ public class MainWindow {
 					syntaxEditor.setText(fileContents);
 					frame.setTitle(filePath);
 					currentFile = file;
+					model.syntaxFilePath = currentFile.getPath();
+					System.out.println("Syntax File path = " + model.syntaxFilePath);
 				  }
 				} catch (FileNotFoundException e) {
 					JOptionPane.showMessageDialog(frame,
@@ -409,6 +418,8 @@ public class MainWindow {
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
+			model.syntaxFilePath = currentFile.getPath();
+			System.out.println("Syntax File path = " + model.syntaxFilePath);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(frame,
 					"Exception while trying to save the file!",
@@ -437,6 +448,8 @@ public class MainWindow {
 		}
 		
 		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nCHAINS:\n\nOUTFILE:\n\nOPTIONS:\n\n");
+		currentFile = null;
+		SyntaxModel.clearModel();
 		frame.setTitle("Untitled");
 		
 	}
@@ -446,7 +459,7 @@ public class MainWindow {
 	}
 	
 	public Path importSelectedFile() {
-		int openResult = selectedFile.showOpenDialog(null);
+		int openResult = selectedFile.showOpenDialog(frame);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
 			openFile(selectedFile.getSelectedFile(), 1);
 			return selectedFile.getSelectedFile().toPath();

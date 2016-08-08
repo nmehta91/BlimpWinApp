@@ -6,6 +6,7 @@ import java.util.HashMap;
 public class SyntaxModel {
 	private static SyntaxModel instance = null;
 	public Path dataSetPath;
+	public String syntaxFilePath;
 	public String outputFilePath;
 	public HashMap <String, String> mappings;
 	public ArrayList<Variable> variables, modelVariables, identifierVariables;
@@ -17,6 +18,7 @@ public class SyntaxModel {
 		if(instance == null) {
 			instance = new SyntaxModel();
 			instance.dataSetPath = null;
+			instance.syntaxFilePath = null;
 			instance.outputFilePath = null;
 			instance.mappings = new HashMap <String, String> ();
 			instance.mcmcOptions = new HashMap <String, String> ();
@@ -36,5 +38,6 @@ public class SyntaxModel {
 		instance.dataSetPath = null;
 		instance.importFileContentsInString = "";
 		instance.outputFilePath = null;
+		instance.syntaxFilePath = null;
 	}
 }

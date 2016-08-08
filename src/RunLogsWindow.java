@@ -26,7 +26,7 @@ public class RunLogsWindow extends JFrame {
 	private JTextArea logTextArea;
 	private SwingWorker worker;
 	private JProgressBar progressBar;
-
+	private SyntaxModel model;
 	/**
 	 * Launch the application.
 	 */
@@ -37,6 +37,8 @@ public class RunLogsWindow extends JFrame {
 		setTitle("Output");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 620, 402);
+		
+		model = SyntaxModel.getInstance();
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -64,7 +66,7 @@ public class RunLogsWindow extends JFrame {
 	{
 		Process process;
 		try {
-			process = new ProcessBuilder("C:\\Users\\Blimp\\Desktop\\sample.exe").start();
+			process = new ProcessBuilder("Resources\\sample.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
