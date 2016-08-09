@@ -1,2 +1,2 @@
-mkdir C:\Users\Blimp\Desktop\abc		
-copy Resources\sample.exe C:\Users\Blimp\Desktop\abc
+mkdir %1\Blimp		
+copy Resources\sample.exe %1\Blimp

@@ -54,6 +54,7 @@ public class MainWindow {
 	private SyntaxModel model;
 	private RunLogsWindow runWindow = null;
 	private int mostRecentHashCode;
+	private String pathToExe;
 	/**
 	 * Launch the application.
 	 */
@@ -88,6 +89,11 @@ public class MainWindow {
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		model = SyntaxModel.getInstance();
+		boolean success = copyEXEToDisk();
+		
+		if(success == false) {
+			System.err.println("Exe could not be copied. Program won't be able to run!");
+		}
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -307,7 +313,7 @@ public class MainWindow {
 					}
 				}
 					
-				runWindow = new RunLogsWindow();
+				runWindow = new RunLogsWindow(pathToExe);
 				runWindow.setVisible(true);
 				runWindow.initiateExecution();
 			}
@@ -572,6 +578,23 @@ public class MainWindow {
 			line += " " + model.mappings.get("LV") + ";";
 			syntaxEditor.append(line);
 		}
+	}
+	
+	public boolean copyEXEToDisk() {
+		File tempFile;
+		boolean copyEXE_succes = true;
+		try {
+			tempFile = File.createTempFile("temp-file", "tmp");
+			tempFile.deleteOnExit();
+			String tempDirectory = tempFile.getParent();
+			Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
+			pathToExe = tempDirectory + "\\Blimp";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			copyEXE_succes = false;
+		}
+		
+		return copyEXE_succes;
 	}
 
 }
