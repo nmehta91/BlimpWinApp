@@ -188,7 +188,7 @@ public class MainWindow {
                     }
 					});
 					cancelButtonClicked = false;
-					ModelMCOutputWindow = new ModelMCOutput(0, cancelButtonClicked);
+					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
 				
 			}
@@ -545,8 +545,8 @@ public class MainWindow {
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
-//		syntaxEditor.setText("");
-//		writeImportSyntax();
+		syntaxEditor.setText("");
+		writeImportSyntax();
 		String line;
 		if(model.modelVariables.size() > 0) {
 			line = "\n\nMODEL: ";
