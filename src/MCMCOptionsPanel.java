@@ -142,20 +142,20 @@ public class MCMCOptionsPanel extends JPanel {
 		buttonGroup_1.add(rdbtnHeterogenous);
 		
 		Box verticalBox_2 = Box.createVerticalBox();
-		verticalBox_2.setBounds(514, 315, 131, 81);
+		verticalBox_2.setBounds(514, 315, 201, 81);
 		add(verticalBox_2);
 		
-		rdbtnInverseWishart = new JRadioButton("Inverse Wishart 0");
+		rdbtnInverseWishart = new JRadioButton("Prior1 (IW with SSCP = 0)");
 		verticalBox_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.mappings.put("VP", "iw0");
 			}
 		});
-		rdbtnInverseWishart.setSelected(true);
 		buttonGroup_2.add(rdbtnInverseWishart);
 		
-		rdbtnInverseWishartId = new JRadioButton("Inverse Wishart ID");
+		rdbtnInverseWishartId = new JRadioButton("Prior2 (IW with SSCP = ID)");
+		rdbtnInverseWishartId.setSelected(true);
 		verticalBox_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

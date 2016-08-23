@@ -55,6 +55,7 @@ public class MainWindow {
 	private RunLogsWindow runWindow = null;
 	private int mostRecentHashCode;
 	private String pathToExe;
+	private Boolean cancelButtonClicked;
 	/**
 	 * Launch the application.
 	 */
@@ -89,11 +90,6 @@ public class MainWindow {
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		model = SyntaxModel.getInstance();
-		boolean success = copyEXEToDisk();
-		
-		if(success == false) {
-			System.err.println("Exe could not be copied. Program won't be able to run!");
-		}
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -120,7 +116,7 @@ public class MainWindow {
 				if(syntaxEditor.getText().isEmpty()) {
 					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile(), 0);
+						boolean result = openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 				else {
@@ -137,7 +133,7 @@ public class MainWindow {
 					
 					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile(), 0);
+						boolean result = openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 		}
@@ -191,7 +187,8 @@ public class MainWindow {
                        writeImportSyntax();
                     }
 					});
-					ModelMCOutputWindow = new ModelMCOutput(0);
+					cancelButtonClicked = false;
+					ModelMCOutputWindow = new ModelMCOutput(0, cancelButtonClicked);
 				}
 				
 			}
@@ -237,7 +234,7 @@ public class MainWindow {
 				ModelMCOutputWindow.selectTab(0);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        writeModelMCMCOutputSyntax();
+                    	writeModelMCMCOutputSyntax();
                     }
 					});
 				
@@ -279,7 +276,7 @@ public class MainWindow {
 				ModelMCOutputWindow.selectTab(2);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        writeModelMCMCOutputSyntax();
+                    	writeModelMCMCOutputSyntax();
                     }
 					});
 				
@@ -352,53 +349,82 @@ public class MainWindow {
 
 	}
 	
-	public void openFile(File file, int flag) {
+	public boolean openFile(File file, int flag) {
 		if (file.canRead()) {
 			String filePath = file.getPath();
 			String fileContents = "";
 			int noOfLinesToRead;
 			
-			if(filePath.endsWith(".txt") || filePath.endsWith(".dat") || filePath.endsWith(".csv")) {
-				try {
-					model.importFileContents = new ArrayList<String>();
-					Scanner scan = new Scanner(new FileInputStream(file));
-					if(flag == 1) { // When a data import file is to be read, read only 10 lines
-						noOfLinesToRead = 10;
-						while(scan.hasNextLine() && noOfLinesToRead > 0){
-							String line = scan.nextLine();
-							fileContents += line;
-							model.importFileContents.add(line);
-							System.out.println("Added to fileContents: " + line);
+			if(flag == 0){
+				// openFile called with the 'Open' menu item
+				// restrict the file that are allowed to open in Blimp to .imp
+				if(filePath.endsWith(".imp")){
+					Scanner scan;
+					try {
+						scan = new Scanner(new FileInputStream(file));
+						while(scan.hasNextLine()){
+							fileContents += scan.nextLine();
 							fileContents += "\n";
-							noOfLinesToRead--;
 						}
-						model.importFileContentsInString = fileContents;
-						System.out.println(fileContents);
+						syntaxEditor.setText(fileContents);
+						frame.setTitle(filePath);
+						currentFile = file;
+						model.syntaxFilePath = currentFile.getPath();
+						System.out.println("Syntax File path = " + model.syntaxFilePath);
+						mostRecentHashCode = syntaxEditor.getText().hashCode();
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(frame,
+								"There was an error in reading the .imp file. Please check again.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return false;
 					}
-					else {	// When a syntax file is to be read, read the entire file and show in the syntax editor
-					
-					while(scan.hasNextLine()){
-						fileContents += scan.nextLine();
-						fileContents += "\n";
-					}
-					syntaxEditor.setText(fileContents);
-					frame.setTitle(filePath);
-					currentFile = file;
-					model.syntaxFilePath = currentFile.getPath();
-					System.out.println("Syntax File path = " + model.syntaxFilePath);
-				  }
-				} catch (FileNotFoundException e) {
+				}
+				else
+				{
 					JOptionPane.showMessageDialog(frame,
-							"FileNotFoundException raised!",
+							"That file type is not supported!\n Only .imp file type is supported!",
 							"Error!",
 							JOptionPane.ERROR_MESSAGE);
+					return false;
 				}
-			} 
+				
+			}
 			else {
-				JOptionPane.showMessageDialog(frame,
-						"That file type is not supported!\n Only .txt file type is supported!",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
+				// When 'Import Data' menu items calls this function allow .dat and .csv files to be imported
+				if(filePath.endsWith(".dat") || filePath.endsWith(".csv")) {
+					try {
+						model.importFileContents = new ArrayList<String>();
+						Scanner scan = new Scanner(new FileInputStream(file));
+						if(flag == 1) { // When a data import file is to be read, read only 10 lines
+							noOfLinesToRead = 10;
+							while(scan.hasNextLine() && noOfLinesToRead > 0){
+								String line = scan.nextLine();
+								fileContents += line;
+								model.importFileContents.add(line);
+								System.out.println("Added to fileContents: " + line);
+								fileContents += "\n";
+								noOfLinesToRead--;
+							}
+							model.importFileContentsInString = fileContents;
+							System.out.println(fileContents);
+						}
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(frame,
+								"FileNotFoundException raised!",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+				} 
+				else {
+					JOptionPane.showMessageDialog(frame,
+							"That file type is not supported!\n Only .dat or .csv file type is supported!",
+							"Error!",
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
 			}
 		} 
 		else {
@@ -406,14 +432,16 @@ public class MainWindow {
 					"File could not be opened!",
 					"Error!",
 					JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
+		return true;
 	}
 	
 	public void saveFile(File file, String contents) {
 		BufferedWriter writer = null;
 		String filePath = file.getPath();
-		if(!filePath.endsWith(".txt")) {
-			filePath += ".txt";
+		if(!filePath.endsWith(".imp")) {
+			filePath += ".imp";
 		}
 		
 		try {
@@ -467,8 +495,10 @@ public class MainWindow {
 	public Path importSelectedFile() {
 		int openResult = selectedFile.showOpenDialog(frame);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
-			openFile(selectedFile.getSelectedFile(), 1);
-			return selectedFile.getSelectedFile().toPath();
+			if(openFile(selectedFile.getSelectedFile(), 1))
+				return selectedFile.getSelectedFile().toPath();
+			else
+				return null;
 		} else {
 			return null;
 		}
@@ -579,22 +609,4 @@ public class MainWindow {
 			syntaxEditor.append(line);
 		}
 	}
-	
-	public boolean copyEXEToDisk() {
-		File tempFile;
-		boolean copyEXE_succes = true;
-		try {
-			tempFile = File.createTempFile("temp-file", "tmp");
-			tempFile.deleteOnExit();
-			String tempDirectory = tempFile.getParent();
-			Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
-			pathToExe = tempDirectory + "\\Blimp";
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			copyEXE_succes = false;
-		}
-		
-		return copyEXE_succes;
-	}
-
 }

@@ -35,9 +35,10 @@ public class RunLogsWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public RunLogsWindow(String pathToExe) {
+		setResizable(false);
 		setTitle("Output");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 620, 402);
+		setBounds(100, 100, 791, 490);
 		
 		model = SyntaxModel.getInstance();
 		this.pathToExe = pathToExe;
@@ -50,12 +51,12 @@ public class RunLogsWindow extends JFrame {
 		logTextArea = new JTextArea();
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
-		scrollPane_1.setBounds(5, 5, 586, 320);
+		scrollPane_1.setBounds(5, 5, 760, 410);
 
-		contentPane.add(scrollPane_1);
+		contentPane.add(scrollPane_1, BorderLayout.CENTER);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(428, 338, 163, 14);
+		progressBar.setBounds(602, 426, 163, 14);
 		contentPane.add(progressBar);
 	}
 	
@@ -69,9 +70,8 @@ public class RunLogsWindow extends JFrame {
 	{
 		Process process;
 		try {  
-//			String temp = createTempDirectory();
-//			"C:\\Users\\Blimp\\Desktop\\abc\\sample.exe"
-			process = new ProcessBuilder(pathToExe, model.syntaxFilePath).start();
+			
+			process = new ProcessBuilder(createTempDirectory() + "\\Blimp\\blimp.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -97,7 +97,7 @@ public class RunLogsWindow extends JFrame {
 	                    			break;
 	                    		
 	                    		logTextArea.append(line+"\n");
-	                    		Thread.sleep(500);
+	             
 	                    	}while(true);
 	                    	
 	                    }catch(Exception ex){}
@@ -122,7 +122,7 @@ public class RunLogsWindow extends JFrame {
 		File tempFile =  File.createTempFile("temp-file", "tmp");
 		tempFile.deleteOnExit();
 		String tempDirectory = tempFile.getParent();
-		Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
+		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
 		return tempDirectory;
 	}
 }

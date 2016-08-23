@@ -54,7 +54,6 @@ public class ModelMCOutput extends JFrame {
 	public ModelMCOutput(int selectedTabIndex) {
 		setTitle("Model Specification");
 		initializeWindowComponents(selectedTabIndex);
-		
 	}
 	
 	public void initializeWindowComponents(int selectTabIndex) {
