@@ -23,7 +23,7 @@ import javax.swing.JProgressBar;
 public class RunLogsWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JTextArea logTextArea;
+	public JTextArea logTextArea;
 	private SwingWorker worker;
 	private JProgressBar progressBar;
 	private SyntaxModel model;

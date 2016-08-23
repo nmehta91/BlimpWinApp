@@ -309,8 +309,9 @@ public class MainWindow {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
 				}
-					
-				runWindow = new RunLogsWindow(pathToExe);
+				if(runWindow == null)
+					runWindow = new RunLogsWindow(pathToExe);
+				runWindow.logTextArea.setText("");
 				runWindow.setVisible(true);
 				runWindow.initiateExecution();
 			}
