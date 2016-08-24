@@ -19,6 +19,11 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.JProgressBar;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class RunLogsWindow extends JFrame {
 
@@ -58,6 +63,33 @@ public class RunLogsWindow extends JFrame {
 		progressBar = new JProgressBar();
 		progressBar.setBounds(602, 426, 163, 14);
 		contentPane.add(progressBar);
+		
+		JButton btnSaveOutput = new JButton("Save Output");
+		btnSaveOutput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser selectedFile = new JFileChooser();
+				int saveResult = selectedFile.showSaveDialog(contentPane);
+				if (saveResult == selectedFile.APPROVE_OPTION) {
+					BufferedWriter writer = null;
+					File file = selectedFile.getSelectedFile();
+					String filePath = file.getPath();
+					
+					try {
+						writer = new BufferedWriter(new FileWriter(filePath));
+						writer.write(logTextArea.getText());
+						writer.close();
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(contentPane,
+								"Exception while trying to save the file!",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
+			}
+		});
+		btnSaveOutput.setBounds(10, 426, 118, 23);
+		contentPane.add(btnSaveOutput);
 	}
 	
 	public void initiateExecution()
