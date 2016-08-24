@@ -656,7 +656,7 @@ public class MainWindow {
 			tempFile = File.createTempFile("temp-file", "tmp");
 			tempFile.deleteOnExit();
 			String tempDirectory = tempFile.getParent();
-			Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
+			Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
