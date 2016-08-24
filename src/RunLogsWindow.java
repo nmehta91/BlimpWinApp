@@ -19,24 +19,35 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.JProgressBar;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class RunLogsWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JTextArea logTextArea;
+	public JTextArea logTextArea;
 	private SwingWorker worker;
 	private JProgressBar progressBar;
-
+	private SyntaxModel model;
+	private String pathToExe;
 	/**
 	 * Launch the application.
 	 */
 	/**
 	 * Create the frame.
 	 */
-	public RunLogsWindow() {
+	public RunLogsWindow(String pathToExe) {
+		setResizable(false);
 		setTitle("Output");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 620, 402);
+		setBounds(100, 100, 791, 490);
+		
+		model = SyntaxModel.getInstance();
+		this.pathToExe = pathToExe;
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -45,13 +56,40 @@ public class RunLogsWindow extends JFrame {
 		logTextArea = new JTextArea();
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
-		scrollPane_1.setBounds(5, 5, 586, 320);
+		scrollPane_1.setBounds(5, 5, 760, 410);
 
-		contentPane.add(scrollPane_1);
+		contentPane.add(scrollPane_1, BorderLayout.CENTER);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(428, 338, 163, 14);
+		progressBar.setBounds(602, 426, 163, 14);
 		contentPane.add(progressBar);
+		
+		JButton btnSaveOutput = new JButton("Save Output");
+		btnSaveOutput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser selectedFile = new JFileChooser();
+				int saveResult = selectedFile.showSaveDialog(contentPane);
+				if (saveResult == selectedFile.APPROVE_OPTION) {
+					BufferedWriter writer = null;
+					File file = selectedFile.getSelectedFile();
+					String filePath = file.getPath();
+					
+					try {
+						writer = new BufferedWriter(new FileWriter(filePath));
+						writer.write(logTextArea.getText());
+						writer.close();
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(contentPane,
+								"Exception while trying to save the file!",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
+			}
+		});
+		btnSaveOutput.setBounds(10, 426, 118, 23);
+		contentPane.add(btnSaveOutput);
 	}
 	
 	public void initiateExecution()
@@ -63,8 +101,9 @@ public class RunLogsWindow extends JFrame {
 	public void executeEXE()
 	{
 		Process process;
-		try {
-			process = new ProcessBuilder("C:\\Users\\Blimp\\Desktop\\sample.exe").start();
+		try {  
+			
+			process = new ProcessBuilder(createTempDirectory() + "\\Blimp\\blimp.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -90,7 +129,7 @@ public class RunLogsWindow extends JFrame {
 	                    			break;
 	                    		
 	                    		logTextArea.append(line+"\n");
-	                    		Thread.sleep(500);
+	             
 	                    	}while(true);
 	                    	
 	                    }catch(Exception ex){}
@@ -111,4 +150,11 @@ public class RunLogsWindow extends JFrame {
 				
 	}
 	
+	public String createTempDirectory() throws IOException {
+		File tempFile =  File.createTempFile("temp-file", "tmp");
+		tempFile.deleteOnExit();
+		String tempDirectory = tempFile.getParent();
+		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
+		return tempDirectory;
+	}
 }

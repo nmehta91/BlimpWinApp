@@ -29,9 +29,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.concurrent.CancellationException;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -54,6 +57,8 @@ public class MainWindow {
 	private SyntaxModel model;
 	private RunLogsWindow runWindow = null;
 	private int mostRecentHashCode;
+	private String pathToExe;
+	private Boolean cancelButtonClicked;
 	/**
 	 * Launch the application.
 	 */
@@ -112,9 +117,9 @@ public class MainWindow {
 				
 				// If before opening new file, syntax editor is non-empty and needs to be saved
 				if(syntaxEditor.getText().isEmpty()) {
-					int openResult = selectedFile.showOpenDialog(null);
+					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile(), 0);
+						boolean result = openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 				else {
@@ -129,9 +134,9 @@ public class MainWindow {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
 					
-					int openResult = selectedFile.showOpenDialog(null);
+					int openResult = selectedFile.showOpenDialog(frame);
 					if (openResult == selectedFile.APPROVE_OPTION) {
-						openFile(selectedFile.getSelectedFile(), 0);
+						boolean result = openFile(selectedFile.getSelectedFile(), 0);
 					}
 				}
 		}
@@ -185,6 +190,9 @@ public class MainWindow {
                        writeImportSyntax();
                     }
 					});
+					currentFile = null;
+					frame.setTitle("Untitled");
+					syntaxEditor.setText("");
 					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
 				
@@ -209,7 +217,7 @@ public class MainWindow {
 		mntmFont.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFontChooser fontChooser = new JFontChooser();
-				int result = fontChooser.showDialog(null);
+				int result = fontChooser.showDialog(frame);
 				if (result == JFontChooser.OK_OPTION)
 				{
 					Font font = fontChooser.getSelectedFont(); 
@@ -231,7 +239,7 @@ public class MainWindow {
 				ModelMCOutputWindow.selectTab(0);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        writeModelMCMCOutputSyntax();
+                    	writeModelMCMCOutputSyntax();
                     }
 					});
 				
@@ -267,10 +275,13 @@ public class MainWindow {
 		JMenuItem mntmOutputOptions = new JMenuItem("Output Options");
 		mntmOutputOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ModelMCOutputWindow = new ModelMCOutput(2);
+				if(ModelMCOutputWindow == null) {
+					ModelMCOutputWindow = new ModelMCOutput(2);
+				}
+				ModelMCOutputWindow.selectTab(2);
 				ModelMCOutputWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
-                        writeModelMCMCOutputSyntax();
+                    	writeModelMCMCOutputSyntax();
                     }
 					});
 				
@@ -283,11 +294,21 @@ public class MainWindow {
 		JMenuItem mntmRun = new JMenuItem("Run");
 		mntmRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				boolean cancelButtonClicked = false;
 				if(currentFile == null){
+					if(syntaxEditor.getText().equals("")) {
+						JOptionPane.showMessageDialog(frame,
+								"Syntax File contains no syntax. Please enter and then continue.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					int saveResult = selectedFile.showSaveDialog(frame);
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+					} else {
+						// When Cancel button is clicked
+						cancelButtonClicked = true;
 					}
 				} else {
 					System.out.println("Most recent hashcode: " + mostRecentHashCode);
@@ -296,10 +317,14 @@ public class MainWindow {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
 				}
-					
-				runWindow = new RunLogsWindow();
-				runWindow.setVisible(true);
-				runWindow.initiateExecution();
+				
+				if(!cancelButtonClicked){
+					if(runWindow == null)
+						runWindow = new RunLogsWindow(pathToExe);
+					runWindow.logTextArea.setText("");
+					runWindow.setVisible(true);
+					runWindow.initiateExecution();
+				}
 			}
 		});
 		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
@@ -336,51 +361,82 @@ public class MainWindow {
 
 	}
 	
-	public void openFile(File file, int flag) {
+	public boolean openFile(File file, int flag) {
 		if (file.canRead()) {
 			String filePath = file.getPath();
 			String fileContents = "";
 			int noOfLinesToRead;
 			
-			if(filePath.endsWith(".dat") || filePath.endsWith(".txt") || filePath.endsWith(".csv")) {
-				try {
-					model.importFileContents = new ArrayList<String>();
-					Scanner scan = new Scanner(new FileInputStream(file));
-					if(flag == 1) { // When a data import file is to be read, read only 10 lines
-						noOfLinesToRead = 10;
-						while(scan.hasNextLine() && noOfLinesToRead > 0){
-							String line = scan.nextLine();
-							fileContents += line;
-							model.importFileContents.add(line);
-							System.out.println("Added to fileContents: " + line);
+			if(flag == 0){
+				// openFile called with the 'Open' menu item
+				// restrict the file that are allowed to open in Blimp to .imp
+				if(filePath.endsWith(".imp")){
+					Scanner scan;
+					try {
+						scan = new Scanner(new FileInputStream(file));
+						while(scan.hasNextLine()){
+							fileContents += scan.nextLine();
 							fileContents += "\n";
-							noOfLinesToRead--;
 						}
-						model.importFileContentsInString = fileContents;
-						System.out.println(fileContents);
+						syntaxEditor.setText(fileContents);
+						frame.setTitle(filePath);
+						currentFile = file;
+						model.syntaxFilePath = currentFile.getPath();
+						System.out.println("Syntax File path = " + model.syntaxFilePath);
+						mostRecentHashCode = syntaxEditor.getText().hashCode();
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(frame,
+								"There was an error in reading the .imp file. Please check again.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return false;
 					}
-					else {	// When a syntax file is to be read, read the entire file and show in the syntax editor
-					
-					while(scan.hasNextLine()){
-						fileContents += scan.nextLine();
-						fileContents += "\n";
-					}
-					syntaxEditor.setText(fileContents);
-					frame.setTitle(filePath);
-					currentFile = file;
-				  }
-				} catch (FileNotFoundException e) {
+				}
+				else
+				{
 					JOptionPane.showMessageDialog(frame,
-							"FileNotFoundException raised!",
+							"That file type is not supported!\n Only .imp file type is supported!",
 							"Error!",
 							JOptionPane.ERROR_MESSAGE);
+					return false;
 				}
-			} 
+				
+			}
 			else {
-				JOptionPane.showMessageDialog(frame,
-						"That file type is not supported!\n Only .txt file type is supported!",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
+				// When 'Import Data' menu items calls this function allow .dat and .csv files to be imported
+				if(filePath.endsWith(".dat") || filePath.endsWith(".csv")) {
+					try {
+						model.importFileContents = new ArrayList<String>();
+						Scanner scan = new Scanner(new FileInputStream(file));
+						if(flag == 1) { // When a data import file is to be read, read only 10 lines
+							noOfLinesToRead = 10;
+							while(scan.hasNextLine() && noOfLinesToRead > 0){
+								String line = scan.nextLine();
+								fileContents += line;
+								model.importFileContents.add(line);
+								System.out.println("Added to fileContents: " + line);
+								fileContents += "\n";
+								noOfLinesToRead--;
+							}
+							model.importFileContentsInString = fileContents;
+							System.out.println(fileContents);
+						}
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(frame,
+								"FileNotFoundException raised!",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+				} 
+				else {
+					JOptionPane.showMessageDialog(frame,
+							"That file type is not supported!\n Only .dat or .csv file type is supported!",
+							"Error!",
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
 			}
 		} 
 		else {
@@ -388,14 +444,16 @@ public class MainWindow {
 					"File could not be opened!",
 					"Error!",
 					JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
+		return true;
 	}
 	
 	public void saveFile(File file, String contents) {
 		BufferedWriter writer = null;
 		String filePath = file.getPath();
-		if(!filePath.endsWith(".txt")) {
-			filePath += ".txt";
+		if(!filePath.endsWith(".imp")) {
+			filePath += ".imp";
 		}
 		
 		try {
@@ -406,6 +464,8 @@ public class MainWindow {
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
+			model.syntaxFilePath = filePath;
+			System.out.println("Syntax File path = " + model.syntaxFilePath);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(frame,
 					"Exception while trying to save the file!",
@@ -434,6 +494,8 @@ public class MainWindow {
 		}
 		
 		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nCHAINS:\n\nOUTFILE:\n\nOPTIONS:\n\n");
+		currentFile = null;
+		SyntaxModel.clearModel();
 		frame.setTitle("Untitled");
 		
 	}
@@ -443,10 +505,12 @@ public class MainWindow {
 	}
 	
 	public Path importSelectedFile() {
-		int openResult = selectedFile.showOpenDialog(null);
+		int openResult = selectedFile.showOpenDialog(frame);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
-			openFile(selectedFile.getSelectedFile(), 1);
-			return selectedFile.getSelectedFile().toPath();
+			if(openFile(selectedFile.getSelectedFile(), 1))
+				return selectedFile.getSelectedFile().toPath();
+			else
+				return null;
 		} else {
 			return null;
 		}
@@ -463,35 +527,58 @@ public class MainWindow {
 		if(model.variables.size() != 0){
 			line = "\n\nVARIABLES: ";
 			int i;
+			
+			ArrayList<Variable> normalAndImputationVarCombined = new ArrayList<Variable>();
+			for(i = 0; i < model.variables.size(); i++){
+				normalAndImputationVarCombined.add(model.variables.get(i));
+			}
+			for(i = 0; i < model.identifierVariables.size(); i++) {
+				normalAndImputationVarCombined.add(model.identifierVariables.get(i));
+			}
+			
+			Collections.sort(normalAndImputationVarCombined);
 			String ordinalVariables = "\n\nORDINAL: ";
 			String nominalVariables = "\n\nNOMINAL: ";
-			for(i = 0; i < model.variables.size() - 1; i++){
-				Variable var = model.variables.get(i);
-				line = line + var.name + " ";
-				
-				if(var.type == "Ordinal") 
-					ordinalVariables = ordinalVariables + var.name + " ";
-				if(var.type == "Nominal")
-					nominalVariables = nominalVariables + var.name + " "; 
+			for(i = 0; i < normalAndImputationVarCombined.size() - 1; i++){
+				Variable var = normalAndImputationVarCombined.get(i);
+				System.out.println("Var name:" +var.name + "type: " +var.type);
+				if(var.name.lastIndexOf("(") != -1) {
+					String truncatedVariable = var.name.substring(0, var.name.lastIndexOf("("));
+					line = line + truncatedVariable + " ";
+					if(var.type == "Ordinal") {
+						ordinalVariables = ordinalVariables + truncatedVariable + " ";
+					}
+						
+					if(var.type == "Nominal") {
+						nominalVariables = nominalVariables + truncatedVariable + " "; 
+					}
+				} else {
+					line = line + var.name + " ";
+					if(var.type == "Ordinal") {
+						ordinalVariables = ordinalVariables + var.name + " ";
+					}
+						
+					if(var.type == "Nominal") {
+						nominalVariables = nominalVariables + var.name + " "; 
+					}
+				}					
 			}
-			line = line + model.variables.get(i).name + ";";
-			if(model.variables.get(i).type == "Ordinal") 
-				ordinalVariables = ordinalVariables + model.variables.get(i).name + ";";
-			if(model.variables.get(i).type == "Nominal")
-				nominalVariables = nominalVariables + model.variables.get(i).name + ";"; 
+			line = line + normalAndImputationVarCombined.get(i).name + ";";
+			if(normalAndImputationVarCombined.get(i).type == "Ordinal") 
+				ordinalVariables = ordinalVariables +normalAndImputationVarCombined.get(i).name;
+			if(normalAndImputationVarCombined.get(i).type == "Nominal")
+				nominalVariables = nominalVariables + normalAndImputationVarCombined.get(i).name; 
 			
 			syntaxEditor.append(line);
-			syntaxEditor.append(ordinalVariables);
-			syntaxEditor.append(nominalVariables);
+			syntaxEditor.append(ordinalVariables + ";");
+			syntaxEditor.append(nominalVariables + ";");
 			
-		}
-		
-		line = "\n\nMISSING: ";
-		if(model.mappings.containsKey("MVC")){
-			line += model.mappings.get("MVC");
-			line += ";";
-		}
-		syntaxEditor.append(line);
+			line = "\n\nMISSING: ";
+			if(model.mappings.containsKey("MVC")){
+				line += model.mappings.get("MVC");
+			}
+			syntaxEditor.append(line + ";");
+		}	
 	}
 	
 	public void writeModelMCMCOutputSyntax() {
@@ -520,12 +607,12 @@ public class MainWindow {
 			String name = model.modelVariables.get(i).name;
 			if(name.lastIndexOf("(") != -1) {
 				String truncatedVariable = name.substring(0, name.lastIndexOf("("));
-				line = line + truncatedVariable + " ";
+				line = line + truncatedVariable;
 			} else {
-				line = line + name + " ";
+				line = line + name;
 			}
 			
-			syntaxEditor.append(line);
+			syntaxEditor.append(line + ";");
 		}
 		
 		System.out.println("Model Mapping size = " + model.mappings.size());
@@ -534,17 +621,17 @@ public class MainWindow {
 			System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
 		}
 		
-		if(model.mappings.size() == 11) {
-			line = "\n\nNIMPS: " + model.mappings.get("Nimps");
-			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations");
-			line = line + "\n\nBURN: " + model.mappings.get("BurnIn");
-			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed");
-			line = line + "\n\nCHAINS: " + model.mappings.get("Chains");
+		if(model.mappings.size() >= 11) {
+			line = "\n\nNIMPS: " + model.mappings.get("Nimps") + ";";
+			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations") + ";";
+			line = line + "\n\nBURN: " + model.mappings.get("BurnIn") + ";";
+			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed") + ";";
+			line = line + "\n\nCHAINS: " + model.mappings.get("Chains") + ";";
 			
-			if(model.mappings.get("DF") == "separate") {
-				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT");
+			if(model.mappings.get("DF").equals("separate")) {
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT") + ";";
 			} else {
-				line = line + "\n\nOUTFILE: " + model.outputFilePath + "." + model.mappings.get("DT");
+				line = line + "\n\nOUTFILE: " + model.outputFilePath + "." + model.mappings.get("DT") + ";";
 			}
 			
 			syntaxEditor.append(line);
@@ -555,9 +642,8 @@ public class MainWindow {
 			line += " " + model.mappings.get("DT");
 			line += " " + model.mappings.get("CM");
 			line += " " + model.mappings.get("VP");
-			line += " " + model.mappings.get("LV");
+			line += " " + model.mappings.get("LV") + ";";
 			syntaxEditor.append(line);
 		}
 	}
-
 }
