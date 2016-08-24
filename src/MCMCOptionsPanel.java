@@ -149,7 +149,7 @@ public class MCMCOptionsPanel extends JPanel {
 		verticalBox_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("VP", "iw0");
+				model.mappings.put("VP", "prior1");
 			}
 		});
 		buttonGroup_2.add(rdbtnInverseWishart);
@@ -159,7 +159,7 @@ public class MCMCOptionsPanel extends JPanel {
 		verticalBox_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.mappings.put("VP", "iw1");
+				model.mappings.put("VP", "prior2");
 			}
 		});
 		buttonGroup_2.add(rdbtnInverseWishartId);
@@ -171,7 +171,7 @@ public class MCMCOptionsPanel extends JPanel {
 	public void initializeModel() {
 		model.mappings.put("CM", "clmean");
 		model.mappings.put("LV", "hov");
-		model.mappings.put("VP", "iw0");
+		model.mappings.put("VP", "prior2");
 	}
 	
 	public void initializeWithModel() {
@@ -189,7 +189,7 @@ public class MCMCOptionsPanel extends JPanel {
 	    noOfChains.setSelectedIndex(0);
 	    rdbtnInclude.setSelected(true);
 	    rdbtnHomogenous.setSelected(true);
-	    rdbtnInverseWishart.setSelected(true);
+	    rdbtnInverseWishartId.setSelected(true);
 	}
 	
 	public boolean isComplete() {

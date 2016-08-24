@@ -29,9 +29,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.concurrent.CancellationException;
 import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -187,7 +190,9 @@ public class MainWindow {
                        writeImportSyntax();
                     }
 					});
-					cancelButtonClicked = false;
+					currentFile = null;
+					frame.setTitle("Untitled");
+					syntaxEditor.setText("");
 					ModelMCOutputWindow = new ModelMCOutput(0);
 				}
 				
@@ -289,7 +294,7 @@ public class MainWindow {
 		JMenuItem mntmRun = new JMenuItem("Run");
 		mntmRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				boolean cancelButtonClicked = false;
 				if(currentFile == null){
 					if(syntaxEditor.getText().equals("")) {
 						JOptionPane.showMessageDialog(frame,
@@ -301,6 +306,9 @@ public class MainWindow {
 					int saveResult = selectedFile.showSaveDialog(frame);
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+					} else {
+						// When Cancel button is clicked
+						cancelButtonClicked = true;
 					}
 				} else {
 					System.out.println("Most recent hashcode: " + mostRecentHashCode);
@@ -309,11 +317,14 @@ public class MainWindow {
 						saveFile(currentFile, syntaxEditor.getText());
 					}
 				}
-				if(runWindow == null)
-					runWindow = new RunLogsWindow(pathToExe);
-				runWindow.logTextArea.setText("");
-				runWindow.setVisible(true);
-				runWindow.initiateExecution();
+				
+				if(!cancelButtonClicked){
+					if(runWindow == null)
+						runWindow = new RunLogsWindow(pathToExe);
+					runWindow.logTextArea.setText("");
+					runWindow.setVisible(true);
+					runWindow.initiateExecution();
+				}
 			}
 		});
 		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
@@ -453,7 +464,7 @@ public class MainWindow {
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
-			model.syntaxFilePath = currentFile.getPath();
+			model.syntaxFilePath = filePath;
 			System.out.println("Syntax File path = " + model.syntaxFilePath);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(frame,
@@ -516,22 +527,47 @@ public class MainWindow {
 		if(model.variables.size() != 0){
 			line = "\n\nVARIABLES: ";
 			int i;
+			
+			ArrayList<Variable> normalAndImputationVarCombined = new ArrayList<Variable>();
+			for(i = 0; i < model.variables.size(); i++){
+				normalAndImputationVarCombined.add(model.variables.get(i));
+			}
+			for(i = 0; i < model.identifierVariables.size(); i++) {
+				normalAndImputationVarCombined.add(model.identifierVariables.get(i));
+			}
+			
+			Collections.sort(normalAndImputationVarCombined);
 			String ordinalVariables = "\n\nORDINAL: ";
 			String nominalVariables = "\n\nNOMINAL: ";
-			for(i = 0; i < model.variables.size() - 1; i++){
-				Variable var = model.variables.get(i);
-				line = line + var.name + " ";
-				System.out.println(var.name);
-				if(var.type == "Ordinal") 
-					ordinalVariables = ordinalVariables + var.name + " ";
-				if(var.type == "Nominal")
-					nominalVariables = nominalVariables + var.name + " "; 
+			for(i = 0; i < normalAndImputationVarCombined.size() - 1; i++){
+				Variable var = normalAndImputationVarCombined.get(i);
+				System.out.println("Var name:" +var.name + "type: " +var.type);
+				if(var.name.lastIndexOf("(") != -1) {
+					String truncatedVariable = var.name.substring(0, var.name.lastIndexOf("("));
+					line = line + truncatedVariable + " ";
+					if(var.type == "Ordinal") {
+						ordinalVariables = ordinalVariables + truncatedVariable + " ";
+					}
+						
+					if(var.type == "Nominal") {
+						nominalVariables = nominalVariables + truncatedVariable + " "; 
+					}
+				} else {
+					line = line + var.name + " ";
+					if(var.type == "Ordinal") {
+						ordinalVariables = ordinalVariables + var.name + " ";
+					}
+						
+					if(var.type == "Nominal") {
+						nominalVariables = nominalVariables + var.name + " "; 
+					}
+				}					
 			}
-			line = line + model.variables.get(i).name + ";";
-			if(model.variables.get(i).type == "Ordinal") 
-				ordinalVariables = ordinalVariables + model.variables.get(i).name;
-			if(model.variables.get(i).type == "Nominal")
-				nominalVariables = nominalVariables + model.variables.get(i).name; 
+			line = line + normalAndImputationVarCombined.get(i).name + ";";
+			if(normalAndImputationVarCombined.get(i).type == "Ordinal") 
+				ordinalVariables = ordinalVariables +normalAndImputationVarCombined.get(i).name;
+			if(normalAndImputationVarCombined.get(i).type == "Nominal")
+				nominalVariables = nominalVariables + normalAndImputationVarCombined.get(i).name; 
 			
 			syntaxEditor.append(line);
 			syntaxEditor.append(ordinalVariables + ";");

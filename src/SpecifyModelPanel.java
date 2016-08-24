@@ -253,7 +253,7 @@ public class SpecifyModelPanel extends JPanel {
 				for(int i = 0; i < selectedRow.length; i++) {
 					Variable variable = model.variables.get(selectedRow[i]);
 					System.out.println(variable.name);
-					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", "Undefined", variable.position);
+					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", variable.type, variable.position);
 					model.identifierVariables.add(identifierVariable);
 					
 				}
