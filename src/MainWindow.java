@@ -94,6 +94,9 @@ public class MainWindow {
 		
 		model = SyntaxModel.getInstance();
 		
+		// Copies Blimp .exe into a temporary folder to allow execution in Java Environment
+		copyEXEToTempDirectory();
+		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -644,6 +647,19 @@ public class MainWindow {
 			line += " " + model.mappings.get("VP");
 			line += " " + model.mappings.get("LV") + ";";
 			syntaxEditor.append(line);
+		}
+	}
+	
+	public void copyEXEToTempDirectory(){
+		File tempFile;
+		try {
+			tempFile = File.createTempFile("temp-file", "tmp");
+			tempFile.deleteOnExit();
+			String tempDirectory = tempFile.getParent();
+			Runtime.getRuntime().exec("cmd /c start test.bat " + tempDirectory);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 }

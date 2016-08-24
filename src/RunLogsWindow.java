@@ -154,7 +154,7 @@ public class RunLogsWindow extends JFrame {
 		File tempFile =  File.createTempFile("temp-file", "tmp");
 		tempFile.deleteOnExit();
 		String tempDirectory = tempFile.getParent();
-		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
+//		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
 		return tempDirectory;
 	}
 }
