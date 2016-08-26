@@ -136,7 +136,7 @@ public class SpecifyModelPanel extends JPanel {
 		scrollPane.setViewportView(variableTable);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(442, 192, 222, 274);
+		scrollPane_1.setBounds(442, 161, 222, 305);
 		add(scrollPane_1);
 		
 		DefaultTableModel tblmodel = new DefaultTableModel(0, 1);
@@ -148,7 +148,7 @@ public class SpecifyModelPanel extends JPanel {
 		scrollPane_1.setViewportView(modelVariables);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(442, 11, 222, 129);
+		scrollPane_2.setBounds(442, 11, 222, 97);
 		add(scrollPane_2);
 		
 		DefaultTableModel tblmodel1 = new DefaultTableModel(0, 1);
@@ -173,6 +173,11 @@ public class SpecifyModelPanel extends JPanel {
 						int index = findInArrayList(model.modelVariables, variable.name);
 						if(index != -1){
 							System.out.println("Duplicate variable found. Not Adding..");
+							// if duplicate variable found exists already, throw error
+							JOptionPane.showMessageDialog(getParentFrame(),
+									"Duplicate variable " + variable.name + " already exists. \nPlease remove any duplicate variables from the model before adding.",
+									"Error!",
+									JOptionPane.ERROR_MESSAGE);
 							break;
 						}
 						model.modelVariables.add(variable);
@@ -203,6 +208,7 @@ public class SpecifyModelPanel extends JPanel {
 							if(index != -1) {
 								System.out.println("Combinated variable "+ combinations.get(i) + " already present. Removing it..");
 								model.modelVariables.remove(index);
+								
 							}
 							String variableName = combinations.get(i) + " (Random Slopes)";
 							Variable newModelVariable = new Variable(variableName, "Undefined", -1);
@@ -294,7 +300,11 @@ public class SpecifyModelPanel extends JPanel {
 				}
 				int count = 0;
 				for(int i = 0; i < selectedRows.length; i++) {
-					model.variables.add(model.identifierVariables.get(selectedRows[i]-count));
+					Variable var = model.identifierVariables.get(selectedRows[i]-count);
+					if(var.name.lastIndexOf("(") != -1) {
+						var.name = var.name.substring(0, var.name.lastIndexOf("(")).trim();
+					}
+					model.variables.add(var);
 					Collections.sort(model.variables);
 					model.identifierVariables.remove(selectedRows[i]-count);
 					count++;
@@ -366,7 +376,7 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		chckbxSingleImputation.setBounds(442, 147, 131, 23);
+		chckbxSingleImputation.setBounds(442, 115, 131, 23);
 		add(chckbxSingleImputation);
 		
 		
@@ -375,9 +385,27 @@ public class SpecifyModelPanel extends JPanel {
 	public int findInArrayList(ArrayList<Variable> list, String variableName) {
 		for(int i = 0; i < list.size(); i++) {
 			System.out.println("Comparing " + list.get(i) + " against " + variableName);
-			if(list.get(i).name.equals(variableName)){
-				return i;
+			String [] separatedVariables = list.get(i).name.split(":");
+			
+			if(separatedVariables.length > 1){
+				// Random Variable
+				String lastVariableToTrim = separatedVariables[separatedVariables.length-1];
+				separatedVariables[separatedVariables.length-1] = lastVariableToTrim.substring(0, lastVariableToTrim.lastIndexOf("(")).trim();
+				System.out.println("Last varaibel : " + separatedVariables[separatedVariables.length-1]);
+				for(int j = 0; j < separatedVariables.length; j++) {
+					System.out.println("Comparing "+ separatedVariables[j] + "with " +variableName);
+					if(separatedVariables[j].equals(variableName))
+						return i;
+				}
+			} else {
+				// Main effects variable
+				if(list.get(i).name.equals(variableName)){
+					return i;
+				}
 			}
+			
+			
+			
 		}
 		return -1;
 	}

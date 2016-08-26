@@ -1,9 +1,11 @@
 import java.awt.EventQueue;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.JMenuBar;
@@ -92,8 +94,12 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
-		model = SyntaxModel.getInstance();
+		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
+		frame.setIconImage(img.getImage());
 		
+		model = SyntaxModel.getInstance();
+				
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -125,9 +131,15 @@ public class MainWindow {
 				else {
 					// If syntax editor is non-empty, save the existing text on disk
 					if(currentFile == null){
-						int saveResult = selectedFile.showSaveDialog(frame);
-						if (saveResult == selectedFile.APPROVE_OPTION) {
-							saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+						int wantToSave = JOptionPane.showConfirmDialog(frame,
+								"Do you want to save changes to Untitled?" ,
+								"Blimp",
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if(wantToSave == JOptionPane.YES_OPTION) {
+							int saveResult = selectedFile.showSaveDialog(frame);
+							if (saveResult == selectedFile.APPROVE_OPTION) {
+								saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+							}
 						}
 					}
 					else {
@@ -141,6 +153,36 @@ public class MainWindow {
 				}
 		}
 		});
+		
+		JMenuItem mntmImportDataset = new JMenuItem("Import Data");
+		mntmImportDataset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				SyntaxModel.clearModel();
+				Path importedFile = importSelectedFile();
+
+				if(importedFile == null){
+					System.out.println("There was an error in importing the file.");
+				} else {
+					model.dataSetPath = importedFile;
+					importWindow = new ImportWindow(frame);
+					importWindow.setVisible(true);
+					importWindow.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                    	// If missing value code is entered only then print import syntax
+                    	if(model.mappings.containsKey("MVC"))
+                       		writeImportSyntax();
+                    }
+					});
+					currentFile = null;
+					frame.setTitle("Untitled");
+					syntaxEditor.setText("");
+					ModelMCOutputWindow = new ModelMCOutput(0);
+				}
+				
+			}
+		});
+		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+		mnFile.add(mntmImportDataset);
 		mntmOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mnFile.add(mntmOpenFile);
 		
@@ -172,34 +214,6 @@ public class MainWindow {
 		});
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnFile.add(mntmSaveAs);
-		
-		JMenuItem mntmImportDataset = new JMenuItem("Import Dataset");
-		mntmImportDataset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				SyntaxModel.clearModel();
-				Path importedFile = importSelectedFile();
-
-				if(importedFile == null){
-					System.out.println("There was an error in importing the file.");
-				} else {
-					model.dataSetPath = importedFile;
-					importWindow = new ImportWindow(frame);
-					importWindow.setVisible(true);
-					importWindow.addWindowListener(new WindowAdapter() {
-                    public void windowClosed(WindowEvent e){
-                       writeImportSyntax();
-                    }
-					});
-					currentFile = null;
-					frame.setTitle("Untitled");
-					syntaxEditor.setText("");
-					ModelMCOutputWindow = new ModelMCOutput(0);
-				}
-				
-			}
-		});
-		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
-		mnFile.add(mntmImportDataset);
 		
 		JMenuItem mntmClose = new JMenuItem("Close");
 		mntmClose.addActionListener(new ActionListener() {
@@ -410,7 +424,7 @@ public class MainWindow {
 						model.importFileContents = new ArrayList<String>();
 						Scanner scan = new Scanner(new FileInputStream(file));
 						if(flag == 1) { // When a data import file is to be read, read only 10 lines
-							noOfLinesToRead = 10;
+							noOfLinesToRead = 20;
 							while(scan.hasNextLine() && noOfLinesToRead > 0){
 								String line = scan.nextLine();
 								fileContents += line;
@@ -460,7 +474,7 @@ public class MainWindow {
 			writer = new BufferedWriter(new FileWriter(filePath));
 			writer.write(contents);
 			writer.close();
-			syntaxEditor.setText(contents);
+//			syntaxEditor.setText(contents);
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
@@ -500,6 +514,35 @@ public class MainWindow {
 		
 	}
 	public void closeWindow() {
+		
+		
+			if(currentFile == null && !syntaxEditor.getText().equals("")) {
+				// File open in the syntax editor is not saved, then show save prompt
+				int saveUntitled = JOptionPane.showConfirmDialog(frame,
+						"Do you want to save changes to Untitled?" ,
+						"Blimp",
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if(saveUntitled == JOptionPane.YES_OPTION) {
+					int saveResult = selectedFile.showSaveDialog(frame);
+					if (saveResult == selectedFile.APPROVE_OPTION) {
+						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+					}
+				}	
+			} 
+			else {
+				if(syntaxEditor.getText().hashCode() != mostRecentHashCode) {
+						int save = JOptionPane.showConfirmDialog(frame,
+								"Do you want to save changes to " + currentFile.getName() + "?",
+								"Blimp",
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if(save == JOptionPane.YES_OPTION) 
+							saveFile(currentFile, syntaxEditor.getText());
+					}
+					
+			}
+		
+
+		
 		WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
 	}
@@ -646,4 +689,5 @@ public class MainWindow {
 			syntaxEditor.append(line);
 		}
 	}
+	
 }

@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.JProgressBar;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
@@ -53,7 +54,13 @@ public class RunLogsWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		JFrame frame = this;
+		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
+		frame.setIconImage(img.getImage());
+		
 		logTextArea = new JTextArea();
+		logTextArea.setEditable(false);
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
 		scrollPane_1.setBounds(5, 5, 760, 410);
@@ -102,8 +109,7 @@ public class RunLogsWindow extends JFrame {
 	{
 		Process process;
 		try {  
-			
-			process = new ProcessBuilder(createTempDirectory() + "\\Blimp\\blimp.exe", model.syntaxFilePath).start();
+			process = new ProcessBuilder("blimp.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -154,7 +160,7 @@ public class RunLogsWindow extends JFrame {
 		File tempFile =  File.createTempFile("temp-file", "tmp");
 		tempFile.deleteOnExit();
 		String tempDirectory = tempFile.getParent();
-		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
+//		Runtime.getRuntime().exec("cmd /c start /B test.bat " + tempDirectory);
 		return tempDirectory;
 	}
 }
