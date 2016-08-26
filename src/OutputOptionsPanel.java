@@ -76,7 +76,7 @@ public class OutputOptionsPanel extends JPanel {
 		JLabel lblDiagnostics = new JLabel("Diagnostics");
 		lblDiagnostics.setBounds(524, 271, 133, 23);
 		selectedOutputDirectory = new JFileChooser();
-		selectedOutputDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
 		setLayout(null);
 		add(lblDataFormat);
 		add(lblFileType);

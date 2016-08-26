@@ -24,6 +24,8 @@ import java.awt.Panel;
 import java.awt.Toolkit;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -64,6 +66,11 @@ public class ModelMCOutput extends JFrame {
 		setContentPane(contentPane);
 		model = SyntaxModel.getInstance();
 		
+		JFrame frame = this;
+		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
+		frame.setIconImage(img.getImage());
+		
 		JButton btnReset = new JButton("Reset");
 		btnReset.setBounds(114, 527, 82, 23);
 		btnReset.addActionListener(new ActionListener() {
@@ -87,7 +94,6 @@ public class ModelMCOutput extends JFrame {
 		tabbedPane.addTab("Output Options", null, outputOptionsPanel, null);
 		tabbedPane.setSelectedIndex(selectTabIndex);
 		
-		JFrame frame = this;
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(10, 527, 92, 23);
 		btnCancel.addActionListener(new ActionListener() {
@@ -125,8 +131,10 @@ public class ModelMCOutput extends JFrame {
 	    		model.mappings.put("ThinIterations", MCMCPanel.thinIterTB.getText());
 	    	if(!MCMCPanel.nimpsTB.getText().equals(""))
 	    		model.mappings.put("Nimps", MCMCPanel.nimpsTB.getText());
-	    	if(!MCMCPanel.randSeedTB.getText().equals(""))
+	    	if(!MCMCPanel.randSeedTB.getText().equals("")){
 	    		model.mappings.put("RandomSeed", MCMCPanel.randSeedTB.getText());
+	    	}
+	    		
 	    	if(!MCMCPanel.noOfChains.getSelectedItem().toString().equals(""))
 	    		model.mappings.put("Chains", MCMCPanel.noOfChains.getSelectedItem().toString());
 	
@@ -151,6 +159,10 @@ public class ModelMCOutput extends JFrame {
 	    	if(!outputOptionsPanel.isComplete()){
 	    		errorMsg += "Output Options not entered.\n";
 	    		isComplete = false;
+	    	}
+	    	
+	    	if(MCMCPanel.randSeedTB.getText().length() > 9) {
+	    		errorMsg += "Random Number seed should have atmost 9 digits.\n";
 	    	}
 	    	
 	    	if(!isComplete)

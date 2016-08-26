@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
@@ -92,6 +93,12 @@ public class ImportWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		JFrame frame = this;
+		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
+		frame.setIconImage(img.getImage());
+		
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 5, 723, 449);
@@ -192,7 +199,8 @@ public class ImportWindow extends JFrame {
 					varNames[i] = model.variables.get(i).name;
 				}
 				variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(varNames));
-				varTypes.setSelectedIndex(0);
+//				varTypes.setSelectedIndex(0);
+				variableNamesComboBox.setSelectedIndex(selectedVariable);
 				newVarName.setText("");
 			}
 		});
@@ -220,6 +228,7 @@ public class ImportWindow extends JFrame {
 		VariablesTable.setOpaque(true);
 		VariablesTable.setFillsViewportHeight(true);
 		VariablesTable.setBackground(Color.WHITE);
+		VariablesTable.getTableHeader().setReorderingAllowed(false);
 
 		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		variableTableSB.setViewportView(VariablesTable);
@@ -280,12 +289,13 @@ public class ImportWindow extends JFrame {
 		scrollPane.setBounds(41, 213, 641, 187);
 		dataPanel.add(scrollPane);
 
+	
 		dataTable = new JTable(model);
-		
-		
+		dataTable.setAutoResizeMode(0);
+		dataTable.getTableHeader().setReorderingAllowed(false);	
 		for(int i = 0; i < defaultColumnHeadings.length; i++) {
 			TableColumn column = dataTable.getColumnModel().getColumn(i);
-			column.setPreferredWidth(30);
+			column.setPreferredWidth(70);
 		}
 		
 		scrollPane.setViewportView(dataTable);
@@ -345,11 +355,23 @@ public class ImportWindow extends JFrame {
 			Pattern pattern = Pattern.compile("\\s");
 			Matcher matcher = pattern.matcher(name);
 			boolean found = matcher.find();
+			
 			if(!found && !checkIfDuplicate(name)){
 				variable.name = name;
 				VariablesTable.getModel().setValueAt(name, index, 0);
 				dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
+				dataTable.getColumnModel().getColumn(index).setPreferredWidth(70);
 				dataTable.getTableHeader().repaint();
+			} else if(found) {
+				JOptionPane.showMessageDialog(contentPane,
+						"Variable name cannot contain white spaces.",
+						"Error!",
+						JOptionPane.ERROR_MESSAGE);
+			} else if(checkIfDuplicate(name)) {
+				JOptionPane.showMessageDialog(contentPane,
+						"Variable name already exists. Please choose another name.",
+						"Error!",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		variable.type = type;
@@ -375,10 +397,17 @@ public class ImportWindow extends JFrame {
 	    }
 
 	    public void actionPerformed(ActionEvent e) {
-	    	if(!MV_Code.getText().equals(""))
-				model.mappings.put("MVC", MV_Code.getText());
-	    	toBeClose.setVisible(false);
-	        toBeClose.dispose();
+	    	if(!MV_Code.getText().equals("")){
+	    		model.mappings.put("MVC", MV_Code.getText());
+	    		toBeClose.setVisible(false);
+		        toBeClose.dispose();
+	    	} else {
+	    		// Missing value textbox is empty
+	    		JOptionPane.showMessageDialog(contentPane,
+						"Please enter a missing value code and then click Done.",
+						"Error!",
+						JOptionPane.ERROR_MESSAGE);
+	    	}
 	    }
 	}
 	
