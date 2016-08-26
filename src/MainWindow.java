@@ -41,11 +41,11 @@ import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultEditorKit;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.rtf.RTFEditorKit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.UndoManager;
 
 import say.swing.JFontChooser;
 
@@ -66,6 +66,9 @@ public class MainWindow {
 	private int mostRecentHashCode;
 	private String pathToExe;
 	private Boolean cancelButtonClicked;
+	private UndoManager undoManager;
+	private JMenuItem mntmUno;
+	private JMenuItem mntmRedo;
 	/**
 	 * Launch the application.
 	 */
@@ -272,7 +275,29 @@ public class MainWindow {
 
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
 		mnFormat.add(mntmPaste);
+		
+		mntmUno = new JMenuItem("Undo");
+		mntmUno.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmUno);
+		mntmUno.setEnabled(false);
+		
+		mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setEnabled(false);
+		mnFormat.add(mntmRedo);
+		
+		JMenuItem findButton = new JMenuItem("Find");
+		findButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+		findButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FindDialog find = new FindDialog(syntaxEditor);
+				find.setLocationRelativeTo(frame);
+				find.setVisible(true);
+				find.setDefaultCloseOperation(find.DISPOSE_ON_CLOSE);
+			}
+		});
+		mnFormat.add(findButton);
 		mnFormat.add(mntmFont);
+		
 		
 		JMenu mnImpute = new JMenu("Impute");
 		menuBar.add(mnImpute);
@@ -405,7 +430,37 @@ public class MainWindow {
 		syntaxEditor.setWrapStyleWord(true);
 		scrollBar = new JScrollPane(syntaxEditor);
 		frame.getContentPane().add(scrollBar, BorderLayout.CENTER);
-
+		undoManager =  new UndoManager();
+		  syntaxEditor.getDocument().addUndoableEditListener(
+			        new UndoableEditListener() {
+			          public void undoableEditHappened(UndoableEditEvent e) {
+			            undoManager.addEdit(e.getEdit());
+			            updateButtons();
+			          }
+			        });
+		  mntmUno.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        try {
+		          undoManager.undo();
+		        } catch (CannotRedoException cre) {
+		          cre.printStackTrace();
+		        }
+		        updateButtons();
+		      }
+		    });
+		 
+		  mntmRedo.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        try {
+		          undoManager.redo();
+		        } catch (CannotRedoException cre) {
+		          cre.printStackTrace();
+		        }
+		        updateButtons();
+		      }
+		    });
+		  
+		  
 	}
 	
 	public boolean openFile(File file, int flag) {
@@ -722,5 +777,8 @@ public class MainWindow {
 			syntaxEditor.append(line);
 		}
 	}
-	
+	 public void updateButtons() {
+		    mntmUno.setEnabled(undoManager.canUndo());
+		    mntmRedo.setEnabled(undoManager.canRedo());
+		  }
 }
