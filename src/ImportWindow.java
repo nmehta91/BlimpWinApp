@@ -99,7 +99,6 @@ public class ImportWindow extends JFrame {
 		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
 		frame.setIconImage(img.getImage());
 		
-		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 5, 723, 449);
 		contentPane.add(tabbedPane);
@@ -383,7 +382,8 @@ public class ImportWindow extends JFrame {
 	public boolean checkIfDuplicate(String name) {
 		boolean found = false;
 		for(int i = 0; i < model.variables.size(); i++) {
-			if(model.variables.get(i).name.equals(name))
+			String lname = model.variables.get(i).name.toLowerCase();
+			if(lname.equals(name.toLowerCase()))
 				found = true;
 		}
 		return found;

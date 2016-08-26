@@ -109,8 +109,7 @@ public class RunLogsWindow extends JFrame {
 	{
 		Process process;
 		try {  
-			
-			process = new ProcessBuilder(createTempDirectory() + "\\Blimp\\blimp.exe", model.syntaxFilePath).start();
+			process = new ProcessBuilder("blimp.exe", model.syntaxFilePath).start();
 			java.io.InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
