@@ -41,6 +41,11 @@ import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.rtf.RTFEditorKit;
 
 import say.swing.JFontChooser;
 
@@ -99,7 +104,7 @@ public class MainWindow {
 		frame.setIconImage(img.getImage());
 		
 		model = SyntaxModel.getInstance();
-				
+		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -239,6 +244,34 @@ public class MainWindow {
 				}
 			}
 		});
+		
+		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmCut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.cut();
+			}
+		});
+		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmCut);
+		
+		JMenuItem mntmCopu = new JMenuItem("Copy");
+		mntmCopu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.copy();
+			}
+		});
+		mntmCopu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmCopu);
+		
+		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mntmPaste.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.paste();
+			}
+		});
+
+		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmPaste);
 		mnFormat.add(mntmFont);
 		
 		JMenu mnImpute = new JMenu("Impute");
