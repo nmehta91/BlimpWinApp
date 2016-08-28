@@ -580,7 +580,6 @@ public class MainWindow {
 			writer = new BufferedWriter(new FileWriter(filePath));
 			writer.write(contents);
 			writer.close();
-//			syntaxEditor.setText(contents);
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
