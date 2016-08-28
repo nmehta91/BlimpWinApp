@@ -51,6 +51,7 @@ import say.swing.JFontChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JSeparator;
 
 public class MainWindow {
 
@@ -102,7 +103,7 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
-		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		ImageIcon img = new ImageIcon("blimplogo_32x32.png");
 		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
 		frame.setIconImage(img.getImage());
 		
@@ -223,14 +224,31 @@ public class MainWindow {
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnFile.add(mntmSaveAs);
 		
-		JMenuItem mntmClose = new JMenuItem("Close");
+		JMenuItem mntmClose = new JMenuItem("Close Syntax");
 		mntmClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				closeWindow();
+				syntaxEditor.setText("");
+				SyntaxModel.clearModel();
+				frame.setTitle("Untitled");
 			}
 		});
-		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
+		
+		JMenuItem mntmQuitBlimp = new JMenuItem("Quit Blimp");
+		mntmQuitBlimp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				closeWindow();
+				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+			}
+		});
+		
+		JSeparator separator = new JSeparator();
+		mnFile.add(separator);
+		mntmQuitBlimp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		mnFile.add(mntmQuitBlimp);
 		
 		JMenu mnFormat = new JMenu("Format");
 		menuBar.add(mnFormat);
@@ -591,7 +609,12 @@ public class MainWindow {
 				}
 			}
 			else {
-				saveFile(currentFile, syntaxEditor.getText());
+				int save = JOptionPane.showConfirmDialog(frame,
+						"Do you want to save changes to " + currentFile.getName() + "?",
+						"Blimp",
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if(save == JOptionPane.YES_OPTION) 
+					saveFile(currentFile, syntaxEditor.getText());
 			}
 		}
 		
@@ -602,8 +625,6 @@ public class MainWindow {
 		
 	}
 	public void closeWindow() {
-		
-		
 			if(currentFile == null && !syntaxEditor.getText().equals("")) {
 				// File open in the syntax editor is not saved, then show save prompt
 				int saveUntitled = JOptionPane.showConfirmDialog(frame,
@@ -628,11 +649,7 @@ public class MainWindow {
 					}
 					
 			}
-		
-
-		
-		WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
-		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+			
 	}
 	
 	public Path importSelectedFile() {
