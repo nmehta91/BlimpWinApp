@@ -41,11 +41,17 @@ import java.awt.event.InputEvent;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Document;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.UndoManager;
 
 import say.swing.JFontChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JSeparator;
 
 public class MainWindow {
 
@@ -61,6 +67,9 @@ public class MainWindow {
 	private int mostRecentHashCode;
 	private String pathToExe;
 	private Boolean cancelButtonClicked;
+	private UndoManager undoManager;
+	private JMenuItem mntmUno;
+	private JMenuItem mntmRedo;
 	/**
 	 * Launch the application.
 	 */
@@ -94,12 +103,12 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
-		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
+		ImageIcon img = new ImageIcon("blimplogo_32x32.png");
 		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
 		frame.setIconImage(img.getImage());
 		
 		model = SyntaxModel.getInstance();
-				
+		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -215,14 +224,31 @@ public class MainWindow {
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnFile.add(mntmSaveAs);
 		
-		JMenuItem mntmClose = new JMenuItem("Close");
+		JMenuItem mntmClose = new JMenuItem("Close Syntax");
 		mntmClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				closeWindow();
+				syntaxEditor.setText("");
+				SyntaxModel.clearModel();
+				frame.setTitle("Untitled");
 			}
 		});
-		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
 		mnFile.add(mntmClose);
+		
+		JMenuItem mntmQuitBlimp = new JMenuItem("Quit Blimp");
+		mntmQuitBlimp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				closeWindow();
+				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+			}
+		});
+		
+		JSeparator separator = new JSeparator();
+		mnFile.add(separator);
+		mntmQuitBlimp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		mnFile.add(mntmQuitBlimp);
 		
 		JMenu mnFormat = new JMenu("Format");
 		menuBar.add(mnFormat);
@@ -239,7 +265,57 @@ public class MainWindow {
 				}
 			}
 		});
+		
+		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmCut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.cut();
+			}
+		});
+		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmCut);
+		
+		JMenuItem mntmCopu = new JMenuItem("Copy");
+		mntmCopu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.copy();
+			}
+		});
+		mntmCopu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmCopu);
+		
+		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mntmPaste.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				syntaxEditor.paste();
+			}
+		});
+
+		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmPaste);
+		
+		mntmUno = new JMenuItem("Undo");
+		mntmUno.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+		mnFormat.add(mntmUno);
+		mntmUno.setEnabled(false);
+		
+		mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setEnabled(false);
+		mnFormat.add(mntmRedo);
+		
+		JMenuItem findButton = new JMenuItem("Find");
+		findButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+		findButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FindDialog find = new FindDialog(syntaxEditor);
+				find.setLocationRelativeTo(frame);
+				find.setVisible(true);
+				find.setDefaultCloseOperation(find.DISPOSE_ON_CLOSE);
+			}
+		});
+		mnFormat.add(findButton);
 		mnFormat.add(mntmFont);
+		
 		
 		JMenu mnImpute = new JMenu("Impute");
 		menuBar.add(mnImpute);
@@ -372,7 +448,37 @@ public class MainWindow {
 		syntaxEditor.setWrapStyleWord(true);
 		scrollBar = new JScrollPane(syntaxEditor);
 		frame.getContentPane().add(scrollBar, BorderLayout.CENTER);
-
+		undoManager =  new UndoManager();
+		  syntaxEditor.getDocument().addUndoableEditListener(
+			        new UndoableEditListener() {
+			          public void undoableEditHappened(UndoableEditEvent e) {
+			            undoManager.addEdit(e.getEdit());
+			            updateButtons();
+			          }
+			        });
+		  mntmUno.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        try {
+		          undoManager.undo();
+		        } catch (CannotRedoException cre) {
+		          cre.printStackTrace();
+		        }
+		        updateButtons();
+		      }
+		    });
+		 
+		  mntmRedo.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        try {
+		          undoManager.redo();
+		        } catch (CannotRedoException cre) {
+		          cre.printStackTrace();
+		        }
+		        updateButtons();
+		      }
+		    });
+		  
+		  
 	}
 	
 	public boolean openFile(File file, int flag) {
@@ -503,7 +609,12 @@ public class MainWindow {
 				}
 			}
 			else {
-				saveFile(currentFile, syntaxEditor.getText());
+				int save = JOptionPane.showConfirmDialog(frame,
+						"Do you want to save changes to " + currentFile.getName() + "?",
+						"Blimp",
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if(save == JOptionPane.YES_OPTION) 
+					saveFile(currentFile, syntaxEditor.getText());
 			}
 		}
 		
@@ -514,8 +625,6 @@ public class MainWindow {
 		
 	}
 	public void closeWindow() {
-		
-		
 			if(currentFile == null && !syntaxEditor.getText().equals("")) {
 				// File open in the syntax editor is not saved, then show save prompt
 				int saveUntitled = JOptionPane.showConfirmDialog(frame,
@@ -540,11 +649,7 @@ public class MainWindow {
 					}
 					
 			}
-		
-
-		
-		WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
-		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+			
 	}
 	
 	public Path importSelectedFile() {
@@ -689,5 +794,8 @@ public class MainWindow {
 			syntaxEditor.append(line);
 		}
 	}
-	
+	 public void updateButtons() {
+		    mntmUno.setEnabled(undoManager.canUndo());
+		    mntmRedo.setEnabled(undoManager.canRedo());
+		  }
 }
