@@ -75,12 +75,15 @@ public class RunLogsWindow extends JFrame {
 		btnSaveOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser selectedFile = new JFileChooser();
+				selectedFile.setSelectedFile(new File(""));
 				int saveResult = selectedFile.showSaveDialog(contentPane);
 				if (saveResult == selectedFile.APPROVE_OPTION) {
 					BufferedWriter writer = null;
 					File file = selectedFile.getSelectedFile();
 					String filePath = file.getPath();
-					
+					if(!filePath.endsWith(".impOut")) {
+						filePath += ".impOut";
+					}
 					try {
 						writer = new BufferedWriter(new FileWriter(filePath));
 						writer.write(logTextArea.getText());

@@ -393,6 +393,7 @@ public class MainWindow {
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
+					selectedFile.setSelectedFile(new File("Untitled"));
 					int saveResult = selectedFile.showSaveDialog(frame);
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
@@ -404,7 +405,17 @@ public class MainWindow {
 					System.out.println("Most recent hashcode: " + mostRecentHashCode);
 					System.out.println("Syntax Editor hashcode: "+ syntaxEditor.getText().hashCode());
 					if(mostRecentHashCode != syntaxEditor.getText().hashCode()){
-						saveFile(currentFile, syntaxEditor.getText());
+						int saveUntitled = JOptionPane.showConfirmDialog(frame,
+								"Do you want to save changes to " + currentFile.getName() + " before running?" ,
+								"Blimp",
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if(saveUntitled == JOptionPane.YES_OPTION) {
+							int saveResult = selectedFile.showSaveDialog(frame);
+							if (saveResult == selectedFile.APPROVE_OPTION) {
+								saveFile(currentFile, syntaxEditor.getText());
+							}
+						}	
+						
 					}
 				}
 				
@@ -580,7 +591,6 @@ public class MainWindow {
 			writer = new BufferedWriter(new FileWriter(filePath));
 			writer.write(contents);
 			writer.close();
-//			syntaxEditor.setText(contents);
 			frame.setTitle(filePath);
 			currentFile = file;
 			mostRecentHashCode = syntaxEditor.getText().hashCode();
