@@ -393,7 +393,7 @@ public class MainWindow {
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
-					selectedFile.setSelectedFile(new File("Untitled"));
+					selectedFile.setSelectedFile(new File(""));
 					int saveResult = selectedFile.showSaveDialog(frame);
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
@@ -439,7 +439,7 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				if (Desktop.isDesktopSupported()) {
 		            try {
-		                File myFile = new File("Resources\\UserGuide.pdf");
+		                File myFile = new File("UserGuide.pdf");
 		                Desktop.getDesktop().open(myFile);
 		            } catch (IOException ex) {
 		                // no application registered for PDFs
