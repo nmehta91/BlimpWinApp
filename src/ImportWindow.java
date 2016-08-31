@@ -327,16 +327,35 @@ public class ImportWindow extends JFrame {
 		parsedFile = new ArrayList<String[]>();
 		
 		int rows = model.importFileContents.size();
-		columns = model.importFileContents.get(0).split(delimiter).length;
+		ArrayList<String> parsedLine = new ArrayList<String>();
+		String[] temp = model.importFileContents.get(0).split(delimiter);
+		for(String element: temp) {
+			if(element.trim().length() <= 0){
+				System.out.println("Element is blank");
+			} else {
+				parsedLine.add(element);
+			}
+		}
+		columns = parsedLine.size();
 		contents = new String[rows][columns];
 		System.out.println("rows: "+rows);
 		System.out.println("columns:"+columns);
 	
 		for(int i = 0; i < rows; i++){
 			try{
+				ArrayList<String> trimmedParsedLine = new ArrayList<String>();
 				String[] line = model.importFileContents.get(i).split(delimiter);
+				System.out.println(Arrays.toString(line).trim());
+				for(String element: line) {
+					if(element.trim().length() <= 0){
+						System.out.println("Element is blank");
+					} else {
+						trimmedParsedLine.add(element);
+					}
+				}
+				
 				for(int j = 0; j < columns; j++) {
-					contents[i][j] = String.format("%.3g%n", Double.parseDouble(line[j]));
+					contents[i][j] = String.format("%.3g%n", Double.parseDouble(trimmedParsedLine.get(j)));
 				}
 			} catch(Exception e) {
 				success = false;
