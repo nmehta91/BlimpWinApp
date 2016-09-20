@@ -30,6 +30,8 @@ import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
@@ -40,6 +42,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import java.awt.Color;
+import java.awt.Desktop.Action;
+import java.awt.Dimension;
+
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
@@ -68,6 +73,106 @@ public class ImportWindow extends JFrame {
 	/**
 	 * Launch the application.
 	 */
+	
+    class VariablesTableModel extends AbstractTableModel {
+    	private String[] columnNames = {"Variable Name", "Variable Type"};
+    	private Object[][] data;
+
+    	public VariablesTableModel() {
+    		data = new Object[model.variables.size()][2];
+    		for(int i = 0; i < model.variables.size(); i++){
+    			data[i][0] = model.variables.get(i).name;
+    			data[i][1] = model.variables.get(i).type;
+    		}
+		}
+    	
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return model.variables.size();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+        	if(col == 0){
+	    		return model.variables.get(row).name;
+	    	}
+	    	else if(col == 1){
+	    		return model.variables.get(row).type;
+	    	}
+	    	return null;
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) {
+        	return true;
+        }
+
+        public void setValueAt(Object value, int row, int col) {
+        	if(col == 0){
+        		// Update Variable Name
+        		// Validate before changing variable name
+        		boolean shouldChange = validateCellChange(value, row, col);
+        		if(shouldChange){
+        			data[row][0] = value.toString();
+            		model.variables.get(row).name = value.toString();
+                	fireTableCellUpdated(row, col);
+        		}
+        	}
+        	else if(col == 1) {
+        		// Update variable scale
+        		data[row][1] = value;
+                model.variables.get(row).type = value.toString();
+                fireTableCellUpdated(row, col);
+        		
+        	}	
+        }
+        
+        public boolean validateCellChange(Object value, int row, int col) {
+        	String name = value.toString();
+        	if(!name.equals("")){
+    			//Check if the new variable name contains whitespaces, if yes skip 
+    			Pattern pattern = Pattern.compile("\\s");
+    			Matcher matcher = pattern.matcher(name);
+    			boolean found = matcher.find();
+    			
+    			if(!found && !checkIfDuplicate(name)){
+    				return true;
+    			} else if(found) {
+    				JOptionPane.showMessageDialog(contentPane,
+    						"Variable name cannot contain white spaces.",
+    						"Error!",
+    						JOptionPane.ERROR_MESSAGE);
+    			} else if(checkIfDuplicate(name)) {
+    				JOptionPane.showMessageDialog(contentPane,
+    						"Variable name already exists. Please choose another name.",
+    						"Error!",
+    						JOptionPane.ERROR_MESSAGE);
+    			}
+    		}
+        	
+        	return false;
+        }
+        
+        public boolean checkIfDuplicate(String name) {
+    		boolean found = false;
+    		for(int i = 0; i < model.variables.size(); i++) {
+    			String lname = model.variables.get(i).name.toLowerCase();
+    			System.out.println("Checking "+lname);
+    			if(lname.equals(name.toLowerCase()))
+    				found = true;
+    		}
+    		return found;
+    	}
+    }
 	public static void showWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -223,6 +328,7 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(variableTBColumnHeadings);
+		
 		VariablesTable = new JTable(model);
 		VariablesTable.setOpaque(true);
 		VariablesTable.setFillsViewportHeight(true);
@@ -231,7 +337,7 @@ public class ImportWindow extends JFrame {
 
 		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		variableTableSB.setViewportView(VariablesTable);
-		
+				
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new doneActionListener(this));
 		btnDone.setBounds(612, 465, 121, 23);
@@ -305,20 +411,17 @@ public class ImportWindow extends JFrame {
 	}
 	
 	public void initializeVariablesTable(String[] variableNames) {
-		String[] header = {"Variable Name", "Variable Type"};
-		variablesTableContents = new String[variableNames.length][2];
-		DefaultTableModel tm = (DefaultTableModel)VariablesTable.getModel();
-		tm.setRowCount(0);
-		
-		//  Add rows to the table showing [variable_name, variable_type]
-		for(int i = 0; i < variableNames.length; i++){
-				variablesTableContents[i][0] = variableNames[i];
-				variablesTableContents[i][1] = "Continuous";
-				System.out.println("Name: " + variablesTableContents[i][0]);
-				tm.addRow(variablesTableContents[i]);
-		}
 
-		variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(variableNames));
+		VariablesTable.setModel(new VariablesTableModel());
+		TableColumn variableScaleCol = VariablesTable.getColumnModel().getColumn(1);
+		JComboBox<String> variableScales = new JComboBox<String>();
+		variableScales.addItem("Continuous");
+		variableScales.addItem("Ordinal");
+		variableScales.addItem("Nominal");
+		variableScaleCol.setCellEditor(new DefaultCellEditor(variableScales));
+		VariablesTable.setRowHeight(25);
+		VariablesTable.repaint();
+	
 	}
 	
 	public boolean parseData(String delimiter) {
@@ -407,6 +510,7 @@ public class ImportWindow extends JFrame {
 		}
 		return found;
 	}
+
 	class doneActionListener implements ActionListener{
 
 	    private JFrame toBeClose;
