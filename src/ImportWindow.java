@@ -419,7 +419,16 @@ public class ImportWindow extends JFrame {
 		variableScales.addItem("Ordinal");
 		variableScales.addItem("Nominal");
 		variableScaleCol.setCellEditor(new DefaultCellEditor(variableScales));
-		VariablesTable.setRowHeight(25);
+		//Set up tool tips for the variable scale cells.
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setToolTipText("Click for combo box");
+        variableScaleCol.setCellRenderer(renderer);
+		
+        
+        TableColumn variableNameCol = VariablesTable.getColumnModel().getColumn(0);
+        renderer.setToolTipText("Click to change name");
+        variableNameCol.setCellRenderer(renderer);
+        VariablesTable.setRowHeight(25);
 		VariablesTable.repaint();
 	
 	}
