@@ -61,9 +61,7 @@ public class ImportWindow extends JFrame {
 	private int columns;
 	private JPanel dataPanel;
 	private JPanel variablePanel;
-	private JTextField newVarName;
 	private JTable VariablesTable;
-	private JComboBox<String> variableNamesComboBox;
 	private String[][] variablesTableContents;
 	private String[] variableNames;
 	private JScrollPane scrollPane;
@@ -269,54 +267,8 @@ public class ImportWindow extends JFrame {
 		tabbedPane.addTab("Variable", null, variablePanel, null);
 		variablePanel.setLayout(null);
 		
-		JLabel lblVariable = new JLabel("Variable");
-		lblVariable.setBounds(29, 27, 86, 14);
-		variablePanel.add(lblVariable);
-		
-		JLabel lblNewName = new JLabel("New Name");
-		lblNewName.setBounds(29, 67, 86, 14);
-		variablePanel.add(lblNewName);
-		
-		JLabel lblVariableScale = new JLabel("Variable Scale");
-		lblVariableScale.setBounds(29, 108, 86, 14);
-		variablePanel.add(lblVariableScale);
-		
-		newVarName = new JTextField();
-		newVarName.setBounds(125, 64, 150, 20);
-		variablePanel.add(newVarName);
-		newVarName.setColumns(10);
-		
-		JComboBox<String> varTypes =  new JComboBox<String>();
-		varTypes.setModel(new DefaultComboBoxModel(new String[] {"Continuous", "Nominal", "Ordinal"}));
-		varTypes.setBounds(125, 105, 150, 20);
-		variablePanel.add(varTypes);
-		
-		JButton btnSaveVarDetails = new JButton("Save");
-		btnSaveVarDetails.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int selectedVariable = variableNamesComboBox.getSelectedIndex();
-				String newName = newVarName.getText();
-				String newType = (String)varTypes.getSelectedItem();
-				saveVariableChanges(selectedVariable, newName, newType);
-				
-				String[] varNames = new String[model.variables.size()];
-				for(int i = 0; i < model.variables.size(); i++) {
-					varNames[i] = model.variables.get(i).name;
-				}
-				variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(varNames));
-				variableNamesComboBox.setSelectedIndex(selectedVariable);
-				newVarName.setText("");
-			}
-		});
-		btnSaveVarDetails.setBounds(86, 160, 89, 23);
-		variablePanel.add(btnSaveVarDetails);
-		
-		variableNamesComboBox = new JComboBox<String>();
-		variableNamesComboBox.setBounds(125, 24, 150, 20);
-		variablePanel.add(variableNamesComboBox);
-		
 		variableTableSB = new JScrollPane();
-		variableTableSB.setBounds(389, 11, 311, 405);
+		variableTableSB.setBounds(182, 11, 341, 405);
 		variablePanel.add(variableTableSB);
 		
 		String[] variableTBColumnHeadings = {"Variable Name", "Variable Type"};
@@ -477,39 +429,6 @@ public class ImportWindow extends JFrame {
 		return success;
 	}
 		
-	public void saveVariableChanges(int index, String name, String type){
-		Variable variable = model.variables.get(index);
-		System.out.println("name: " + name);
-		if(!name.equals("")){
-			//Check if the new variable name contains whitespaces, if yes skip 
-			Pattern pattern = Pattern.compile("\\s");
-			Matcher matcher = pattern.matcher(name);
-			boolean found = matcher.find();
-			
-			if(!found && !checkIfDuplicate(name)){
-				variable.name = name;
-				VariablesTable.getModel().setValueAt(name, index, 0);
-				dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
-				dataTable.getColumnModel().getColumn(index).setPreferredWidth(70);
-				dataTable.getTableHeader().repaint();
-			} else if(found) {
-				JOptionPane.showMessageDialog(contentPane,
-						"Variable name cannot contain white spaces.",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
-			} else if(checkIfDuplicate(name)) {
-				JOptionPane.showMessageDialog(contentPane,
-						"Variable name already exists. Please choose another name.",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
-			}
-		}
-		variable.type = type;
-		VariablesTable.getModel().setValueAt(type, index, 1);
-		model.variables.remove(index);
-		model.variables.add(index, variable);
-	}
-	
 	public boolean checkIfDuplicate(String name) {
 		boolean found = false;
 		for(int i = 0; i < model.variables.size(); i++) {
