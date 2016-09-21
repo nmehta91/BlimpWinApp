@@ -124,6 +124,7 @@ public class ImportWindow extends JFrame {
         		if(shouldChange){
         			data[row][0] = value.toString();
             		model.variables.get(row).name = value.toString();
+            		changeDataTableHeader(value.toString(), row);
                 	fireTableCellUpdated(row, col);
         		}
         	}
@@ -303,7 +304,6 @@ public class ImportWindow extends JFrame {
 					varNames[i] = model.variables.get(i).name;
 				}
 				variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(varNames));
-//				varTypes.setSelectedIndex(0);
 				variableNamesComboBox.setSelectedIndex(selectedVariable);
 				newVarName.setText("");
 			}
@@ -511,6 +511,12 @@ public class ImportWindow extends JFrame {
 		return found;
 	}
 
+	public void changeDataTableHeader(String newName, int col) {
+		dataTable.getColumnModel().getColumn(col).setHeaderValue(newName);
+		dataTable.getColumnModel().getColumn(col).setPreferredWidth(70);
+		dataTable.getTableHeader().repaint();
+	}
+	
 	class doneActionListener implements ActionListener{
 
 	    private JFrame toBeClose;
