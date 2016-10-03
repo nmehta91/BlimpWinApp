@@ -135,9 +135,7 @@ public class ModelMCOutput extends JFrame {
 	    		model.mappings.put("RandomSeed", MCMCPanel.randSeedTB.getText());
 	    	}
 	    		
-	    	if(!MCMCPanel.noOfChains.getSelectedItem().toString().equals(""))
-	    		model.mappings.put("Chains", MCMCPanel.noOfChains.getSelectedItem().toString());
-	
+	    	
 	    	if(!IsComplete())
 	    		return;
 	    	
