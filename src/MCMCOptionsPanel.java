@@ -136,6 +136,7 @@ public class MCMCOptionsPanel extends JPanel {
 		add(verticalBox_2);
 		
 		rdbtnInverseWishart = new JRadioButton("Prior1 (IW with SSCP = 0)");
+		rdbtnInverseWishart.setSelected(true);
 		verticalBox_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -145,7 +146,6 @@ public class MCMCOptionsPanel extends JPanel {
 		buttonGroup_2.add(rdbtnInverseWishart);
 		
 		rdbtnInverseWishartId = new JRadioButton("Prior2 (IW with SSCP = ID)");
-		rdbtnInverseWishartId.setSelected(true);
 		verticalBox_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -161,7 +161,7 @@ public class MCMCOptionsPanel extends JPanel {
 	public void initializeModel() {
 		model.mappings.put("CM", "clmean");
 		model.mappings.put("LV", "hov");
-		model.mappings.put("VP", "prior2");
+		model.mappings.put("VP", "prior1");
 	}
 	
 	public void initializeWithModel() {
