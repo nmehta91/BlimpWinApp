@@ -66,7 +66,6 @@ public class ImportWindow extends JFrame {
 	private String[] variableNames;
 	private JScrollPane scrollPane;
 	private JScrollPane variableTableSB;
-	private JTable dummyTable;
 	private JScrollPane scrollPane_1;
 	/**
 	 * Launch the application.
