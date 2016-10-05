@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -61,6 +62,7 @@ public class RunLogsWindow extends JFrame {
 		
 		logTextArea = new JTextArea();
 		logTextArea.setEditable(false);
+		logTextArea.setFont(new Font("Courier", Font.PLAIN, 14));
 		
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
 		scrollPane_1.setBounds(5, 5, 760, 410);
