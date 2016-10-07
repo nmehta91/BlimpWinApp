@@ -47,6 +47,7 @@ import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class ImportWindow extends JFrame {
 
@@ -191,7 +192,7 @@ public class ImportWindow extends JFrame {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 829, 559);
+		setBounds(100, 100, 799, 546);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -200,150 +201,24 @@ public class ImportWindow extends JFrame {
 		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
 		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
 		frame.setIconImage(img.getImage());
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{723, 0};
-		gbl_contentPane.rowHeights = new int[]{449, 23, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		contentPane.setLayout(gbl_contentPane);
-		
-		JButton btnDone = new JButton("Done");
-		btnDone.addActionListener(new doneActionListener(this));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
-		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
-		gbc_tabbedPane.insets = new Insets(0, 0, 5, 0);
-		gbc_tabbedPane.gridx = 0;
-		gbc_tabbedPane.gridy = 0;
-		contentPane.add(tabbedPane, gbc_tabbedPane);
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", null, dataPanel, null);
-		GridBagLayout gbl_dataPanel = new GridBagLayout();
-		gbl_dataPanel.columnWidths = new int[]{64, 120, 86, 68, 397, 0, 0, 0};
-		gbl_dataPanel.rowHeights = new int[]{31, 20, 37, 0, 78, 187, 0, 0, 0};
-		gbl_dataPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		dataPanel.setLayout(gbl_dataPanel);
 		
 		scrollPane_1 = new JScrollPane();
-		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane_1.gridheight = 5;
-		gbc_scrollPane_1.gridx = 4;
-		gbc_scrollPane_1.gridy = 0;
-		dataPanel.add(scrollPane_1, gbc_scrollPane_1);
 		
 			rawDataView = new JTextArea();
 			scrollPane_1.setViewportView(rawDataView);
 			rawDataView.setWrapStyleWord(false);
 			rawDataView.setLineWrap(false);	
 			rawDataView.setText(model.importFileContentsInString);
-			
-			variablePanel = new JPanel();
-			tabbedPane.addTab("Variable", null, variablePanel, null);
-			variablePanel.setLayout(null);
-			
-			variableTableSB = new JScrollPane();
-			variableTableSB.setBounds(182, 11, 341, 405);
-			variablePanel.add(variableTableSB);
-			
-			VariablesTable = new JTable(model);
-			VariablesTable.setOpaque(true);
-			VariablesTable.setFillsViewportHeight(true);
-			VariablesTable.setBackground(Color.WHITE);
-			VariablesTable.getTableHeader().setReorderingAllowed(false);
-			
-					VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					variableTableSB.setViewportView(VariablesTable);
-					
-					JButton btnImport = new JButton("Import");
-					btnImport.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							String delimiter;
-							if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
-								delimiter = "\\s+";
-							} else {
-								delimiter = ",";
-							}
-						
-							if(parseData(delimiter)) {
-								initializeVariablesTable(initializeParsedFileTableView());
-							} else {
-								JOptionPane.showMessageDialog(contentPane.getParent(),
-										"There was an error in parsing the file. Please re-select the appropriate delimiter.",
-										"Error!",
-										JOptionPane.ERROR_MESSAGE);
-							}
-						}	
-					});
-					
-					JLabel lblNewLabel = new JLabel("Delimiter");
-					GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-					gbc_lblNewLabel.anchor = GridBagConstraints.SOUTH;
-					gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-					gbc_lblNewLabel.gridx = 1;
-					gbc_lblNewLabel.gridy = 2;
-					dataPanel.add(lblNewLabel, gbc_lblNewLabel);
-					
-					DelimiterComboBox = new JComboBox();
-					DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
-					GridBagConstraints gbc_DelimiterComboBox = new GridBagConstraints();
-					gbc_DelimiterComboBox.anchor = GridBagConstraints.SOUTH;
-					gbc_DelimiterComboBox.fill = GridBagConstraints.HORIZONTAL;
-					gbc_DelimiterComboBox.insets = new Insets(0, 0, 5, 5);
-					gbc_DelimiterComboBox.gridx = 2;
-					gbc_DelimiterComboBox.gridy = 2;
-					dataPanel.add(DelimiterComboBox, gbc_DelimiterComboBox);
-					
-					JLabel lblMissingValueCode = new JLabel("Missing Value Code");
-					GridBagConstraints gbc_lblMissingValueCode = new GridBagConstraints();
-					gbc_lblMissingValueCode.insets = new Insets(0, 0, 5, 5);
-					gbc_lblMissingValueCode.gridx = 1;
-					gbc_lblMissingValueCode.gridy = 3;
-					dataPanel.add(lblMissingValueCode, gbc_lblMissingValueCode);
-					
-					MV_Code = new JTextField();
-					GridBagConstraints gbc_MV_Code = new GridBagConstraints();
-					gbc_MV_Code.fill = GridBagConstraints.HORIZONTAL;
-					gbc_MV_Code.anchor = GridBagConstraints.NORTH;
-					gbc_MV_Code.insets = new Insets(0, 0, 5, 5);
-					gbc_MV_Code.gridx = 2;
-					gbc_MV_Code.gridy = 3;
-					dataPanel.add(MV_Code, gbc_MV_Code);
-					MV_Code.setColumns(10);
-					GridBagConstraints gbc_btnImport = new GridBagConstraints();
-					gbc_btnImport.insets = new Insets(0, 0, 5, 5);
-					gbc_btnImport.gridx = 2;
-					gbc_btnImport.gridy = 4;
-					dataPanel.add(btnImport, gbc_btnImport);
-					
-					
-					scrollPane = new JScrollPane();
-					GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-					gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
-					gbc_scrollPane.fill = GridBagConstraints.BOTH;
-					gbc_scrollPane.gridwidth = 4;
-					gbc_scrollPane.gridx = 1;
-					gbc_scrollPane.gridy = 5;
-					dataPanel.add(scrollPane, gbc_scrollPane);
-					
-						
-							dataTable = new JTable(model);
-							dataTable.setAutoResizeMode(0);
-							dataTable.getTableHeader().setReorderingAllowed(false);	
-							
-							scrollPane.setViewportView(dataTable);
-							dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
-							
-							DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
-		GridBagConstraints gbc_btnDone = new GridBagConstraints();
-		gbc_btnDone.anchor = GridBagConstraints.NORTHEAST;
-		gbc_btnDone.gridx = 0;
-		gbc_btnDone.gridy = 1;
-		contentPane.add(btnDone, gbc_btnDone);
+		
+		variablePanel = new JPanel();
+		tabbedPane.addTab("Variable", null, variablePanel, null);
+		
+		variableTableSB = new JScrollPane();
 		
 		String[] variableTBColumnHeadings = {"Variable Name", "Variable Type"};
 		DefaultTableModel model = new DefaultTableModel(25, variableTBColumnHeadings.length) {
@@ -354,6 +229,53 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(variableTBColumnHeadings);
+		
+		VariablesTable = new JTable(model);
+		VariablesTable.setOpaque(true);
+		VariablesTable.setFillsViewportHeight(true);
+		VariablesTable.setBackground(Color.WHITE);
+		VariablesTable.getTableHeader().setReorderingAllowed(false);
+
+		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		variableTableSB.setViewportView(VariablesTable);
+		GroupLayout gl_variablePanel = new GroupLayout(variablePanel);
+		gl_variablePanel.setHorizontalGroup(
+			gl_variablePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_variablePanel.createSequentialGroup()
+					.addGap(182)
+					.addComponent(variableTableSB, GroupLayout.PREFERRED_SIZE, 341, GroupLayout.PREFERRED_SIZE))
+		);
+		gl_variablePanel.setVerticalGroup(
+			gl_variablePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_variablePanel.createSequentialGroup()
+					.addGap(11)
+					.addComponent(variableTableSB, GroupLayout.PREFERRED_SIZE, 405, GroupLayout.PREFERRED_SIZE))
+		);
+		variablePanel.setLayout(gl_variablePanel);
+				
+		JButton btnDone = new JButton("Done");
+		btnDone.addActionListener(new doneActionListener(this));
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(19)
+							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE))
+						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+							.addContainerGap(639, Short.MAX_VALUE)
+							.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+		);
+		contentPane.setLayout(gl_contentPane);
 		
 		String[] dataColHeadings = new String[10];
 		for(int i = 0; i < 10; i++) {
@@ -404,6 +326,97 @@ public class ImportWindow extends JFrame {
 			//TableColumn column = dataTable.getColumnModel().getColumn(i);
 			//column.setPreferredWidth(70);
 		}
+						
+						JButton btnImport = new JButton("Import");
+						btnImport.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								String delimiter;
+								if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
+									delimiter = "\\s+";
+								} else {
+									delimiter = ",";
+								}
+							
+								if(parseData(delimiter)) {
+									initializeVariablesTable(initializeParsedFileTableView());
+								} else {
+									JOptionPane.showMessageDialog(contentPane.getParent(),
+											"There was an error in parsing the file. Please re-select the appropriate delimiter.",
+											"Error!",
+											JOptionPane.ERROR_MESSAGE);
+								}
+							}	
+						});
+						
+						JLabel lblNewLabel = new JLabel("Delimiter");
+						
+						DelimiterComboBox = new JComboBox();
+						DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
+						
+						JLabel lblMissingValueCode = new JLabel("Missing Value Code");
+						
+						MV_Code = new JTextField();
+						MV_Code.setColumns(10);
+						
+						
+						scrollPane = new JScrollPane();
+						
+							
+								dataTable = new JTable(model);
+								dataTable.setAutoResizeMode(1);
+								dataTable.getTableHeader().setReorderingAllowed(false);	
+								
+								scrollPane.setViewportView(dataTable);
+								dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+								GroupLayout gl_dataPanel = new GroupLayout(dataPanel);
+								gl_dataPanel.setHorizontalGroup(
+									gl_dataPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_dataPanel.createSequentialGroup()
+											.addGap(26)
+											.addGroup(gl_dataPanel.createParallelGroup(Alignment.TRAILING)
+												.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(12)
+													.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+														.addGroup(gl_dataPanel.createSequentialGroup()
+															.addGap(25)
+															.addComponent(lblNewLabel))
+														.addComponent(lblMissingValueCode))
+													.addGap(17)
+													.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+														.addComponent(DelimiterComboBox, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+														.addComponent(MV_Code, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+														.addGroup(gl_dataPanel.createSequentialGroup()
+															.addGap(8)
+															.addComponent(btnImport)))
+													.addGap(73)
+													.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)))
+											.addGap(26))
+								);
+								gl_dataPanel.setVerticalGroup(
+									gl_dataPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_dataPanel.createSequentialGroup()
+											.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(66)
+													.addComponent(lblNewLabel)
+													.addGap(8)
+													.addComponent(lblMissingValueCode))
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(60)
+													.addComponent(DelimiterComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addGap(5)
+													.addComponent(MV_Code, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addGap(30)
+													.addComponent(btnImport))
+												.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
+											.addGap(29)
+											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+											.addGap(41))
+								);
+								dataPanel.setLayout(gl_dataPanel);
+		
+		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
 		renderer.setHorizontalAlignment( JLabel.RIGHT );
 	}
 	
