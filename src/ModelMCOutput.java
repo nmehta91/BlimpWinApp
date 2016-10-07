@@ -37,6 +37,8 @@ import java.awt.Insets;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 
 public class ModelMCOutput extends JFrame {
 
@@ -72,42 +74,61 @@ public class ModelMCOutput extends JFrame {
 		frame.setIconImage(img.getImage());
 		
 		JButton btnReset = new JButton("Reset");
-		btnReset.setBounds(114, 527, 82, 23);
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				reset();
 			}
 		});
-		contentPane.setLayout(null);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(10, 11, 764, 505);
-		contentPane.add(tabbedPane);
 		MCMCPanel = new MCMCOptionsPanel();
 		outputOptionsPanel = new OutputOptionsPanel();
 		
 		SMPanel = new SpecifyModelPanel();
 		
 		tabbedPane.addTab("Specify Model", null, SMPanel, null);
-		SMPanel.setLayout(null);
+//		SMPanel.setLayout(null);
 		tabbedPane.addTab("MCMC Options", null, MCMCPanel, null);
 		tabbedPane.addTab("Output Options", null, outputOptionsPanel, null);
 		tabbedPane.setSelectedIndex(selectTabIndex);
 		
 		JButton btnCancel = new JButton("Cancel");
-		btnCancel.setBounds(10, 527, 92, 23);
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
 			}
 		});
-		contentPane.add(btnCancel);
-		contentPane.add(btnReset);
 		
 		JButton btnNewButton = new JButton("Done");
-		btnNewButton.setBounds(651, 527, 123, 23);
-		contentPane.add(btnNewButton);
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(5)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 764, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(btnCancel, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
+							.addGap(12)
+							.addComponent(btnReset, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE)
+							.addGap(455)
+							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)))
+					.addGap(5))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(6)
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+					.addGap(11)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnCancel)
+						.addComponent(btnReset)
+						.addComponent(btnNewButton))
+					.addGap(6))
+		);
+		contentPane.setLayout(gl_contentPane);
 		
 		btnNewButton.addActionListener(new doneActionListener(this));
 	}

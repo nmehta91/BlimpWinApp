@@ -22,6 +22,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 
 public class SpecifyModelPanel extends JPanel {
 	private JTable variableTable;
@@ -119,14 +121,11 @@ public class SpecifyModelPanel extends JPanel {
 
 	}
 	public SpecifyModelPanel() {
-		setLayout(null);
 		
 		model = SyntaxModel.getInstance();
 		mode = 0; // 0 = Main Effects, 1 = Random Slopes
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(25, 11, 209, 455);
-		add(scrollPane);
 		
 		variableTable = new JTable(new VariablesTableModel("Variables", model.variables));
 		variableTable.setOpaque(true);
@@ -136,8 +135,6 @@ public class SpecifyModelPanel extends JPanel {
 		scrollPane.setViewportView(variableTable);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(442, 161, 222, 305);
-		add(scrollPane_1);
 		
 		DefaultTableModel tblmodel = new DefaultTableModel(0, 1);
 		tblmodel.setColumnIdentifiers(new String[] {"Imputation Model Variables"});
@@ -148,8 +145,6 @@ public class SpecifyModelPanel extends JPanel {
 		scrollPane_1.setViewportView(modelVariables);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(442, 11, 222, 97);
-		add(scrollPane_2);
 		
 		DefaultTableModel tblmodel1 = new DefaultTableModel(0, 1);
 		tblmodel1.setColumnIdentifiers(new String[] {"Cluster-Level Identifier Variables"});
@@ -226,8 +221,6 @@ public class SpecifyModelPanel extends JPanel {
 				scrollPane_1.setViewportView(modelVariables);
 			}
 		});
-		button.setBounds(293, 255, 89, 33);
-		add(button);
 		
 		JButton button_1 = new JButton("<");
 		button_1.addActionListener(new ActionListener() {
@@ -243,8 +236,6 @@ public class SpecifyModelPanel extends JPanel {
 				modelVariables.repaint();
 			}
 		});
-		button_1.setBounds(293, 313, 89, 33);
-		add(button_1);
 		
 		JButton addToImputation = new JButton(">");
 		addToImputation.addActionListener(new ActionListener() {
@@ -286,8 +277,6 @@ public class SpecifyModelPanel extends JPanel {
 			}
 			
 		});
-		addToImputation.setBounds(293, 62, 89, 33);
-		add(addToImputation);
 		
 		JButton removeFromImputation = new JButton("<");
 		removeFromImputation.addActionListener(new ActionListener() {
@@ -313,8 +302,6 @@ public class SpecifyModelPanel extends JPanel {
 				imputationVariablesTable.repaint();
 			}
 		});
-		removeFromImputation.setBounds(293, 119, 89, 33);
-		add(removeFromImputation);
 		
 		JComboBox<String> comboBox = new JComboBox<String>(new DefaultComboBoxModel<String>(new String[] {"Main Effects", "Random Slopes"}));
 		comboBox.addActionListener(new ActionListener() {
@@ -326,12 +313,8 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		comboBox.setBounds(281, 207, 116, 20);
-		add(comboBox);
 		
 		JLabel lblBuildTerms = new JLabel("Build Terms");
-		lblBuildTerms.setBounds(308, 184, 89, 23);
-		add(lblBuildTerms);
 		
 		JCheckBox chckbxSingleImputation = new JCheckBox("Single Imputation");
 		chckbxSingleImputation.addActionListener(new ActionListener() {
@@ -376,8 +359,65 @@ public class SpecifyModelPanel extends JPanel {
 				}
 			}
 		});
-		chckbxSingleImputation.setBounds(442, 115, 131, 23);
-		add(chckbxSingleImputation);
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(25)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+					.addGap(47)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(addToImputation, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(removeFromImputation, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(27)
+							.addComponent(lblBuildTerms, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(button, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)))
+					.addGap(45)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+						.addComponent(chckbxSingleImputation, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE))
+					.addGap(100))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(11)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+					.addGap(39))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(62)
+					.addComponent(addToImputation, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+					.addGap(24)
+					.addComponent(removeFromImputation, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+					.addGap(32)
+					.addComponent(lblBuildTerms, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(28)
+					.addComponent(button, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+					.addGap(25)
+					.addComponent(button_1, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(11)
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+					.addGap(7)
+					.addComponent(chckbxSingleImputation)
+					.addGap(23)
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
+					.addGap(39))
+		);
+		setLayout(groupLayout);
 		
 		
 	}
