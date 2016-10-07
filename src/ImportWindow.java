@@ -243,13 +243,15 @@ public class ImportWindow extends JFrame {
 			gl_variablePanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_variablePanel.createSequentialGroup()
 					.addGap(182)
-					.addComponent(variableTableSB, GroupLayout.PREFERRED_SIZE, 341, GroupLayout.PREFERRED_SIZE))
+					.addComponent(variableTableSB, GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+					.addGap(216))
 		);
 		gl_variablePanel.setVerticalGroup(
 			gl_variablePanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_variablePanel.createSequentialGroup()
 					.addGap(11)
-					.addComponent(variableTableSB, GroupLayout.PREFERRED_SIZE, 405, GroupLayout.PREFERRED_SIZE))
+					.addComponent(variableTableSB, GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+					.addGap(19))
 		);
 		variablePanel.setLayout(gl_variablePanel);
 				
