@@ -191,84 +191,159 @@ public class ImportWindow extends JFrame {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 759, 540);
+		setBounds(100, 100, 829, 559);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		
 		JFrame frame = this;
 		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
 		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
 		frame.setIconImage(img.getImage());
+		GridBagLayout gbl_contentPane = new GridBagLayout();
+		gbl_contentPane.columnWidths = new int[]{723, 0};
+		gbl_contentPane.rowHeights = new int[]{449, 23, 0};
+		gbl_contentPane.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		contentPane.setLayout(gbl_contentPane);
+		
+		JButton btnDone = new JButton("Done");
+		btnDone.addActionListener(new doneActionListener(this));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(10, 5, 723, 449);
-		contentPane.add(tabbedPane);
+		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
+		gbc_tabbedPane.insets = new Insets(0, 0, 5, 0);
+		gbc_tabbedPane.gridx = 0;
+		gbc_tabbedPane.gridy = 0;
+		contentPane.add(tabbedPane, gbc_tabbedPane);
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", null, dataPanel, null);
-		dataPanel.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Delimiter");
-		lblNewLabel.setBounds(28, 25, 73, 14);
-		dataPanel.add(lblNewLabel);
-		
-		JLabel lblMissingValueCode = new JLabel("Missing Value Code");
-		lblMissingValueCode.setBounds(10, 68, 120, 14);
-		dataPanel.add(lblMissingValueCode);
-		
-		MV_Code = new JTextField();
-		MV_Code.setBounds(131, 65, 86, 20);
-		dataPanel.add(MV_Code);
-		MV_Code.setColumns(10);
+		GridBagLayout gbl_dataPanel = new GridBagLayout();
+		gbl_dataPanel.columnWidths = new int[]{64, 120, 86, 68, 397, 0, 0, 0};
+		gbl_dataPanel.rowHeights = new int[]{31, 20, 37, 0, 78, 187, 0, 0, 0};
+		gbl_dataPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		dataPanel.setLayout(gbl_dataPanel);
 		
 		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(285, 11, 397, 187);
-		dataPanel.add(scrollPane_1);
-	
-		rawDataView = new JTextArea();
-		scrollPane_1.setViewportView(rawDataView);
-		rawDataView.setWrapStyleWord(false);
-		rawDataView.setLineWrap(false);	
-		rawDataView.setText(model.importFileContentsInString);
+		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollPane_1.gridheight = 5;
+		gbc_scrollPane_1.gridx = 4;
+		gbc_scrollPane_1.gridy = 0;
+		dataPanel.add(scrollPane_1, gbc_scrollPane_1);
 		
-		DelimiterComboBox = new JComboBox();
-		DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
-		DelimiterComboBox.setBounds(131, 22, 86, 20);
-		dataPanel.add(DelimiterComboBox);
-		
-		JButton btnImport = new JButton("Import");
-		btnImport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String delimiter;
-				if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
-					delimiter = "\\s+";
-				} else {
-					delimiter = ",";
-				}
+			rawDataView = new JTextArea();
+			scrollPane_1.setViewportView(rawDataView);
+			rawDataView.setWrapStyleWord(false);
+			rawDataView.setLineWrap(false);	
+			rawDataView.setText(model.importFileContentsInString);
 			
-				if(parseData(delimiter)) {
-					initializeVariablesTable(initializeParsedFileTableView());
-				} else {
-					JOptionPane.showMessageDialog(contentPane.getParent(),
-							"There was an error in parsing the file. Please re-select the appropriate delimiter.",
-							"Error!",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}	
-		});
-		
-		btnImport.setBounds(80, 120, 89, 23);
-		dataPanel.add(btnImport);
-		
-		variablePanel = new JPanel();
-		tabbedPane.addTab("Variable", null, variablePanel, null);
-		variablePanel.setLayout(null);
-		
-		variableTableSB = new JScrollPane();
-		variableTableSB.setBounds(182, 11, 341, 405);
-		variablePanel.add(variableTableSB);
+			variablePanel = new JPanel();
+			tabbedPane.addTab("Variable", null, variablePanel, null);
+			variablePanel.setLayout(null);
+			
+			variableTableSB = new JScrollPane();
+			variableTableSB.setBounds(182, 11, 341, 405);
+			variablePanel.add(variableTableSB);
+			
+			VariablesTable = new JTable(model);
+			VariablesTable.setOpaque(true);
+			VariablesTable.setFillsViewportHeight(true);
+			VariablesTable.setBackground(Color.WHITE);
+			VariablesTable.getTableHeader().setReorderingAllowed(false);
+			
+					VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+					variableTableSB.setViewportView(VariablesTable);
+					
+					JButton btnImport = new JButton("Import");
+					btnImport.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String delimiter;
+							if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
+								delimiter = "\\s+";
+							} else {
+								delimiter = ",";
+							}
+						
+							if(parseData(delimiter)) {
+								initializeVariablesTable(initializeParsedFileTableView());
+							} else {
+								JOptionPane.showMessageDialog(contentPane.getParent(),
+										"There was an error in parsing the file. Please re-select the appropriate delimiter.",
+										"Error!",
+										JOptionPane.ERROR_MESSAGE);
+							}
+						}	
+					});
+					
+					JLabel lblNewLabel = new JLabel("Delimiter");
+					GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+					gbc_lblNewLabel.anchor = GridBagConstraints.SOUTH;
+					gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+					gbc_lblNewLabel.gridx = 1;
+					gbc_lblNewLabel.gridy = 2;
+					dataPanel.add(lblNewLabel, gbc_lblNewLabel);
+					
+					DelimiterComboBox = new JComboBox();
+					DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
+					GridBagConstraints gbc_DelimiterComboBox = new GridBagConstraints();
+					gbc_DelimiterComboBox.anchor = GridBagConstraints.SOUTH;
+					gbc_DelimiterComboBox.fill = GridBagConstraints.HORIZONTAL;
+					gbc_DelimiterComboBox.insets = new Insets(0, 0, 5, 5);
+					gbc_DelimiterComboBox.gridx = 2;
+					gbc_DelimiterComboBox.gridy = 2;
+					dataPanel.add(DelimiterComboBox, gbc_DelimiterComboBox);
+					
+					JLabel lblMissingValueCode = new JLabel("Missing Value Code");
+					GridBagConstraints gbc_lblMissingValueCode = new GridBagConstraints();
+					gbc_lblMissingValueCode.insets = new Insets(0, 0, 5, 5);
+					gbc_lblMissingValueCode.gridx = 1;
+					gbc_lblMissingValueCode.gridy = 3;
+					dataPanel.add(lblMissingValueCode, gbc_lblMissingValueCode);
+					
+					MV_Code = new JTextField();
+					GridBagConstraints gbc_MV_Code = new GridBagConstraints();
+					gbc_MV_Code.fill = GridBagConstraints.HORIZONTAL;
+					gbc_MV_Code.anchor = GridBagConstraints.NORTH;
+					gbc_MV_Code.insets = new Insets(0, 0, 5, 5);
+					gbc_MV_Code.gridx = 2;
+					gbc_MV_Code.gridy = 3;
+					dataPanel.add(MV_Code, gbc_MV_Code);
+					MV_Code.setColumns(10);
+					GridBagConstraints gbc_btnImport = new GridBagConstraints();
+					gbc_btnImport.insets = new Insets(0, 0, 5, 5);
+					gbc_btnImport.gridx = 2;
+					gbc_btnImport.gridy = 4;
+					dataPanel.add(btnImport, gbc_btnImport);
+					
+					
+					scrollPane = new JScrollPane();
+					GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+					gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
+					gbc_scrollPane.fill = GridBagConstraints.BOTH;
+					gbc_scrollPane.gridwidth = 4;
+					gbc_scrollPane.gridx = 1;
+					gbc_scrollPane.gridy = 5;
+					dataPanel.add(scrollPane, gbc_scrollPane);
+					
+						
+							dataTable = new JTable(model);
+							dataTable.setAutoResizeMode(0);
+							dataTable.getTableHeader().setReorderingAllowed(false);	
+							
+							scrollPane.setViewportView(dataTable);
+							dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+							
+							DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
+		GridBagConstraints gbc_btnDone = new GridBagConstraints();
+		gbc_btnDone.anchor = GridBagConstraints.NORTHEAST;
+		gbc_btnDone.gridx = 0;
+		gbc_btnDone.gridy = 1;
+		contentPane.add(btnDone, gbc_btnDone);
 		
 		String[] variableTBColumnHeadings = {"Variable Name", "Variable Type"};
 		DefaultTableModel model = new DefaultTableModel(25, variableTBColumnHeadings.length) {
@@ -279,20 +354,6 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(variableTBColumnHeadings);
-		
-		VariablesTable = new JTable(model);
-		VariablesTable.setOpaque(true);
-		VariablesTable.setFillsViewportHeight(true);
-		VariablesTable.setBackground(Color.WHITE);
-		VariablesTable.getTableHeader().setReorderingAllowed(false);
-
-		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		variableTableSB.setViewportView(VariablesTable);
-				
-		JButton btnDone = new JButton("Done");
-		btnDone.addActionListener(new doneActionListener(this));
-		btnDone.setBounds(612, 465, 121, 23);
-		contentPane.add(btnDone);
 		
 		String[] dataColHeadings = new String[10];
 		for(int i = 0; i < 10; i++) {
@@ -339,25 +400,10 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(defaultColumnHeadings);
-		
-		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(41, 213, 641, 187);
-		dataPanel.add(scrollPane);
-
-	
-		dataTable = new JTable(model);
-		dataTable.setAutoResizeMode(0);
-		dataTable.getTableHeader().setReorderingAllowed(false);	
 		for(int i = 0; i < defaultColumnHeadings.length; i++) {
-			TableColumn column = dataTable.getColumnModel().getColumn(i);
-			column.setPreferredWidth(70);
+			//TableColumn column = dataTable.getColumnModel().getColumn(i);
+			//column.setPreferredWidth(70);
 		}
-		
-		scrollPane.setViewportView(dataTable);
-		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
-		
-		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
 		renderer.setHorizontalAlignment( JLabel.RIGHT );
 	}
 	
