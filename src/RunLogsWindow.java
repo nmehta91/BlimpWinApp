@@ -42,7 +42,6 @@ public class RunLogsWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public RunLogsWindow(String pathToExe) {
-		setResizable(false);
 		setTitle("Output");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 791, 490);
