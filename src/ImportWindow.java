@@ -192,7 +192,7 @@ public class ImportWindow extends JFrame {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 799, 546);
+		setBounds(100, 100, 811, 548);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -261,19 +261,17 @@ public class ImportWindow extends JFrame {
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(19)
-							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE))
-						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-							.addContainerGap(639, Short.MAX_VALUE)
-							.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+						.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
 		);
@@ -325,8 +323,8 @@ public class ImportWindow extends JFrame {
 		};
 		model.setColumnIdentifiers(defaultColumnHeadings);
 		for(int i = 0; i < defaultColumnHeadings.length; i++) {
-			//TableColumn column = dataTable.getColumnModel().getColumn(i);
-			//column.setPreferredWidth(70);
+//			TableColumn column = dataTable.getColumnModel().getColumn(i);
+//			column.setPreferredWidth(70);
 		}
 						
 						JButton btnImport = new JButton("Import");
