@@ -43,10 +43,8 @@ public class OutputOptionsPanel extends JPanel {
 		initializeModel();
 		
 		JLabel lblNewLabel = new JLabel("Save Imputations To File");
-		lblNewLabel.setBounds(227, 125, 171, 32);
 		
 		JButton btnBrowse = new JButton("Browse");
-		btnBrowse.setBounds(399, 130, 91, 27);
 		
 		JPanel outputOptionsPanel = this;
 		btnBrowse.addActionListener(new ActionListener() {
@@ -65,29 +63,15 @@ public class OutputOptionsPanel extends JPanel {
 		});
 		
 		outputFileNameLabel = new JLabel("");
-		outputFileNameLabel.setBounds(399, 161, 258, 99);
 		
 		JLabel lblDataFormat = new JLabel("Data Format");
-		lblDataFormat.setBounds(113, 271, 128, 23);
 		
 		JLabel lblFileType = new JLabel("File Type");
-		lblFileType.setBounds(321, 271, 135, 23);
 		
 		JLabel lblDiagnostics = new JLabel("Diagnostics");
-		lblDiagnostics.setBounds(524, 271, 133, 23);
 		selectedOutputDirectory = new JFileChooser();
 		
-		setLayout(null);
-		add(lblDataFormat);
-		add(lblFileType);
-		add(lblDiagnostics);
-		add(lblNewLabel);
-		add(outputFileNameLabel);
-		add(btnBrowse);
-		
 		Box verticalBox = Box.createVerticalBox();
-		verticalBox.setBounds(113, 296, 133, 81);
-		add(verticalBox);
 		
 		rdbtnStacked = new JRadioButton("Stacked");
 		verticalBox.add(rdbtnStacked);
@@ -105,8 +89,6 @@ public class OutputOptionsPanel extends JPanel {
 		buttonGroup.add(rdbtnSeparated);
 		
 		Box verticalBox_1 = Box.createVerticalBox();
-		verticalBox_1.setBounds(322, 296, 134, 81);
-		add(verticalBox_1);
 		
 		rdbtncsv = new JRadioButton(".csv");
 		verticalBox_1.add(rdbtncsv);
@@ -135,8 +117,6 @@ public class OutputOptionsPanel extends JPanel {
 		buttonGroup_1.add(rdbtndat);
 		
 		Box verticalBox_2 = Box.createVerticalBox();
-		verticalBox_2.setBounds(524, 296, 133, 81);
-		add(verticalBox_2);
 		
 		rdbtnNoPsr = new JRadioButton("No PSR");
 		verticalBox_2.add(rdbtnNoPsr);
@@ -156,6 +136,56 @@ public class OutputOptionsPanel extends JPanel {
 			}
 		});
 		buttonGroup_2.add(rdbtnPsr);
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(110)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(93)
+							.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 171, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnBrowse, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(286)
+							.addComponent(outputFileNameLabel, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblDataFormat, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)
+							.addGap(80)
+							.addComponent(lblFileType, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+							.addGap(68)
+							.addComponent(lblDiagnostics, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(verticalBox, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
+							.addGap(76)
+							.addComponent(verticalBox_1, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)
+							.addGap(68)
+							.addComponent(verticalBox_2, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)))
+					.addGap(110))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(131)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+						.addComponent(btnBrowse, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+					.addComponent(outputFileNameLabel, GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+					.addGap(11)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblDataFormat, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+						.addComponent(lblFileType, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+						.addComponent(lblDiagnostics, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+					.addGap(2)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(verticalBox, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+						.addComponent(verticalBox_1, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+						.addComponent(verticalBox_2, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+					.addGap(127))
+		);
+		setLayout(groupLayout);
 		rdbtnStacked.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				outputFileNameLabel.setText(model.outputFilePath + "." + model.mappings.get("DT"));

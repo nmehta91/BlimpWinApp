@@ -628,7 +628,7 @@ public class MainWindow {
 			}
 		}
 		
-		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nCHAINS:\n\nOUTFILE:\n\nOPTIONS:\n\n");
+		syntaxEditor.setText("DATA:\n\nVARIABLES:\n\nORDINAL:\n\nNOMINAL:\n\nMODEL:\n\nNIMPS:\n\nTHIN:\n\nBURN:\n\nSEED:\n\nOUTFILE:\n\nOPTIONS:\n\n");
 		currentFile = null;
 		SyntaxModel.clearModel();
 		frame.setTitle("Untitled");
@@ -784,7 +784,6 @@ public class MainWindow {
 			line = line + "\n\nTHIN: " + model.mappings.get("ThinIterations") + ";";
 			line = line + "\n\nBURN: " + model.mappings.get("BurnIn") + ";";
 			line = line + "\n\nSEED: " + model.mappings.get("RandomSeed") + ";";
-			line = line + "\n\nCHAINS: " + model.mappings.get("Chains") + ";";
 			
 			if(model.mappings.get("DF").equals("separate")) {
 				line = line + "\n\nOUTFILE: " + model.outputFilePath + "*." + model.mappings.get("DT") + ";";

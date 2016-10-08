@@ -18,7 +18,6 @@ public class MCMCOptionsPanel extends JPanel {
 	public JTextField thinIterTB;
 	public JTextField nimpsTB;
 	public JTextField randSeedTB;
-	public JComboBox<String> noOfChains;
 	private JRadioButton rdbtnInclude;
 	private JRadioButton rdbtnExclude;
 	private JRadioButton rdbtnHomogenous;
@@ -64,9 +63,6 @@ public class MCMCOptionsPanel extends JPanel {
 		randSeedTB.setBounds(378, 161, 86, 20);
 		randSeedTB.setColumns(10);
 		
-		JLabel lblNumberOfChains = new JLabel("Number of Chains");
-		lblNumberOfChains.setBounds(199, 202, 111, 26);
-		
 		JLabel lblClusterMeans = new JLabel("Cluster Means");
 		lblClusterMeans.setBounds(116, 284, 131, 26);
 		
@@ -75,10 +71,6 @@ public class MCMCOptionsPanel extends JPanel {
 		
 		JLabel lblVariancePrior = new JLabel("Variance Prior");
 		lblVariancePrior.setBounds(514, 284, 131, 26);
-		
-		noOfChains = new JComboBox<String>();
-		noOfChains.setBounds(378, 205, 86, 20);
-		noOfChains.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "3", "4", "5", "6", "7"}));
 		setLayout(null);
 		add(lblNewLabel);
 		add(burnInTB);
@@ -88,8 +80,6 @@ public class MCMCOptionsPanel extends JPanel {
 		add(nimpsTB);
 		add(lblRandomNumberSeed);
 		add(randSeedTB);
-		add(lblNumberOfChains);
-		add(noOfChains);
 		add(lblClusterMeans);
 		add(lblLevelVariance);
 		add(lblVariancePrior);
@@ -146,6 +136,7 @@ public class MCMCOptionsPanel extends JPanel {
 		add(verticalBox_2);
 		
 		rdbtnInverseWishart = new JRadioButton("Prior1 (IW with SSCP = 0)");
+		rdbtnInverseWishart.setSelected(true);
 		verticalBox_2.add(rdbtnInverseWishart);
 		rdbtnInverseWishart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -155,7 +146,6 @@ public class MCMCOptionsPanel extends JPanel {
 		buttonGroup_2.add(rdbtnInverseWishart);
 		
 		rdbtnInverseWishartId = new JRadioButton("Prior2 (IW with SSCP = ID)");
-		rdbtnInverseWishartId.setSelected(true);
 		verticalBox_2.add(rdbtnInverseWishartId);
 		rdbtnInverseWishartId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -171,7 +161,7 @@ public class MCMCOptionsPanel extends JPanel {
 	public void initializeModel() {
 		model.mappings.put("CM", "clmean");
 		model.mappings.put("LV", "hov");
-		model.mappings.put("VP", "prior2");
+		model.mappings.put("VP", "prior1");
 	}
 	
 	public void initializeWithModel() {
@@ -186,7 +176,6 @@ public class MCMCOptionsPanel extends JPanel {
 		thinIterTB.setText("");
 		nimpsTB.setText("");
 		randSeedTB.setText("");
-	    noOfChains.setSelectedIndex(0);
 	    rdbtnInclude.setSelected(true);
 	    rdbtnHomogenous.setSelected(true);
 	    rdbtnInverseWishartId.setSelected(true);

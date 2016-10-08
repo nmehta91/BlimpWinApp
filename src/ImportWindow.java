@@ -30,6 +30,8 @@ import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
@@ -40,8 +42,12 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import java.awt.Color;
+import java.awt.Desktop.Action;
+import java.awt.Dimension;
+
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class ImportWindow extends JFrame {
 
@@ -56,18 +62,116 @@ public class ImportWindow extends JFrame {
 	private int columns;
 	private JPanel dataPanel;
 	private JPanel variablePanel;
-	private JTextField newVarName;
 	private JTable VariablesTable;
-	private JComboBox<String> variableNamesComboBox;
 	private String[][] variablesTableContents;
 	private String[] variableNames;
 	private JScrollPane scrollPane;
 	private JScrollPane variableTableSB;
-	private JTable dummyTable;
 	private JScrollPane scrollPane_1;
 	/**
 	 * Launch the application.
 	 */
+	
+    class VariablesTableModel extends AbstractTableModel {
+    	private String[] columnNames = {"Variable Name", "Variable Type"};
+    	private Object[][] data;
+
+    	public VariablesTableModel() {
+    		data = new Object[model.variables.size()][2];
+    		for(int i = 0; i < model.variables.size(); i++){
+    			data[i][0] = model.variables.get(i).name;
+    			data[i][1] = model.variables.get(i).type;
+    		}
+		}
+    	
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return model.variables.size();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+        	if(col == 0){
+	    		return model.variables.get(row).name;
+	    	}
+	    	else if(col == 1){
+	    		return model.variables.get(row).type;
+	    	}
+	    	return null;
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) {
+        	return true;
+        }
+
+        public void setValueAt(Object value, int row, int col) {
+        	if(col == 0){
+        		// Update Variable Name
+        		// Validate before changing variable name
+        		boolean shouldChange = validateCellChange(value, row, col);
+        		if(shouldChange){
+        			data[row][0] = value.toString();
+            		model.variables.get(row).name = value.toString();
+            		changeDataTableHeader(value.toString(), row);
+                	fireTableCellUpdated(row, col);
+        		}
+        	}
+        	else if(col == 1) {
+        		// Update variable scale
+        		data[row][1] = value;
+                model.variables.get(row).type = value.toString();
+                fireTableCellUpdated(row, col);
+        		
+        	}	
+        }
+        
+        public boolean validateCellChange(Object value, int row, int col) {
+        	String name = value.toString();
+        	if(!name.equals("")){
+    			//Check if the new variable name contains whitespaces, if yes skip 
+    			Pattern pattern = Pattern.compile("\\s");
+    			Matcher matcher = pattern.matcher(name);
+    			boolean found = matcher.find();
+    			
+    			if(!found && !checkIfDuplicate(name)){
+    				return true;
+    			} else if(found) {
+    				JOptionPane.showMessageDialog(contentPane,
+    						"Variable name cannot contain white spaces.",
+    						"Error!",
+    						JOptionPane.ERROR_MESSAGE);
+    			} else if(checkIfDuplicate(name)) {
+    				JOptionPane.showMessageDialog(contentPane,
+    						"Variable name already exists. Please choose another name.",
+    						"Error!",
+    						JOptionPane.ERROR_MESSAGE);
+    			}
+    		}
+        	
+        	return false;
+        }
+        
+        public boolean checkIfDuplicate(String name) {
+    		boolean found = false;
+    		for(int i = 0; i < model.variables.size(); i++) {
+    			String lname = model.variables.get(i).name.toLowerCase();
+    			System.out.println("Checking "+lname);
+    			if(lname.equals(name.toLowerCase()))
+    				found = true;
+    		}
+    		return found;
+    	}
+    }
 	public static void showWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -88,11 +192,10 @@ public class ImportWindow extends JFrame {
 		setTitle("Import Window");
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 759, 540);
+		setBounds(100, 100, 799, 546);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		
 		JFrame frame = this;
 		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
@@ -100,119 +203,22 @@ public class ImportWindow extends JFrame {
 		frame.setIconImage(img.getImage());
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(10, 5, 723, 449);
-		contentPane.add(tabbedPane);
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", null, dataPanel, null);
-		dataPanel.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Delimiter");
-		lblNewLabel.setBounds(28, 25, 73, 14);
-		dataPanel.add(lblNewLabel);
-		
-		JLabel lblMissingValueCode = new JLabel("Missing Value Code");
-		lblMissingValueCode.setBounds(10, 68, 120, 14);
-		dataPanel.add(lblMissingValueCode);
-		
-		MV_Code = new JTextField();
-		MV_Code.setBounds(131, 65, 86, 20);
-		dataPanel.add(MV_Code);
-		MV_Code.setColumns(10);
 		
 		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(285, 11, 397, 187);
-		dataPanel.add(scrollPane_1);
-	
-		rawDataView = new JTextArea();
-		scrollPane_1.setViewportView(rawDataView);
-		rawDataView.setWrapStyleWord(false);
-		rawDataView.setLineWrap(false);	
-		rawDataView.setText(model.importFileContentsInString);
 		
-		DelimiterComboBox = new JComboBox();
-		DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
-		DelimiterComboBox.setBounds(131, 22, 86, 20);
-		dataPanel.add(DelimiterComboBox);
-		
-		JButton btnImport = new JButton("Import");
-		btnImport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String delimiter;
-				if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
-					delimiter = "\\s+";
-				} else {
-					delimiter = ",";
-				}
-			
-				if(parseData(delimiter)) {
-					initializeVariablesTable(initializeParsedFileTableView());
-				} else {
-					JOptionPane.showMessageDialog(contentPane.getParent(),
-							"There was an error in parsing the file. Please re-select the appropriate delimiter.",
-							"Error!",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}	
-		});
-		
-		btnImport.setBounds(80, 120, 89, 23);
-		dataPanel.add(btnImport);
+			rawDataView = new JTextArea();
+			scrollPane_1.setViewportView(rawDataView);
+			rawDataView.setWrapStyleWord(false);
+			rawDataView.setLineWrap(false);	
+			rawDataView.setText(model.importFileContentsInString);
 		
 		variablePanel = new JPanel();
 		tabbedPane.addTab("Variable", null, variablePanel, null);
-		variablePanel.setLayout(null);
-		
-		JLabel lblVariable = new JLabel("Variable");
-		lblVariable.setBounds(29, 27, 86, 14);
-		variablePanel.add(lblVariable);
-		
-		JLabel lblNewName = new JLabel("New Name");
-		lblNewName.setBounds(29, 67, 86, 14);
-		variablePanel.add(lblNewName);
-		
-		JLabel lblVariableScale = new JLabel("Variable Scale");
-		lblVariableScale.setBounds(29, 108, 86, 14);
-		variablePanel.add(lblVariableScale);
-		
-		newVarName = new JTextField();
-		newVarName.setBounds(125, 64, 150, 20);
-		variablePanel.add(newVarName);
-		newVarName.setColumns(10);
-		
-		JComboBox<String> varTypes =  new JComboBox<String>();
-		varTypes.setModel(new DefaultComboBoxModel(new String[] {"Continuous", "Nominal", "Ordinal"}));
-		varTypes.setBounds(125, 105, 150, 20);
-		variablePanel.add(varTypes);
-		
-		JButton btnSaveVarDetails = new JButton("Save");
-		btnSaveVarDetails.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int selectedVariable = variableNamesComboBox.getSelectedIndex();
-				String newName = newVarName.getText();
-				String newType = (String)varTypes.getSelectedItem();
-				saveVariableChanges(selectedVariable, newName, newType);
-				
-				String[] varNames = new String[model.variables.size()];
-				for(int i = 0; i < model.variables.size(); i++) {
-					varNames[i] = model.variables.get(i).name;
-				}
-				variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(varNames));
-//				varTypes.setSelectedIndex(0);
-				variableNamesComboBox.setSelectedIndex(selectedVariable);
-				newVarName.setText("");
-			}
-		});
-		btnSaveVarDetails.setBounds(86, 160, 89, 23);
-		variablePanel.add(btnSaveVarDetails);
-		
-		variableNamesComboBox = new JComboBox<String>();
-		variableNamesComboBox.setBounds(125, 24, 150, 20);
-		variablePanel.add(variableNamesComboBox);
 		
 		variableTableSB = new JScrollPane();
-		variableTableSB.setBounds(389, 11, 311, 405);
-		variablePanel.add(variableTableSB);
 		
 		String[] variableTBColumnHeadings = {"Variable Name", "Variable Type"};
 		DefaultTableModel model = new DefaultTableModel(25, variableTBColumnHeadings.length) {
@@ -223,6 +229,7 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(variableTBColumnHeadings);
+		
 		VariablesTable = new JTable(model);
 		VariablesTable.setOpaque(true);
 		VariablesTable.setFillsViewportHeight(true);
@@ -231,11 +238,46 @@ public class ImportWindow extends JFrame {
 
 		VariablesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		variableTableSB.setViewportView(VariablesTable);
-		
+		GroupLayout gl_variablePanel = new GroupLayout(variablePanel);
+		gl_variablePanel.setHorizontalGroup(
+			gl_variablePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_variablePanel.createSequentialGroup()
+					.addGap(182)
+					.addComponent(variableTableSB, GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+					.addGap(216))
+		);
+		gl_variablePanel.setVerticalGroup(
+			gl_variablePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_variablePanel.createSequentialGroup()
+					.addGap(11)
+					.addComponent(variableTableSB, GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+					.addGap(19))
+		);
+		variablePanel.setLayout(gl_variablePanel);
+				
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new doneActionListener(this));
-		btnDone.setBounds(612, 465, 121, 23);
-		contentPane.add(btnDone);
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(19)
+							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE))
+						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+							.addContainerGap(639, Short.MAX_VALUE)
+							.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnDone, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+		);
+		contentPane.setLayout(gl_contentPane);
 		
 		String[] dataColHeadings = new String[10];
 		for(int i = 0; i < 10; i++) {
@@ -282,43 +324,117 @@ public class ImportWindow extends JFrame {
 			   }
 		};
 		model.setColumnIdentifiers(defaultColumnHeadings);
-		
-		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(41, 213, 641, 187);
-		dataPanel.add(scrollPane);
-
-	
-		dataTable = new JTable(model);
-		dataTable.setAutoResizeMode(0);
-		dataTable.getTableHeader().setReorderingAllowed(false);	
 		for(int i = 0; i < defaultColumnHeadings.length; i++) {
-			TableColumn column = dataTable.getColumnModel().getColumn(i);
-			column.setPreferredWidth(70);
+			//TableColumn column = dataTable.getColumnModel().getColumn(i);
+			//column.setPreferredWidth(70);
 		}
-		
-		scrollPane.setViewportView(dataTable);
-		dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+						
+						JButton btnImport = new JButton("Import");
+						btnImport.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								String delimiter;
+								if ((String) DelimiterComboBox.getSelectedItem() == "Space") {
+									delimiter = "\\s+";
+								} else {
+									delimiter = ",";
+								}
+							
+								if(parseData(delimiter)) {
+									initializeVariablesTable(initializeParsedFileTableView());
+								} else {
+									JOptionPane.showMessageDialog(contentPane.getParent(),
+											"There was an error in parsing the file. Please re-select the appropriate delimiter.",
+											"Error!",
+											JOptionPane.ERROR_MESSAGE);
+								}
+							}	
+						});
+						
+						JLabel lblNewLabel = new JLabel("Delimiter");
+						
+						DelimiterComboBox = new JComboBox();
+						DelimiterComboBox.setModel(new DefaultComboBoxModel(new String[] {"Comma", "Space"}));
+						
+						JLabel lblMissingValueCode = new JLabel("Missing Value Code");
+						
+						MV_Code = new JTextField();
+						MV_Code.setColumns(10);
+						
+						
+						scrollPane = new JScrollPane();
+						
+							
+								dataTable = new JTable(model);
+								dataTable.setAutoResizeMode(1);
+								dataTable.getTableHeader().setReorderingAllowed(false);	
+								
+								scrollPane.setViewportView(dataTable);
+								dataTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+								GroupLayout gl_dataPanel = new GroupLayout(dataPanel);
+								gl_dataPanel.setHorizontalGroup(
+									gl_dataPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_dataPanel.createSequentialGroup()
+											.addGap(26)
+											.addGroup(gl_dataPanel.createParallelGroup(Alignment.TRAILING)
+												.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(12)
+													.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+														.addGroup(gl_dataPanel.createSequentialGroup()
+															.addGap(25)
+															.addComponent(lblNewLabel))
+														.addComponent(lblMissingValueCode))
+													.addGap(17)
+													.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+														.addComponent(DelimiterComboBox, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+														.addComponent(MV_Code, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+														.addGroup(gl_dataPanel.createSequentialGroup()
+															.addGap(8)
+															.addComponent(btnImport)))
+													.addGap(73)
+													.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)))
+											.addGap(26))
+								);
+								gl_dataPanel.setVerticalGroup(
+									gl_dataPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_dataPanel.createSequentialGroup()
+											.addGroup(gl_dataPanel.createParallelGroup(Alignment.LEADING)
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(66)
+													.addComponent(lblNewLabel)
+													.addGap(8)
+													.addComponent(lblMissingValueCode))
+												.addGroup(gl_dataPanel.createSequentialGroup()
+													.addGap(60)
+													.addComponent(DelimiterComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addGap(5)
+													.addComponent(MV_Code, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addGap(30)
+													.addComponent(btnImport))
+												.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
+											.addGap(29)
+											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+											.addGap(41))
+								);
+								dataPanel.setLayout(gl_dataPanel);
 		
 		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)dataTable.getDefaultRenderer(Object.class);
 		renderer.setHorizontalAlignment( JLabel.RIGHT );
 	}
 	
 	public void initializeVariablesTable(String[] variableNames) {
-		String[] header = {"Variable Name", "Variable Type"};
-		variablesTableContents = new String[variableNames.length][2];
-		DefaultTableModel tm = (DefaultTableModel)VariablesTable.getModel();
-		tm.setRowCount(0);
-		
-		//  Add rows to the table showing [variable_name, variable_type]
-		for(int i = 0; i < variableNames.length; i++){
-				variablesTableContents[i][0] = variableNames[i];
-				variablesTableContents[i][1] = "Continuous";
-				System.out.println("Name: " + variablesTableContents[i][0]);
-				tm.addRow(variablesTableContents[i]);
-		}
 
-		variableNamesComboBox.setModel(new DefaultComboBoxModel<String>(variableNames));
+		VariablesTable.setModel(new VariablesTableModel());
+		TableColumn variableScaleCol = VariablesTable.getColumnModel().getColumn(1);
+		JComboBox<String> variableScales = new JComboBox<String>();
+		variableScales.addItem("Continuous");
+		variableScales.addItem("Ordinal");
+		variableScales.addItem("Nominal");
+		variableScaleCol.setCellEditor(new DefaultCellEditor(variableScales));
+
+        VariablesTable.setRowHeight(25);
+		VariablesTable.repaint();
+	
 	}
 	
 	public boolean parseData(String delimiter) {
@@ -365,39 +481,6 @@ public class ImportWindow extends JFrame {
 		return success;
 	}
 		
-	public void saveVariableChanges(int index, String name, String type){
-		Variable variable = model.variables.get(index);
-		System.out.println("name: " + name);
-		if(!name.equals("")){
-			//Check if the new variable name contains whitespaces, if yes skip 
-			Pattern pattern = Pattern.compile("\\s");
-			Matcher matcher = pattern.matcher(name);
-			boolean found = matcher.find();
-			
-			if(!found && !checkIfDuplicate(name)){
-				variable.name = name;
-				VariablesTable.getModel().setValueAt(name, index, 0);
-				dataTable.getColumnModel().getColumn(index).setHeaderValue(name);
-				dataTable.getColumnModel().getColumn(index).setPreferredWidth(70);
-				dataTable.getTableHeader().repaint();
-			} else if(found) {
-				JOptionPane.showMessageDialog(contentPane,
-						"Variable name cannot contain white spaces.",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
-			} else if(checkIfDuplicate(name)) {
-				JOptionPane.showMessageDialog(contentPane,
-						"Variable name already exists. Please choose another name.",
-						"Error!",
-						JOptionPane.ERROR_MESSAGE);
-			}
-		}
-		variable.type = type;
-		VariablesTable.getModel().setValueAt(type, index, 1);
-		model.variables.remove(index);
-		model.variables.add(index, variable);
-	}
-	
 	public boolean checkIfDuplicate(String name) {
 		boolean found = false;
 		for(int i = 0; i < model.variables.size(); i++) {
@@ -407,6 +490,13 @@ public class ImportWindow extends JFrame {
 		}
 		return found;
 	}
+
+	public void changeDataTableHeader(String newName, int col) {
+		dataTable.getColumnModel().getColumn(col).setHeaderValue(newName);
+		dataTable.getColumnModel().getColumn(col).setPreferredWidth(70);
+		dataTable.getTableHeader().repaint();
+	}
+	
 	class doneActionListener implements ActionListener{
 
 	    private JFrame toBeClose;
