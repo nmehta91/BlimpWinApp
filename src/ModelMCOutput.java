@@ -39,6 +39,7 @@ import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class ModelMCOutput extends JFrame {
 
@@ -107,13 +108,15 @@ public class ModelMCOutput extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGap(5)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 764, Short.MAX_VALUE)
-						.addGroup(gl_contentPane.createSequentialGroup()
+						.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 769, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+							.addGap(5)
 							.addComponent(btnCancel, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
 							.addGap(12)
 							.addComponent(btnReset, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE)
-							.addGap(455)
-							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)))
+							.addPreferredGap(ComponentPlacement.RELATED, 445, Short.MAX_VALUE)
+							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)))
 					.addGap(5))
 		);
 		gl_contentPane.setVerticalGroup(
@@ -124,8 +127,9 @@ public class ModelMCOutput extends JFrame {
 					.addGap(11)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 						.addComponent(btnCancel)
-						.addComponent(btnReset)
-						.addComponent(btnNewButton))
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnReset)
+							.addComponent(btnNewButton)))
 					.addGap(6))
 		);
 		contentPane.setLayout(gl_contentPane);
