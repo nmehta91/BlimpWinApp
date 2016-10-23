@@ -59,6 +59,7 @@ public class ModelMCOutput extends JFrame {
 	}
 	
 	public void initializeWindowComponents(int selectTabIndex) {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
