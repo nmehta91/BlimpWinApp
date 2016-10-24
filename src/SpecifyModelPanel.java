@@ -256,8 +256,23 @@ public class SpecifyModelPanel extends JPanel {
 				
 				if(model.identifierVariables.size() < 3 && selectedRow.length <= (3-model.identifierVariables.size())){
 				
+				// Array specifies which indexes to remove based on comparison with model variables
+				Boolean[] indexesToRemove = new Boolean[model.variables.size()];
+				for(int i = 0; i < model.variables.size(); i++) {
+					indexesToRemove[i] = false;
+				}
+				
 				for(int i = 0; i < selectedRow.length; i++) {
 					Variable variable = model.variables.get(selectedRow[i]);
+					int index = findInArrayList(model.modelVariables, variable.name);
+					if(index != -1) {
+						JOptionPane.showMessageDialog(getParentFrame(),
+								"Duplicate variable " + variable.name + " already exists. \nPlease remove any duplicate variables from the model before adding.",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+						continue;
+					}
+					indexesToRemove[i] = true;
 					System.out.println(variable.name);
 					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", variable.type, variable.position);
 					model.identifierVariables.add(identifierVariable);
@@ -265,10 +280,12 @@ public class SpecifyModelPanel extends JPanel {
 				}
 				int count = 0;
 				for(int i = 0; i < selectedRow.length; i++) {
-					System.out.println("Removing "+model.variables.get(selectedRow[i-count]).name);
-					model.variables.remove(selectedRow[i-count]);
-					variableTable.repaint();
-					count++;
+					if(indexesToRemove[i]) {
+						System.out.println("Removing "+model.variables.get(selectedRow[i-count]).name);
+						model.variables.remove(selectedRow[i-count]);
+						variableTable.repaint();
+						count++;
+					}
 				}
 				
 				System.out.println("Imputation Variables length: " + model.identifierVariables.size());
