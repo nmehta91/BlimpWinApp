@@ -145,41 +145,11 @@ public class RunLogsWindow extends JFrame {
 		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
 		
 		progressBar = new JProgressBar();
-		
-		JButton btnSaveOutput = new JButton("Save Output");
-		btnSaveOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser selectedFile = new JFileChooser();
-				selectedFile.setSelectedFile(new File(""));
-				int saveResult = selectedFile.showSaveDialog(contentPane);
-				if (saveResult == selectedFile.APPROVE_OPTION) {
-					BufferedWriter writer = null;
-					File file = selectedFile.getSelectedFile();
-					String filePath = file.getPath();
-					if(!filePath.endsWith(".impOut")) {
-						filePath += ".impOut";
-					}
-					try {
-						writer = new BufferedWriter(new FileWriter(filePath));
-						writer.write(logTextArea.getText());
-						writer.close();
-					} catch (Exception e) {
-						JOptionPane.showMessageDialog(contentPane,
-								"Exception while trying to save the file!",
-								"Error!",
-								JOptionPane.ERROR_MESSAGE);
-					}
-					
-				}
-			}
-		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnSaveOutput, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 464, Short.MAX_VALUE)
+					.addContainerGap(608, Short.MAX_VALUE)
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 				.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 781, Short.MAX_VALUE)
@@ -187,13 +157,10 @@ public class RunLogsWindow extends JFrame {
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap(36, Short.MAX_VALUE)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 407, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnSaveOutput)
-						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(2))
+					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(11))
 		);
 		contentPane.setLayout(gl_contentPane);
 	}
