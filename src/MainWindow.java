@@ -70,6 +70,7 @@ public class MainWindow {
 	private UndoManager undoManager;
 	private JMenuItem mntmUno;
 	private JMenuItem mntmRedo;
+	private JMenuItem mntmDataViewer;
 	/**
 	 * Launch the application.
 	 */
@@ -186,6 +187,7 @@ public class MainWindow {
 					frame.setTitle("Untitled");
 					syntaxEditor.setText("");
 					ModelMCOutputWindow = new ModelMCOutput(0);
+					mntmDataViewer.setEnabled(true);
 				}
 				
 			}
@@ -428,8 +430,19 @@ public class MainWindow {
 				}
 			}
 		});
+	
+		mntmDataViewer = new JMenuItem("Data Viewer");
+		mntmDataViewer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(importWindow != null)
+					importWindow.setVisible(true);
+			}
+		});
+		mntmDataViewer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+		mnImpute.add(mntmDataViewer);
 		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
 		mnImpute.add(mntmRun);
+		mntmDataViewer.setEnabled(false);
 		
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
