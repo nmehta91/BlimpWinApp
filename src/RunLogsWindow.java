@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +18,9 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import org.omg.CORBA.portable.InputStream;
+
+import say.swing.JFontChooser;
+
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -25,10 +30,16 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 
 public class RunLogsWindow extends JFrame {
 
@@ -38,6 +49,12 @@ public class RunLogsWindow extends JFrame {
 	private JProgressBar progressBar;
 	private SyntaxModel model;
 	private String pathToExe;
+	private JMenuBar menuBar;
+	private JMenu mnFile;
+	private JMenu mnFormat;
+	private JMenuItem mntmSave;
+	private JMenuItem mntmClose;
+	private JMenuItem mntmFont;
 	/**
 	 * Launch the application.
 	 */
@@ -45,32 +62,22 @@ public class RunLogsWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public RunLogsWindow(String pathToExe) {
+		setResizable(true);
 		setTitle("Output");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 786, 477);
+		setBounds(100, 100, 807, 523);
 		
 		model = SyntaxModel.getInstance();
 		this.pathToExe = pathToExe;
 		
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-
-		JFrame frame = this;
-		ImageIcon img = new ImageIcon("Resources\\blimplogo_32x32.png");
-		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
-		frame.setIconImage(img.getImage());
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
 		
-		logTextArea = new JTextArea();
-		logTextArea.setEditable(false);
-		logTextArea.setFont(new Font("Courier", Font.PLAIN, 14));
+		mnFile = new JMenu("File");
+		menuBar.add(mnFile);
 		
-		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
-		
-		progressBar = new JProgressBar();
-		
-		JButton btnSaveOutput = new JButton("Save Output");
-		btnSaveOutput.addActionListener(new ActionListener() {
+		mntmSave = new JMenuItem("Save...");
+		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser selectedFile = new JFileChooser();
 				selectedFile.setSelectedFile(new File(""));
@@ -93,30 +100,70 @@ public class RunLogsWindow extends JFrame {
 								JOptionPane.ERROR_MESSAGE);
 					}
 					
+				}  
+			}
+		});
+		mnFile.add(mntmSave);
+		
+		JFrame frame = this;
+		mntmClose = new JMenuItem("Close");
+		mntmClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+			}
+		});
+		mnFile.add(mntmClose);
+		
+		mnFormat = new JMenu("Format");
+		menuBar.add(mnFormat);
+		
+		mntmFont = new JMenuItem("Font...");
+		mntmFont.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFontChooser fontChooser = new JFontChooser();
+				int result = fontChooser.showDialog(frame);
+				if (result == JFontChooser.OK_OPTION)
+				{
+					Font font = fontChooser.getSelectedFont(); 
+					logTextArea.setFont(font);
 				}
 			}
 		});
+
+		mnFormat.add(mntmFont);
+		
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+
+		ImageIcon img = new ImageIcon("blimplogo_32x32.png");
+		System.out.println("width: "+ img.getIconWidth() + "height:" + img.getIconHeight());
+		frame.setIconImage(img.getImage());
+		
+		logTextArea = new JTextArea();
+		logTextArea.setEditable(false);
+		logTextArea.setFont(new Font("Courier", Font.PLAIN, 14));
+		
+		JScrollPane scrollPane_1 = new JScrollPane(logTextArea);
+		
+		progressBar = new JProgressBar();
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
-					.addGap(5))
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-					.addComponent(btnSaveOutput, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 469, Short.MAX_VALUE)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap(608, Short.MAX_VALUE)
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
+				.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 781, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSaveOutput))
-					.addGap(20))
+					.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(11))
 		);
 		contentPane.setLayout(gl_contentPane);
 	}

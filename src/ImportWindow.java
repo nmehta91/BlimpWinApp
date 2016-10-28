@@ -190,6 +190,7 @@ public class ImportWindow extends JFrame {
 	 */
 	public ImportWindow(Window parent) {
 		setTitle("Import Window");
+		setResizable(false);
 		model = SyntaxModel.getInstance();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 811, 548);
