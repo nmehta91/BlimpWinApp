@@ -64,6 +64,7 @@ public class MainWindow {
 	private ModelMCOutput ModelMCOutputWindow = null;
 	private SyntaxModel model;
 	private RunLogsWindow runWindow = null;
+	private AboutPage aboutPage = null;
 	private int mostRecentHashCode;
 	private String pathToExe;
 	private Boolean cancelButtonClicked;
@@ -466,6 +467,18 @@ public class MainWindow {
 		});
 		mntmBlimpUserManual.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
 		mnHelp.add(mntmBlimpUserManual);
+		
+		JSeparator separator_1 = new JSeparator();
+		mnHelp.add(separator_1);
+		
+		JMenuItem mntmAboutBlimp = new JMenuItem("About Blimp");
+		mntmAboutBlimp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				aboutPage = new AboutPage();
+				aboutPage.setVisible(true);  
+			}
+		});
+		mnHelp.add(mntmAboutBlimp);
 		
 		syntaxEditor = new JTextArea(5, 30);
 		syntaxEditor.setLineWrap(true);
