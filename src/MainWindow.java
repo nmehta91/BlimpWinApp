@@ -437,6 +437,7 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				if(importWindow != null)
 					importWindow.setVisible(true);
+					importWindow.btnImport.setEnabled(false);
 			}
 		});
 		mntmDataViewer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));

@@ -67,6 +67,7 @@ public class ImportWindow extends JFrame {
 	private JScrollPane scrollPane;
 	private JScrollPane variableTableSB;
 	private JScrollPane scrollPane_1;
+	public JButton btnImport;
 	/**
 	 * Launch the application.
 	 */
@@ -239,7 +240,7 @@ public class ImportWindow extends JFrame {
 		DelimiterComboBox.setBounds(131, 22, 86, 20);
 		dataPanel.add(DelimiterComboBox);
 		
-		JButton btnImport = new JButton("Import");
+		btnImport = new JButton("Import");
 		btnImport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String delimiter;
