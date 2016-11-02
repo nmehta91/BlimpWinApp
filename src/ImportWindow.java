@@ -77,10 +77,10 @@ public class ImportWindow extends JFrame {
     	private Object[][] data;
 
     	public VariablesTableModel() {
-    		data = new Object[model.variables.size()][2];
-    		for(int i = 0; i < model.variables.size(); i++){
-    			data[i][0] = model.variables.get(i).name;
-    			data[i][1] = model.variables.get(i).type;
+    		data = new Object[model.allVariables.size()][2];
+    		for(int i = 0; i < model.allVariables.size(); i++){
+    			data[i][0] = model.allVariables.get(i).name;
+    			data[i][1] = model.allVariables.get(i).type;
     		}
 		}
     	
@@ -89,7 +89,7 @@ public class ImportWindow extends JFrame {
         }
 
         public int getRowCount() {
-            return model.variables.size();
+            return model.allVariables.size();
         }
 
         public String getColumnName(int col) {
@@ -98,10 +98,10 @@ public class ImportWindow extends JFrame {
 
         public Object getValueAt(int row, int col) {
         	if(col == 0){
-	    		return model.variables.get(row).name;
+	    		return model.allVariables.get(row).name;
 	    	}
 	    	else if(col == 1){
-	    		return model.variables.get(row).type;
+	    		return model.allVariables.get(row).type;
 	    	}
 	    	return null;
         }
@@ -119,17 +119,22 @@ public class ImportWindow extends JFrame {
         		// Update Variable Name
         		// Validate before changing variable name
         		boolean shouldChange = validateCellChange(value, row, col);
-        		if(shouldChange){
+        		if(shouldChange){  
         			data[row][0] = value.toString();
-            		model.variables.get(row).name = value.toString();
+            		model.allVariables.get(row).name = value.toString();
+            		if(model.identifierVariablesLocations.contains(new Integer(row))){
+            			// if the variable name modified is an identifier variable, changes its name in model.identifierVariables
+            			String[] split = model.identifierVariables.get(row).name.split(" ");
+            			model.identifierVariables.get(row).name = value.toString() + " " + split[1];
+            		}
             		changeDataTableHeader(value.toString(), row);
                 	fireTableCellUpdated(row, col);
-        		}
+        		} 
         	}
         	else if(col == 1) {
         		// Update variable scale
         		data[row][1] = value;
-                model.variables.get(row).type = value.toString();
+                model.allVariables.get(row).type = value.toString();
                 fireTableCellUpdated(row, col);
         		
         	}	
@@ -163,8 +168,8 @@ public class ImportWindow extends JFrame {
         
         public boolean checkIfDuplicate(String name) {
     		boolean found = false;
-    		for(int i = 0; i < model.variables.size(); i++) {
-    			String lname = model.variables.get(i).name.toLowerCase();
+    		for(int i = 0; i < model.allVariables.size(); i++) {
+    			String lname = model.allVariables.get(i).name.toLowerCase();
     			System.out.println("Checking "+lname);
     			if(lname.equals(name.toLowerCase()))
     				found = true;
@@ -310,11 +315,13 @@ public class ImportWindow extends JFrame {
 		
 		// To ensure if Import button clicked more than once, variables don't get duplicated
 		model.variables.clear();
+		model.allVariables.clear();
 		
 		for(int i = 0; i< variableNames.length; i++) {
 			String name = "VAR" + (i+1);
 			Variable newVariable = new Variable(name, "Continuous", i);
 			variableNames[i] = name;
+			model.allVariables.add(newVariable);
 			model.variables.add(newVariable);
 		}
 		
@@ -424,8 +431,8 @@ public class ImportWindow extends JFrame {
 		
 	public boolean checkIfDuplicate(String name) {
 		boolean found = false;
-		for(int i = 0; i < model.variables.size(); i++) {
-			String lname = model.variables.get(i).name.toLowerCase();
+		for(int i = 0; i < model.allVariables.size(); i++) {
+			String lname = model.allVariables.get(i).name.toLowerCase();
 			if(lname.equals(name.toLowerCase()))
 				found = true;
 		}

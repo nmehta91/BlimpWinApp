@@ -273,6 +273,8 @@ public class SpecifyModelPanel extends JPanel {
 						continue;
 					}
 					indexesToRemove[i] = true;
+					// identifierVariableLocations specifies the indexes of model.variables which it contains - Used for Data View under Impute
+					model.identifierVariablesLocations.add(new Integer(i));
 					System.out.println(variable.name);
 					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", variable.type, variable.position);
 					model.identifierVariables.add(identifierVariable);

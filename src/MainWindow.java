@@ -180,8 +180,10 @@ public class MainWindow {
 					importWindow.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e){
                     	// If missing value code is entered only then print import syntax
-                    	if(model.mappings.containsKey("MVC"))
-                       		writeImportSyntax();
+                    	if(model.mappings.containsKey("MVC")) {
+//                   		writeImportSyntax();
+                    		writeModelMCMCOutputSyntax();
+                    	}
                     }
 					});
 					currentFile = null;
@@ -713,19 +715,10 @@ public class MainWindow {
 			line = "\n\nVARIABLES: ";
 			int i;
 			
-			ArrayList<Variable> normalAndImputationVarCombined = new ArrayList<Variable>();
-			for(i = 0; i < model.variables.size(); i++){
-				normalAndImputationVarCombined.add(model.variables.get(i));
-			}
-			for(i = 0; i < model.identifierVariables.size(); i++) {
-				normalAndImputationVarCombined.add(model.identifierVariables.get(i));
-			}
-			
-			Collections.sort(normalAndImputationVarCombined);
 			String ordinalVariables = "\n\nORDINAL: ";
 			String nominalVariables = "\n\nNOMINAL: ";
-			for(i = 0; i < normalAndImputationVarCombined.size() - 1; i++){
-				Variable var = normalAndImputationVarCombined.get(i);
+			for(i = 0; i < model.allVariables.size() - 1; i++){
+				Variable var = model.allVariables.get(i);
 				System.out.println("Var name:" +var.name + "type: " +var.type);
 				if(var.name.lastIndexOf("(") != -1) {
 					String truncatedVariable = var.name.substring(0, var.name.lastIndexOf("("));
@@ -748,11 +741,11 @@ public class MainWindow {
 					}
 				}					
 			}
-			line = line + normalAndImputationVarCombined.get(i).name + ";";
-			if(normalAndImputationVarCombined.get(i).type == "Ordinal") 
-				ordinalVariables = ordinalVariables +normalAndImputationVarCombined.get(i).name;
-			if(normalAndImputationVarCombined.get(i).type == "Nominal")
-				nominalVariables = nominalVariables + normalAndImputationVarCombined.get(i).name; 
+			line = line + model.allVariables.get(i).name + ";";
+			if(model.allVariables.get(i).type == "Ordinal") 
+				ordinalVariables = ordinalVariables +model.allVariables.get(i).name;
+			if(model.allVariables.get(i).type == "Nominal")
+				nominalVariables = nominalVariables + model.allVariables.get(i).name; 
 			
 			syntaxEditor.append(line);
 			syntaxEditor.append(ordinalVariables + ";");
