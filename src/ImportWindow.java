@@ -121,12 +121,42 @@ public class ImportWindow extends JFrame {
         		boolean shouldChange = validateCellChange(value, row, col);
         		if(shouldChange){  
         			data[row][0] = value.toString();
+        			
+            		// Change Random slopes model variable with the updated variable name
+            		for(int i = 0; i < model.modelVariables.size(); i++)
+            		{
+            			Variable mvar = model.modelVariables.get(i);
+            			System.out.println("Considering model variable :" + mvar.name);
+            			if(!mvar.name.contains(":"))
+            				continue;
+            			String[] split = mvar.name.split(":");
+            			System.out.println("Split[0]: " + split[0] + "Split[1]: " + split[1]);
+            			
+            			if(split.length > 1) {
+            				// Second variable name is always append with '(Random Slopes)' - we are only considering the variable name hence removing the suffix
+                			split[1] = split[1].split(" ")[0];
+            				System.out.println("Entered split ---------------------- ");
+            				for(int j = 0; j < split.length; j++) {
+            					if(split[j].equals(model.allVariables.get(row).name)) {
+            						split[j] = value.toString();
+            						mvar.name = split[0] + ":" + split[1] + " (Random Slopes)";
+            						System.out.println("new name : " + mvar.name);
+            						break;
+            					}
+            				}
+            			}
+            		}
+            			
             		model.allVariables.get(row).name = value.toString();
             		if(model.identifierVariablesLocations.contains(new Integer(row))){
             			// if the variable name modified is an identifier variable, changes its name in model.identifierVariables
             			String[] split = model.identifierVariables.get(row).name.split(" ");
             			model.identifierVariables.get(row).name = value.toString() + " " + split[1];
             		}
+            		
+
+            		
+            		
             		changeDataTableHeader(value.toString(), row);
                 	fireTableCellUpdated(row, col);
         		} 
