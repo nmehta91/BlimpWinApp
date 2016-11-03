@@ -177,23 +177,36 @@ public class ImportWindow extends JFrame {
     			Pattern pattern = Pattern.compile("\\s");
     			Matcher matcher = pattern.matcher(name);
     			boolean found = matcher.find();
-    			
-    			if(!found && !checkIfDuplicate(name)){
-    				return true;
-    			} else if(found) {
+    			if(found) {
+    				System.out.println("New variable name has spaces.");
     				JOptionPane.showMessageDialog(contentPane,
-    						"Variable name cannot contain white spaces.",
-    						"Error!",
+    						"Please enter a variable name that is valid. Only alphanumeric characters and underscores are allowed.",
+    						"Entered Variable name is invalid",
     						JOptionPane.ERROR_MESSAGE);
-    			} else if(checkIfDuplicate(name)) {
+    				return false;
+    			}
+    			
+    			found = name.matches("[A-Z0-9a-z_]*");
+    			if(!found) {
+    				System.out.println("New variable name is not alphanumeric.");
+    				JOptionPane.showMessageDialog(contentPane,
+    						"Please enter a variable name that is valid. Only alphanumeric characters and underscores are allowed.",
+    						"Entered Variable name is invalid",
+    						JOptionPane.ERROR_MESSAGE);
+    				return false;
+    			}
+    			
+    			if(checkIfDuplicate(name)){
     				JOptionPane.showMessageDialog(contentPane,
     						"Variable name already exists. Please choose another name.",
     						"Error!",
     						JOptionPane.ERROR_MESSAGE);
-    			}
+    			} 	
+    			return true;
+    		} else {
+    			// if new name is empty string return false
+    			return false;
     		}
-        	
-        	return false;
         }
         
         public boolean checkIfDuplicate(String name) {
