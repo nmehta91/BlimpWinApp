@@ -437,9 +437,13 @@ public class MainWindow {
 		mntmDataViewer = new JMenuItem("Data Viewer");
 		mntmDataViewer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(importWindow != null)
+				if(importWindow == null) {
+					mntmDataViewer.setEnabled(false);
+				}
+				if(importWindow != null) {
 					importWindow.setVisible(true);
 					importWindow.btnImport.setEnabled(false);
+				}
 			}
 		});
 		mntmDataViewer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
