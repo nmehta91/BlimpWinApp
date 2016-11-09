@@ -68,6 +68,7 @@ public class ImportWindow extends JFrame {
 	private JScrollPane variableTableSB;
 	private JScrollPane scrollPane_1;
 	public JButton btnImport;
+	public ModelMCOutput modelWindow;
 	/**
 	 * Launch the application.
 	 */
@@ -153,9 +154,12 @@ public class ImportWindow extends JFrame {
             			String[] split = model.identifierVariables.get(row).name.split(" ");
             			model.identifierVariables.get(row).name = value.toString() + " " + split[1];
             		}
-            		
-
-            		
+            	
+            		if(modelWindow != null) {
+            			modelWindow.SMPanel.variableTable.repaint();
+            			modelWindow.SMPanel.modelVariables.repaint();
+            			modelWindow.SMPanel.imputationVariablesTable.repaint();
+            		}
             		
             		changeDataTableHeader(value.toString(), row);
                 	fireTableCellUpdated(row, col);

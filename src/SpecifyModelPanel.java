@@ -24,9 +24,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 public class SpecifyModelPanel extends JPanel {
-	private JTable variableTable;
-	private JTable modelVariables;
-	private JTable imputationVariablesTable;
+	public JTable variableTable;
+	public JTable modelVariables;
+	public JTable imputationVariablesTable;
 	private SyntaxModel model;
 	private int mode;
 	private Frame parentFrame;

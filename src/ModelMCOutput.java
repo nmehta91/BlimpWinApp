@@ -42,7 +42,7 @@ public class ModelMCOutput extends JFrame {
 
 	private JPanel contentPane;
 	public JTabbedPane tabbedPane;
-	private SpecifyModelPanel SMPanel;
+	public SpecifyModelPanel SMPanel;
 	private MCMCOptionsPanel MCMCPanel;
 	private OutputOptionsPanel outputOptionsPanel;
 	private SyntaxModel model;

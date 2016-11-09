@@ -190,6 +190,7 @@ public class MainWindow {
 					frame.setTitle("Untitled");
 					syntaxEditor.setText("");
 					ModelMCOutputWindow = new ModelMCOutput(0);
+					importWindow.modelWindow = ModelMCOutputWindow;
 					mntmDataViewer.setEnabled(true);
 				}
 				
