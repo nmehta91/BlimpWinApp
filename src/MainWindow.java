@@ -81,6 +81,9 @@ public class MainWindow {
 				try {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
+					if(args.length > 0) {
+						window.openFile(new File(args[0]), 0);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
