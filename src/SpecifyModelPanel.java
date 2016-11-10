@@ -30,6 +30,10 @@ public class SpecifyModelPanel extends JPanel {
 	private SyntaxModel model;
 	private int mode;
 	private Frame parentFrame;
+	private JCheckBox chckbxSingleImputation;
+	private JButton addToImputation;
+	private JButton removeFromImputation;
+	private JComboBox<String> buildTermsComboBox;
 	/**
 	 * Create the panel.
 	 */
@@ -246,7 +250,7 @@ public class SpecifyModelPanel extends JPanel {
 		button_1.setBounds(293, 313, 89, 33);
 		add(button_1);
 		
-		JButton addToImputation = new JButton(">");
+		addToImputation = new JButton(">");
 		addToImputation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedRow[] = variableTable.getSelectedRows();
@@ -308,7 +312,7 @@ public class SpecifyModelPanel extends JPanel {
 		addToImputation.setBounds(293, 62, 89, 33);
 		add(addToImputation);
 		
-		JButton removeFromImputation = new JButton("<");
+		removeFromImputation = new JButton("<");
 		removeFromImputation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedRows = imputationVariablesTable.getSelectedRows();
@@ -335,24 +339,24 @@ public class SpecifyModelPanel extends JPanel {
 		removeFromImputation.setBounds(293, 119, 89, 33);
 		add(removeFromImputation);
 		
-		JComboBox<String> comboBox = new JComboBox<String>(new DefaultComboBoxModel<String>(new String[] {"Main Effects", "Random Slopes"}));
-		comboBox.addActionListener(new ActionListener() {
+		buildTermsComboBox = new JComboBox<String>(new DefaultComboBoxModel<String>(new String[] {"Main Effects", "Random Slopes"}));
+		buildTermsComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(comboBox.getSelectedItem() == "Random Slopes"){
+				if(buildTermsComboBox.getSelectedItem() == "Random Slopes"){
 					mode = 1;
 				} else {
 					mode = 0;
 				}
 			}
 		});
-		comboBox.setBounds(281, 207, 116, 20);
-		add(comboBox);
+		buildTermsComboBox.setBounds(281, 207, 116, 20);
+		add(buildTermsComboBox);
 		
 		JLabel lblBuildTerms = new JLabel("Build Terms");
 		lblBuildTerms.setBounds(308, 184, 89, 23);
 		add(lblBuildTerms);
 		
-		JCheckBox chckbxSingleImputation = new JCheckBox("Single Imputation");
+		chckbxSingleImputation = new JCheckBox("Single Imputation");
 		chckbxSingleImputation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(chckbxSingleImputation.isSelected()) {
@@ -387,11 +391,11 @@ public class SpecifyModelPanel extends JPanel {
 					
 					addToImputation.setEnabled(false);
 					removeFromImputation.setEnabled(false);
-					comboBox.removeItemAt(1);
+					buildTermsComboBox.removeItemAt(1);
 				} else {
 					addToImputation.setEnabled(true);
 					removeFromImputation.setEnabled(true);
-					comboBox.addItem("Random Slopes");
+					buildTermsComboBox.addItem("Random Slopes");
 				}
 			}
 		});
@@ -454,6 +458,10 @@ public class SpecifyModelPanel extends JPanel {
 		modelVariables.repaint();
 		imputationVariablesTable.repaint();
 		variableTable.repaint();
+		chckbxSingleImputation.setSelected(false);
+		addToImputation.setEnabled(true);
+		removeFromImputation.setEnabled(true);
+		buildTermsComboBox.addItem("Random Slopes");
 	}
 	
 	public Frame getParentFrame() {
