@@ -171,32 +171,39 @@ public class MainWindow {
 		JMenuItem mntmImportDataset = new JMenuItem("Import Data");
 		mntmImportDataset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				SyntaxModel.clearModel();
 				Path importedFile = importSelectedFile();
 
 				if(importedFile == null){
 					System.out.println("There was an error in importing the file.");
-				} else {
-					model.dataSetPath = importedFile;
-					importWindow = new ImportWindow(frame);
-					importWindow.setVisible(true);
-					importWindow.addWindowListener(new WindowAdapter() {
-                    public void windowClosed(WindowEvent e){
-                    	// If missing value code is entered only then print import syntax
-                    	if(model.mappings.containsKey("MVC")) {
-//                   		writeImportSyntax();
-                    		writeModelMCMCOutputSyntax();
-                    	}
-                    }
-					});
-					currentFile = null;
-					frame.setTitle("Untitled");
-					syntaxEditor.setText("");
-					ModelMCOutputWindow = new ModelMCOutput(0);
-					importWindow.modelWindow = ModelMCOutputWindow;
-					mntmDataViewer.setEnabled(true);
-				}
-				
+					return;
+				} 
+					
+				SyntaxModel.clearModel();
+					if(openFile(selectedFile.getSelectedFile(), 1)) {
+						model.dataSetPath = importedFile;
+						importWindow = new ImportWindow(frame);
+						importWindow.setVisible(true);
+						importWindow.addWindowListener(new WindowAdapter() {
+	                    public void windowClosed(WindowEvent e){
+	                    	// If missing value code is entered only then print import syntax
+	                    	if(model.mappings.containsKey("MVC")) {
+//	                   		writeImportSyntax();
+	                    		writeModelMCMCOutputSyntax();
+	                    	}
+	                    }
+						});
+						currentFile = null;
+						frame.setTitle("Untitled");
+						syntaxEditor.setText("");
+						ModelMCOutputWindow = new ModelMCOutput(0);
+						importWindow.modelWindow = ModelMCOutputWindow;
+						mntmDataViewer.setEnabled(true);
+					} else {
+						JOptionPane.showMessageDialog(frame,
+								"There was an error in importing the selected file. Please check ",
+								"Error!",
+								JOptionPane.ERROR_MESSAGE);
+					}				
 			}
 		});
 		mntmImportDataset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
@@ -402,14 +409,25 @@ public class MainWindow {
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
-					selectedFile.setSelectedFile(new File(""));
-					int saveResult = selectedFile.showSaveDialog(frame);
-					if (saveResult == selectedFile.APPROVE_OPTION) {
-						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
-					} else {
+					int saveUntitled = JOptionPane.showConfirmDialog(frame,
+							"Save changes to syntax file?" ,
+							"Syntax file must be saved prior to running",
+							JOptionPane.YES_NO_CANCEL_OPTION);
+					if(saveUntitled == JOptionPane.YES_OPTION) {
+						selectedFile.setSelectedFile(new File(""));
+						int saveResult = selectedFile.showSaveDialog(frame);
+						if (saveResult == selectedFile.APPROVE_OPTION) {
+							saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
+						} else {
+							// When Cancel button is clicked
+							cancelButtonClicked = true;
+						}
+					} 
+					if(saveUntitled == JOptionPane.NO_OPTION || saveUntitled == JOptionPane.CANCEL_OPTION) {
 						// When Cancel button is clicked
 						cancelButtonClicked = true;
 					}
+					
 				} else {
 					System.out.println("Most recent hashcode: " + mostRecentHashCode);
 					System.out.println("Syntax Editor hashcode: "+ syntaxEditor.getText().hashCode());
@@ -424,7 +442,6 @@ public class MainWindow {
 								saveFile(currentFile, syntaxEditor.getText());
 							}
 						}	
-						
 					}
 				}
 				
@@ -702,14 +719,10 @@ public class MainWindow {
 	public Path importSelectedFile() {
 		int openResult = selectedFile.showOpenDialog(frame);
 		if (openResult == JFileChooser.APPROVE_OPTION) {
-			if(openFile(selectedFile.getSelectedFile(), 1))
 				return selectedFile.getSelectedFile().toPath();
-			else
-				return null;
 		} else {
 			return null;
 		}
-		
 	}
 	
 	public void writeImportSyntax() {
