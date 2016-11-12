@@ -147,10 +147,12 @@ public class ImportWindow extends JFrame {
             				}
             			}
             		}
-            			
+            		
+            		
             		model.allVariables.get(row).name = value.toString();
             		if(model.identifierVariablesLocations.contains(new Integer(row))){
             			// if the variable name modified is an identifier variable, changes its name in model.identifierVariables
+            			System.out.println("FOUND in Identifier variables list.......");
             			String[] split = model.identifierVariables.get(row).name.split(" ");
             			model.identifierVariables.get(row).name = value.toString() + " " + split[1];
             		}

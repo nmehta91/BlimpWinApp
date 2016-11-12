@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -278,7 +279,18 @@ public class SpecifyModelPanel extends JPanel {
 					}
 					indexesToRemove[i] = true;
 					// identifierVariableLocations specifies the indexes of model.variables which it contains - Used for Data View under Impute
-					model.identifierVariablesLocations.add(new Integer(i));
+//					System.out.println("Added index: " + i + " into identifer variables list...");
+					
+					// Find the index of the currently removed index in allVariables list
+					int indexInAllVariables = -1;
+					for(int k = 0; k < model.allVariables.size(); k++) {
+						Variable var = model.allVariables.get(k);
+						if(var.name == variable.name) {
+							indexInAllVariables = k;
+							System.out.println("Added index: " + k + " into identifer variables list...");
+						}
+					}
+					model.identifierVariablesLocations.add(new Integer(indexInAllVariables));
 					System.out.println(variable.name);
 					Variable identifierVariable = new Variable(variable.name+" (L"+(model.identifierVariables.size()+1)+")", variable.type, variable.position);
 					model.identifierVariables.add(identifierVariable);
@@ -461,7 +473,10 @@ public class SpecifyModelPanel extends JPanel {
 		chckbxSingleImputation.setSelected(false);
 		addToImputation.setEnabled(true);
 		removeFromImputation.setEnabled(true);
-		buildTermsComboBox.addItem("Random Slopes");
+		
+		ComboBoxModel<String>model = buildTermsComboBox.getModel();
+		if(model.getSize() < 2)
+			buildTermsComboBox.addItem("Random Slopes");
 	}
 	
 	public Frame getParentFrame() {

@@ -243,10 +243,11 @@ public class MainWindow {
 		JMenuItem mntmClose = new JMenuItem("Close Syntax");
 		mntmClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				closeWindow();
-				syntaxEditor.setText("");
-				SyntaxModel.clearModel();
-				frame.setTitle("Untitled");
+				if(closeWindow()) {
+					syntaxEditor.setText("");
+					SyntaxModel.clearModel();
+					frame.setTitle("Untitled");
+				}
 			}
 		});
 		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
@@ -255,9 +256,10 @@ public class MainWindow {
 		JMenuItem mntmQuitBlimp = new JMenuItem("Quit Blimp");
 		mntmQuitBlimp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				closeWindow();
-				WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
-				Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+				if(closeWindow()) {
+					WindowEvent close = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+					Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+				}
 			}
 		});
 		
@@ -436,7 +438,7 @@ public class MainWindow {
 								"Do you want to save changes to " + currentFile.getName() + " before running?" ,
 								"Blimp",
 								JOptionPane.YES_NO_CANCEL_OPTION);
-						if(saveUntitled == JOptionPane.YES_OPTION) {
+						if(saveUntitled == JOptionPane.YES_OPTION) { 
 							int saveResult = selectedFile.showSaveDialog(frame);
 							if (saveResult == selectedFile.APPROVE_OPTION) {
 								saveFile(currentFile, syntaxEditor.getText());
@@ -688,7 +690,7 @@ public class MainWindow {
 		frame.setTitle("Untitled");
 		
 	}
-	public void closeWindow() {
+	public boolean closeWindow() {
 			if(currentFile == null && !syntaxEditor.getText().equals("")) {
 				// File open in the syntax editor is not saved, then show save prompt
 				int saveUntitled = JOptionPane.showConfirmDialog(frame,
@@ -700,7 +702,10 @@ public class MainWindow {
 					if (saveResult == selectedFile.APPROVE_OPTION) {
 						saveFile(selectedFile.getSelectedFile(), syntaxEditor.getText());
 					}
-				}	
+				}
+				if(saveUntitled == JOptionPane.CANCEL_OPTION) {
+					return false;
+				}
 			} 
 			else {
 				if(syntaxEditor.getText().hashCode() != mostRecentHashCode) {
@@ -710,10 +715,11 @@ public class MainWindow {
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if(save == JOptionPane.YES_OPTION) 
 							saveFile(currentFile, syntaxEditor.getText());
+						if(save == JOptionPane.CANCEL_OPTION)
+							return false;
 					}
-					
 			}
-			
+			return true;
 	}
 	
 	public Path importSelectedFile() {
